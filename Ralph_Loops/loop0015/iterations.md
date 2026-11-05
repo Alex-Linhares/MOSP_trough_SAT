@@ -260,7 +260,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   appendix names the declarations by their existing full names. The
   axiom audit, the README and everything else in this item stand.**
 
-- [ ] **08 Related work and context.**
+- [x] **08 Related work and context.**
   The human-audit paper arXiv 2608.14673 (Sienicki & Sienicki, *A Human
   Audit of OpenAI's AI-Generated Mathematical Proofs*, v3 2026-09-09 —
   fetch the abstract page; it concerns the ten results of 1 August 2026,

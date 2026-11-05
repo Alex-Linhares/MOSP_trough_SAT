@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:opensearch="http://a9.com/-/spec/opensearch/1.1/" xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <id>https://arxiv.org/api/Tjad+Kq2i20MHJQ0natBbRp1msk</id>
+  <title>arXiv Query: search_query=&amp;id_list=2608.14673&amp;start=0&amp;max_results=10</title>
+  <updated>2026-11-05T05:59:12Z</updated>
+  <link href="https://arxiv.org/api/query?search_query=&amp;start=0&amp;max_results=10&amp;id_list=2608.14673" type="application/atom+xml"/>
+  <opensearch:itemsPerPage>10</opensearch:itemsPerPage>
+  <opensearch:totalResults>1</opensearch:totalResults>
+  <opensearch:startIndex>0</opensearch:startIndex>
+  <entry>
+    <id>http://arxiv.org/abs/2608.14673v3</id>
+    <title>A Human Audit of OpenAIs AI-Generated Mathematical Proofs</title>
+    <updated>2026-09-09T12:39:56Z</updated>
+    <link href="https://arxiv.org/abs/2608.14673v3" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2608.14673v3" rel="related" type="application/pdf" title="pdf"/>
+    <summary>We assess 18 chapter-specific reviews of the ten mathematical results announced by OpenAI on 1 August 2026, alongside review standards, Lean formalizations, subsequent research, and mathematical references. The article audits this review record without claiming a complete reconstruction of all ten proofs. No confirmed substantive mathematical error in a principal result remains in the examined assessments, although review depth varies and some dependencies remain partly checked. Chapter 8 presents the strongest reservation: a specialist review requests major revision of compressed analytic arguments. In Chapter 6, an apparent polarity error was withdrawn after an overbar lost during PDF extraction was recovered from the typeset source. Subsequent research independently reuses the Chapter 3 proof mechanism and confirms that Connes's rigidity conjecture is false, without independently reproducing Chapter 4's stronger infinite-family result. Among the cited follow-ups, Chapter 7 receives the strongest direct theorem-level corroboration through a stronger hardness theorem. Related equality results in Chapter 8 do not verify the analytic inequality proof. Some follow-ups disclose material AI assistance. We argue that confidence should combine formal checking, human reconstruction, independent mathematical use, and a public record supporting correction of both proofs and reviews.</summary>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.GL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="quant-ph" scheme="http://arxiv.org/schemas/atom"/>
+    <published>2026-08-03T15:12:46Z</published>
+    <arxiv:comment>8 pages, 5 references. V2: 11 pages, 8 references. V3. 13 pages, 27 references. Revised and updated version</arxiv:comment>
+    <arxiv:primary_category term="cs.AI"/>
+    <author>
+      <name>Mikołaj Sienicki</name>
+    </author>
+    <author>
+      <name>Krzysztof Sienicki</name>
+    </author>
+  </entry>
+</feed>

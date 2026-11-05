@@ -1,5 +1,309 @@
-% Related work and context -- drafted by loop0015 item 08.
+% Related work and context -- drafted by loop0015 item 08 (2026-11-05).
+% Every quotation below is located by paper3/scripts/related_work.py
+% (python3 -I; --check verifies without writing), which reads the fetched
+% texts under paper3/related/fetched/ (hashes in Table 9.1), the clone at
+% 4eaee875, and the manuscript extract reports/scratch/eth_audit/paper.txt.
+% Nothing is quoted from memory; nothing in the clone is run.
 \section{Related work and context}
 \label{sec:related}
+\begingroup\sloppy
 
-\placeholder{Item 08 drafts this section: the human audit of the August 2026 results (arXiv 2608.14673), the working group named in the collection's history, Impagliazzo--Paturi, Impagliazzo--Paturi--Zane, the comparator mechanism, nanoda; ``we found no prior statement'', never ``first''. Ends with what this does not claim''.}
+This section places the paper beside what others have written about the
+same family and about the mechanism that checked it. There are five
+things to place it beside: what the collection says about itself; the two
+papers that stated the hypotheses; a published human audit of an earlier
+batch of OpenAI's results; the checking tool, called the comparator; and
+the second proof checker, called nanoda, that we ran in
+Section~\ref{sec:replay}. The section ends by saying where we looked for
+an earlier statement of the title's observation and what we found.
+Table~\ref{tab:related-sources} lists every source with where it is on
+disk, when it was fetched, and its hash or commit. We quote only what is
+on disk; nothing in this section is quoted from memory or from the press.
+
+\begin{table}[htbp]
+\centering\small
+\caption{The sources of this section. ``Clone'' is the read-only copy of
+the OpenAI collection at commit \texttt{4eaee875}; ``fetched'' files were
+downloaded on 2026-11-05 and are kept under \texttt{paper3/related/fetched/}
+with their SHA-256 hashes. Written by
+\texttt{paper3/scripts/related\_work.py}.}
+\label{tab:related-sources}
+\input{tables/related_sources}
+\end{table}
+
+\subsection{What the collection says about itself}
+\label{sec:related-collection}
+
+The collection keeps a dated log, \clonefile{history.md} (56 lines). Under
+the heading ``October 26, 2026'' (line 11), the entry for this family is
+one bullet, which we quote in full (line 18):
+\begin{quote}\small
+``\emph{The Exponential Time Hypothesis is False.} The paper gives a
+deterministic algorithm that exactly counts satisfying assignments of
+fixed-width CNF formulas in subexponential time and polynomial space. The
+case of 3-SAT refutes the Exponential Time Hypothesis. An independent
+working group of computer scientists led by Russell Impagliazzo,
+Ramamohan Paturi, and Ryan Williams will examine and explain the proof.
+At the group’s request, we are making the materials public immediately so
+others can examine them as well.''
+\end{quote}
+Three things in this sentence matter for us. First, the group it names is
+led by two of the three authors of the papers that stated the hypotheses
+(Section~\ref{sec:related-hypotheses}). Second, the verb is ``will'': the
+log announces an examination to come. Nothing from that group is in the
+clone, and we fetched nothing from it, so this paper has no finding of
+theirs to cite, agree with or disagree with. Whatever that group
+publishes about the proof will carry more weight on the proof than
+Section~\ref{sec:proof} does, which only inspected and replayed. Third,
+the log says ``the paper gives \ldots{} subexponential time'' with no
+exponent; the exponent is in the scope note.
+
+That scope note is \clonefile{lean/docs/378.md}, seventeen lines, quoted
+in full in Section~\ref{sec:beyond}. It is the collection's own statement
+of the gap between what Lean proves (the exponent with the squared
+$\log\log$ factor) and what the manuscript claims (two sharper
+exponents). Its table (line 17) links the result to the one comparator
+statement, \clonefile{lean/ComparatorChallenges/SubexponentialSAT.lean}.
+So the collection itself records that the verified exponent is the weaker
+one. What it does not record is what the weaker exponent means at any
+size: that $\rhon$, the verified exponent, is larger than $n$ for every
+$n$ between $50$ and $e^{5504}$, so that the verified bound with constant
+one sits above $2^n$ at every size anyone will ever run
+(Section~\ref{sec:statement}). That is the title's observation, and the
+note does not make it.
+
+The third document is \clonefile{lean/ComparatorChallenges/README.md},
+ten lines. It says how the collection's checks are run: ``Install
+\texttt{comparator}, \texttt{landrun}, and \texttt{lean4export}, and make
+them available on \texttt{PATH}.'' (line 3), then from the \texttt{lean/}
+directory \texttt{lake update}, \texttt{lake exe cache get}, and
+\texttt{lake env comparator} on a family's JSON (lines 7--9; the example
+is another family's). The JSON for this family has six fields
+(Section~\ref{sec:related-comparator} reads them).
+
+\subsection{The two papers that stated the hypotheses}
+\label{sec:related-hypotheses}
+
+ETH, the Exponential Time Hypothesis, says that 3-SAT (deciding whether a
+formula whose clauses have three literals each can be satisfied) has no
+algorithm whose running time grows slower than every exponential in the
+number of variables. SETH, the Strong form, says that as the clause width
+grows, the best possible base of the exponential tends to $2$, the base of
+trying every assignment. Both are from \citet{ImpagliazzoPaturi2001}; the
+standard setting of SETH, and the lemma that lets one move between the
+number of variables and the number of clauses, are from
+\citet{ImpagliazzoPaturiZane2001}. The manuscript cites both as
+\texttt{[IP01]} and \texttt{[IPZ01]} (extract page 66, lines 3733--3736)
+and states each hypothesis in its own words in its \S1.1.1, which
+Section~\ref{sec:consequences} quotes with page and line. We do not hold
+either paper: \repofile{literature/} has no file for them, and
+\repofile{literature/MISSING.md} now records both with their DOIs. Every
+statement of a hypothesis in this paper is therefore the manuscript's
+statement of it, not the original's, and we quote nothing from the two
+originals. The manuscript's own account of what motivated SETH is one
+sentence we can locate (page 4, lines 170--171): the improvements of the
+known algorithms ``over exhaustive search diminish as $k$ grows [IP01,
+Open Problems, item 2]''. Exhaustive search is the ``trying all $2^n$
+assignments'' of the title.
+
+\subsection{A human audit of an earlier batch of results}
+\label{sec:related-audit}
+
+\citet{SienickiSienicki2026} is a published human audit of OpenAI's
+AI-generated proofs. We fetched its arXiv abstract page and API record
+(v1 of 3 August 2026, v2 of 25 August, v3 of 9 September 2026; 13 pages;
+primary class cs.AI). It is not about this family. Its abstract says
+what it covers: ``We assess 18 chapter-specific reviews of the ten
+mathematical results announced by OpenAI on 1 August 2026, alongside
+review standards, Lean formalizations, subsequent research, and
+mathematical references.'' The family this paper reads is dated 17
+October 2026, revised 25 October, and entered the collection on 26
+October (Section~\ref{sec:related-collection}); it is not one of the ten,
+and the abstract mentions neither it nor ETH (the script checks). So we
+cite the audit for its method of review and for nothing about the proof.
+
+Four sentences of the abstract bear on how this paper was written. On
+restraint: ``The article audits this review record without claiming a
+complete reconstruction of all ten proofs.'' On the finding: ``No
+confirmed substantive mathematical error in a principal result remains in
+the examined assessments, although review depth varies and some
+dependencies remain partly checked.'' On a hazard of reading proofs
+through text extraction: ``In Chapter 6, an apparent polarity error was
+withdrawn after an overbar lost during PDF extraction was recovered from
+the typeset source.'' And on what confidence should rest on: ``We argue
+that confidence should combine formal checking, human reconstruction,
+independent mathematical use, and a public record supporting correction
+of both proofs and reviews.''
+
+The third of these is a warning we took. This paper reads the manuscript
+through a \texttt{pdftotext} extract, the same kind of text in which that
+overbar was lost. That is why every quotation from the manuscript carries
+the page of the PDF beside the line of the extract, why the Lean is read
+from its source files and never from a rendering, and why no claim in
+this paper rests on a formula read from the extract alone: the formulas
+that matter are the Lean's, re-typed in Section~\ref{sec:statement} from
+the \texttt{.lean} file and re-checked by the kernel in
+Section~\ref{sec:lean}. Against the fourth sentence, this paper is one of
+the four things it lists, formal checking, replayed by us and by a
+second kernel, together with a reading of what the checked statement
+says. It is not a human reconstruction of the proof: Section~\ref{sec:proof}
+inspected the proof's files and did not re-derive the argument. We
+fetched the abstract only, and quote nothing from the paper's body.
+
+\subsection{The comparator}
+\label{sec:related-comparator}
+
+The comparator is the program the collection used to check that the
+solution file proves the challenge statement
+\citep{LeanComparator}. We fetched its README from the
+\texttt{master} branch of \texttt{leanprover/comparator} on 2026-11-05
+(latest commit \texttt{865edc14} of 2026-10-14, ``doc: migration
+notice''; the repository is archived and under the Apache-2.0 licence).
+Its first lines say the tool has moved: ``This project has been merged
+into core as of Lean release v4.35.0 in the form of \texttt{lake
+comparator} and the accompanying \texttt{lake check}'' (line 3). The
+collection pins Lean v4.34.1 (Section~\ref{sec:proof}), one release
+earlier, so the stand-alone tool is the one its README names. The README
+opens: ``Comparator is a trustworthy judge for Lean proofs.'' (line 8).
+
+What it checks is stated as three guarantees for the theorems a JSON
+configuration names (lines 52--55):
+\begin{quote}\small
+``All theorems in \texttt{Solution} that are listed in
+\texttt{theorem\_names} are guaranteed to:\\
+1. Prove the same statement as provided in \texttt{Challenge}\\
+2. Use no more axioms than listed in \texttt{permitted\_axioms}\\
+3. Be accepted by the Lean kernel''
+\end{quote}
+In plain words: the solution proves exactly the sentence
+the challenge posed, uses only the agreed axioms (the three standard ones
+in the example configuration, line 27), and passes the kernel, the small
+core of Lean that checks proofs. How it checks them is in its
+``Internals'' (lines 184--200), six steps: build the challenge inside a
+sandbox; export its declarations with \texttt{lean4export}; do the same
+for the solution; ``Verify that all declarations used in the statement of
+all relevant theorems in \texttt{Challenge} are the same as in the
+\texttt{Solution} environment'' (lines 191--192); ``Verify that the body
+of all relevant theorems in the \texttt{Solution} environment only uses
+axioms listed in \texttt{permitted\_axioms}'' (lines 195--196); and
+``Replay the \texttt{Solution} environment into the Lean kernel'' (line
+197). The first guarantee is therefore a match of the statement's
+declarations as exported, not a textual comparison of the two files.
+That is the check Section~\ref{sec:proof} says we did not reproduce: our
+statement match is textual (Table~\ref{tab:proof-trust}, row (iv)).
+
+The guarantees hold under six stated assumptions (lines 34--45). The one
+that concerns the kernel is the fifth: ``The Lean kernel is correct (with
+\texttt{external\_kernels} this can be reduced to `At least one of the
+Lean kernel or the \texttt{external\_kernels} is correct')'' (lines
+43--44). The sandbox is \texttt{landrun} (line 10), a tool that confines
+the build so that a malicious solution file cannot tamper with the
+checker; the README notes that its trusted base ``naturally includes the
+operating system and hardware it is running on, plus its sandboxing
+mechanism'' (line 58). External kernels are optional: ``Comparator can
+additionally check solutions with external kernels'' (line 70), and ``For
+backwards compatibility reasons users may instead set
+\texttt{enable\_nanoda: true} to obtain a config that calls
+\texttt{nanoda\_bin}'' (lines 86--87). The tool ``was originally
+developed by Lean FRO, with feedback from the AIMO team, in support of
+the AIMO series of competitions'' (lines 207--208).
+
+For this family the configuration has six fields
+(\clonefile{lean/ComparatorChallenges/SubexponentialSAT.json}): the
+challenge module; the solution module,
+\path{OAI.Algorithms.SubexponentialSAT.Main}; one theorem name,
+\path{SqrtLogSpace.exact_count_and_sat}; an empty
+\texttt{definition\_names}; the three standard axioms as
+\texttt{permitted\_axioms}; and \texttt{enable\_nanoda: false}. There is
+no \texttt{external\_kernels} field. So the check the collection
+configured for this family is the Lean kernel alone, under the fifth
+assumption in its unweakened form. Section~\ref{sec:replay} is the
+weakened form, supplied by us: the same theorem's dependencies through a
+second kernel. Our \texttt{bwrap} sandbox there played the role
+\texttt{landrun} plays here, for the same reason, and we did not run the
+comparator itself.
+
+\subsection{nanoda}
+\label{sec:related-nanoda}
+
+nanoda is the second checker \citep{Nanoda}. Its README, fetched from
+the \texttt{master} branch of \texttt{ammkrn/nanoda\_lib} on 2026-11-05,
+says what it is in one sentence (line 3): ``This is an external type
+checker for the Lean 4 programming language and theorem prover.'' The
+repository's description line is ``Library implementing type
+inference/checking functionality based on the Lean theorem prover''; the
+licence is Apache-2.0. It reads the file \texttt{lean4export} writes:
+``Export files can be created with lean4export'' (line 13), and ``Given
+that lean4export already uses json as its export format, adding a json
+parser as a dependency doesn't increase the overall complexity of the
+project'' (line 23). Its axiom rule is the comparator's: ``The average
+Lean user will want to permit the three semi-official axioms, which are
+\texttt{Quot.sound}, \texttt{Classical.choice}, and \texttt{propext}, and
+most export files will also rely on \texttt{Lean.trustCompiler}'' (line
+33); the export we checked contains the first three and no fourth
+(Section~\ref{sec:replay}). Two kernel extensions for arithmetic on
+literals are off by default and ``enable or disable the Nat and String
+kernel extensions'' (line 39); the replay turned both on.
+
+The latest commit of the repository at the time of the fetch is
+\texttt{8de7e0c4} of 2026-10-29, and that is the commit the replay built
+and ran (version 0.4.31; the script checks the replay's log against the
+fetched record). The checker is written in Rust and shares no code with
+the Lean kernel, which is what makes it a second opinion. Its author's
+book on external type checkers, linked from line 3 of the README, was not
+fetched.
+
+\subsection{Where we looked for an earlier statement of the title's observation}
+\label{sec:related-search}
+
+The title says the verified guarantee is weaker than trying all $2^n$
+assignments at every practical size. We looked for an earlier statement
+of that observation in the texts this paper rests on, and in no others:
+the collection's \clonefile{history.md}, its scope note
+\clonefile{lean/docs/378.md}, the abstract of
+\citet{SienickiSienicki2026}, the comparator README, the nanoda README,
+and the manuscript extract. The script searches each for the words such
+a statement would be likely to use (``practical'', ``brute'', ``trying
+all'', ``exhaustive'', ``$2^n$'', ``constants are'', ``concrete''). Outside
+the manuscript, none occurs. In the manuscript, ``practical'' occurs once
+(page 4, line 153), in a sentence about the practical value of SAT
+solvers on industrial formulas, a different sense; ``exhaustive'' occurs
+eleven times, as the motivation of SETH quoted above (line 170) and as the
+proof's own fallback for small inputs (lines 2480 and 2487, where the
+algorithm uses ``exhaustive search'' below the cutoff
+$n \ge 20$). The nearest earlier statements are the manuscript's own
+sentence that Lean verifies ``the weaker exponent'' (page 2, lines
+63--67; Section~\ref{sec:beyond}) and the scope note: both say the
+verified exponent is the weaker one, and neither says at what sizes the
+verified bound exceeds $2^n$, which is the title's point. Within these
+texts we found no prior statement of it. The search is bounded by that
+list: we did not search the literature at large, the working group's
+output, or the press.
+
+\subsection{What this does not claim}
+\label{sec:related-not}
+
+\begin{itemize}
+\item \textbf{Nothing about the working group's findings.} The
+  collection's log says the group ``will examine and explain the
+  proof''; we hold nothing it has written, and we neither anticipate
+  nor contradict it.
+\item \textbf{The human audit does not cover this family.} It is cited
+  for its method and its stated lesson about PDF extraction; its body
+  was not fetched, and no sentence of it beyond the abstract is quoted.
+\item \textbf{The two hypothesis papers were not read.} They are cited
+  as the manuscript cites them, and the hypotheses are stated as the
+  manuscript states them (Section~\ref{sec:consequences}).
+\item \textbf{We did not run the comparator.} What we reproduced is
+  stated in Section~\ref{sec:proof}'s Table~\ref{tab:proof-trust};
+  the comparator's statement match by exported declarations is not among
+  it.
+\item \textbf{No claim that landrun, lean4export or nanoda is correct.}
+  Each is quoted for what its README says it does; the replay's
+  evidence is that two independent checkers agreed on this export, and
+  the trust left in \texttt{lean4export} is stated in
+  Section~\ref{sec:replay}.
+\item \textbf{``No prior statement'' is bounded by the list above.} Six
+  texts, read with a script; not a literature search.
+\end{itemize}
+\endgroup

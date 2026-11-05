@@ -1,0 +1,89 @@
+[
+  {
+    "sha": "8de7e0c4ed3052745a7f8725164efd9e76d84c56",
+    "node_id": "C_kwDODkjvI9oAKDhkZTdlMGM0ZWQzMDUyNzQ1YTdmODcyNTE2NGVmZDllNzZkODRjNTY",
+    "commit": {
+      "author": {
+        "name": "Chris Bailey",
+        "email": "46387933+ammkrn@users.noreply.github.com",
+        "date": "2026-10-29T23:39:55Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2026-10-29T23:39:55Z"
+      },
+      "message": "Merge pull request #78 from ammkrn/stack_cfg\n\nfeat: allow configuring stack size",
+      "tree": {
+        "sha": "167e96e4ef130241861088f8def28a1ce09f913f",
+        "url": "https://api.github.com/repos/ammkrn/nanoda_lib/git/trees/167e96e4ef130241861088f8def28a1ce09f913f"
+      },
+      "url": "https://api.github.com/repos/ammkrn/nanoda_lib/git/commits/8de7e0c4ed3052745a7f8725164efd9e76d84c56",
+      "comment_count": 0,
+      "verification": {
+        "verified": true,
+        "reason": "valid",
+        "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq49lLCRC1aQ7uu5UhlAAAdycQAKDUA/9kOwr0pgWB7j+m7G2S\nxbFEDJnzJtw4Hw6qi3ondIgdxgmTxdp7/wX/HZwZWHk8eHCl1bgs1gin6n0csJoV\nxM6TCqbpELTQxVzv2yDPSJPvm3NqA4tfZQvPDsQOtl7KLOm/PluBP8W+1NrbAdju\ndeicnvG3vvLyQqe504OvbCLbHu2lJy32sFtrXjRfvT/PsmmZNeXEfGlMOLmlq1Jj\nMbe1P5JX0udGxKDiUnIvGmqphuavU3yvr2ljE6C3N2/Ohmvigz2Eu2oHWSSN0sr1\n9Ns/fMgQOLJBgNE8uVndn/xOnEHBCAI3NevfuiWXlnvNnGD8cYxUeZJmAEjPjv9M\n4MhyLfPopiFW/bERMw6xSELKpNtbz5Qd1v/akzv8ajnqIYMrSbndpIEZEQklcza6\nU9wMH2JEUKfWBHELgzP+XmdNtp85qgba9jC2Eo60mHiOOTOY67eb5HsEMzBnyGCd\nVPFnJKWqlFfNB1WaTBcoDPClPCOwPNYNPTXBJownDveVlLerurHpvUdxCBzRr4CB\n5TiR+ttb1OYafTAdcaIHAdGvBIKSv9TVDH6gTFfeJ6n025UaXTcdoyT0nOwy6jbv\nhnsgGnZT6XviWB0tCIK4SVhJWZtz+Kd5fLItCipO0iMwMh9L1G1vg253TYFYe4Tj\n9lQ2liwkb/bRtoxkiAUN\n=+xeG\n-----END PGP SIGNATURE-----\n",
+        "payload": "tree 167e96e4ef130241861088f8def28a1ce09f913f\nparent d0a02cc5defadd683f62f9d078f41688314fa31f\nparent 79c9abe5109ee2905b78b02eabe5e5a3f5878d6d\nauthor Chris Bailey <46387933+ammkrn@users.noreply.github.com> 1793317195 -0700\ncommitter GitHub <noreply@github.com> 1793317195 -0700\n\nMerge pull request #78 from ammkrn/stack_cfg\n\nfeat: allow configuring stack size",
+        "verified_at": "2026-10-29T23:39:55Z"
+      }
+    },
+    "url": "https://api.github.com/repos/ammkrn/nanoda_lib/commits/8de7e0c4ed3052745a7f8725164efd9e76d84c56",
+    "html_url": "https://github.com/ammkrn/nanoda_lib/commit/8de7e0c4ed3052745a7f8725164efd9e76d84c56",
+    "comments_url": "https://api.github.com/repos/ammkrn/nanoda_lib/commits/8de7e0c4ed3052745a7f8725164efd9e76d84c56/comments",
+    "author": {
+      "login": "ammkrn",
+      "id": 46387933,
+      "node_id": "MDQ6VXNlcjQ2Mzg3OTMz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/46387933?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/ammkrn",
+      "html_url": "https://github.com/ammkrn",
+      "followers_url": "https://api.github.com/users/ammkrn/followers",
+      "following_url": "https://api.github.com/users/ammkrn/following{/other_user}",
+      "gists_url": "https://api.github.com/users/ammkrn/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/ammkrn/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/ammkrn/subscriptions",
+      "organizations_url": "https://api.github.com/users/ammkrn/orgs",
+      "repos_url": "https://api.github.com/users/ammkrn/repos",
+      "events_url": "https://api.github.com/users/ammkrn/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/ammkrn/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "node_id": "MDQ6VXNlcjE5ODY0NDQ3",
+      "avatar_url": "https://avatars.githubusercontent.com/u/19864447?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "d0a02cc5defadd683f62f9d078f41688314fa31f",
+        "url": "https://api.github.com/repos/ammkrn/nanoda_lib/commits/d0a02cc5defadd683f62f9d078f41688314fa31f",
+        "html_url": "https://github.com/ammkrn/nanoda_lib/commit/d0a02cc5defadd683f62f9d078f41688314fa31f"
+      },
+      {
+        "sha": "79c9abe5109ee2905b78b02eabe5e5a3f5878d6d",
+        "url": "https://api.github.com/repos/ammkrn/nanoda_lib/commits/79c9abe5109ee2905b78b02eabe5e5a3f5878d6d",
+        "html_url": "https://github.com/ammkrn/nanoda_lib/commit/79c9abe5109ee2905b78b02eabe5e5a3f5878d6d"
+      }
+    ]
+  }
+]

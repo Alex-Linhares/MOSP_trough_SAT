@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 7/12 SOLVED
+Current: 8/12 SOLVED
 
 ## Setup — 2026-11-05
 
@@ -595,3 +595,104 @@ Current: 7/12 SOLVED
 - Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 05:46
   (exit 0; `lake build` ok; 1978 passed, 2 skipped, 1 xfailed, 180 warnings in 277.76s; 123 passed in 393.59s; paper 1 builds at 78 pages, paper 3 at 42; title verbatim;
   `solutions/` untouched).
+
+
+---
+
+## Iteration 8 — 2026-11-05 05:55 (item 08, related work and context) `[x]`
+
+### Completed
+- **Fetched, exactly the three pages the brief allows plus their public
+  metadata records** (05:59 UTC, `curl`, into `paper3/related/fetched/`,
+  eight files, each hashed; `paper3/related/README.md` lists file, URL and
+  what was *not* fetched; 08b): the arXiv API record and abstract page of
+  2608.14673 (v1 3 Aug, v2 25 Aug, v3 9 Sep 2026; "13 pages, 27
+  references"; cs.AI; the record spells the title `OpenAIs`, 08a); the
+  `master` README of `leanprover/comparator` (208 lines; latest commit
+  `865edc14` of 2026-10-14 "doc: migration notice"; **archived**, its line
+  3 says the tool "has been merged into core as of Lean release v4.35.0 in
+  the form of `lake comparator`"; neither repository has a `main` branch);
+  the `master` README of `ammkrn/nanoda_lib` (85 lines; latest commit
+  `8de7e0c4` of 2026-10-29 = **the commit the replay built**, checked
+  against `replay/logs/nanoda/nanoda_sandbox.txt`; Apache-2.0).
+- **Read in the clone at `4eaee875`** (`cat -n`/`sed -n`/`open()` only):
+  `history.md` line 18 under "October 26, 2026" (line 11), quoted in full
+  — the working-group sentence ("will examine and explain the proof"; the
+  log has no word "audit" or "review", and its one "verif" is another
+  family's Python checker, line 27); `lean/docs/378.md` (already quoted
+  in full by Section 3; here as the collection's own record of the weaker
+  exponent, which does not say what it means at any size);
+  `lean/ComparatorChallenges/README.md` (10 lines, line 3 and the three
+  commands) and `SubexponentialSAT.json` (six fields, `enable_nanoda:
+  false`, no `external_kernels`). The manuscript's own `[IP01]`/`[IPZ01]`
+  entries at extract lines 3733–3736 (page 66) and the "over exhaustive
+  search diminish as k grows" sentence at 170–171 (page 4).
+- **Holdings**: `literature/` has neither Impagliazzo–Paturi 2001 nor
+  Impagliazzo–Paturi–Zane 2001 nor the audit paper; a "Paper 3, related
+  work" section is appended to `literature/MISSING.md` with the three
+  (DOIs from the setup's Crossref check for the two JCSS papers) and a
+  pointer to the fourteen unchecked-DOI entries of items 05 and 06 (08c:
+  not fetched, Crossref is outside the download list).
+- `paper3/scripts/related_work.py` (python3 -I; `--check`): hashes the
+  eight fetched files; checks 60-odd quoted fragments at their lines (the
+  arXiv record's title, authors, dates, class, comment and five abstract
+  sentences, and that the abstract names neither 378 nor ETH; 33
+  comparator README lines; 7 nanoda README lines; both API records and
+  commits; the clone's four texts and the JSON's six fields; the clone's
+  commit read from `.git` without running git; the extract's six lines
+  with their pages); the holdings; the replay's nanoda commit; and runs
+  the **prior-statement word search** over the six texts ("practical",
+  "brute", "trying all", "exhaustive", "2^n", "constants are",
+  "concrete"): none outside the manuscript; in it "practical" once (line
+  153, the practical value of SAT solvers) and "exhaustive" eleven times
+  (170 the SETH motivation, 2480/2487 the proof's small-case fallback).
+  Writes `tables/related_sources.tex` (Table 9.1). `ALL CHECKS PASSED`.
+- `paper3/latex/sec9_related.tex` drafted in plain English (pages 38–43 of
+  48, seven subsections: what the collection says about itself; the two
+  hypothesis papers, cited through the manuscript and not read; the human
+  audit of the 1 August results — four abstract sentences quoted, the
+  "overbar lost during PDF extraction" taken as a warning and tied to our
+  page-plus-line and read-the-Lean-from-source rules; the comparator —
+  its three guarantees as a three-line quote, the six assumptions with
+  the kernel one quoted, Internals steps 4–6, `landrun`, external kernels
+  and `enable_nanoda`, the Lean FRO / AIMO acknowledgement, and family
+  378's JSON read against them: the configured check is the Lean kernel
+  alone, Section 5 is the weakened fifth assumption supplied by us; nanoda
+  — four README lines, the commit identity with the replay; **"we found
+  no prior statement" bounded to the six texts** with the two nearest
+  earlier statements named (the manuscript's "weaker exponent" sentence,
+  the scope note), 08d; "what this does not claim" in six points).
+  `make -C paper3/latex check` passes, 48 pages, **zero overfull boxes in
+  the section** (the sources table made breakable with `\path` and
+  ragged-right columns; `\repofile` cannot sit in a caption, as item 06
+  found).
+- `refs.bib`: `LeanComparator` and `Nanoda` completed with commit, date,
+  branch, licence and the archived/merged status; `SienickiSienicki2026`
+  with the three version dates and the record's spelling; two `@misc`
+  entries added for `lean4export` and `landrun` by the URLs the comparator
+  README gives (lines 10–11, "page not fetched"); the header's "item 08
+  completes" sentence resolved. `paper3/README.md`: Section 9 regenerate
+  paragraph and a `related/` layout row. `ETH_AMBIGUOUS.MD` entries
+  08a–08d.
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing of
+  the clone executed; the fetched files never executed, imported or
+  rendered; no subagent used.
+
+### Blockers
+- None.
+
+### Next
+- Item 09 (abstract, introduction, conclusion): Section 9.1 quotes the
+  working-group sentence and 9.6 bounds "no prior statement"; the
+  introduction may reuse the former and must not widen the latter.
+- Item 10 (refuter): Section 9's quotations are all located by the
+  script; the two JCSS papers are cited unread (9.2 says so) — the owner
+  may want them obtained (MISSING.md) before submission.
+- Item 11: `paper3/README.md`'s Section 9 paragraph is written; the
+  CLAUDE.md paragraph may mention that `leanprover/comparator` is
+  archived and merged into Lean core at v4.35.0 (one release above the
+  clone's pin).
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 06:22
+  (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed in
+  4:36; pathwidth_solver 123 passed in 6:35; paper 1 builds at 78 pages,
+  paper 3 at 48; title verbatim; `solutions/` untouched).

@@ -1,0 +1,84 @@
+[
+  {
+    "sha": "865edc14486c3388e9225daa971da8e157488c3e",
+    "node_id": "C_kwDOO3InetoAKDg2NWVkYzE0NDg2YzMzODhlOTIyNWRhYTk3MWRhOGUxNTc0ODhjM2U",
+    "commit": {
+      "author": {
+        "name": "Henrik Böving",
+        "email": "hargonix@gmail.com",
+        "date": "2026-10-14T08:48:27Z"
+      },
+      "committer": {
+        "name": "Henrik Böving",
+        "email": "hargonix@gmail.com",
+        "date": "2026-10-14T08:49:09Z"
+      },
+      "message": "doc: migration notice",
+      "tree": {
+        "sha": "098bac931982050422ca36302e29d471fb39c4bc",
+        "url": "https://api.github.com/repos/leanprover/comparator/git/trees/098bac931982050422ca36302e29d471fb39c4bc"
+      },
+      "url": "https://api.github.com/repos/leanprover/comparator/git/commits/865edc14486c3388e9225daa971da8e157488c3e",
+      "comment_count": 0,
+      "verification": {
+        "verified": false,
+        "reason": "unsigned",
+        "signature": null,
+        "payload": null,
+        "verified_at": null
+      }
+    },
+    "url": "https://api.github.com/repos/leanprover/comparator/commits/865edc14486c3388e9225daa971da8e157488c3e",
+    "html_url": "https://github.com/leanprover/comparator/commit/865edc14486c3388e9225daa971da8e157488c3e",
+    "comments_url": "https://api.github.com/repos/leanprover/comparator/commits/865edc14486c3388e9225daa971da8e157488c3e/comments",
+    "author": {
+      "login": "hargoniX",
+      "id": 33270164,
+      "node_id": "MDQ6VXNlcjMzMjcwMTY0",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33270164?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/hargoniX",
+      "html_url": "https://github.com/hargoniX",
+      "followers_url": "https://api.github.com/users/hargoniX/followers",
+      "following_url": "https://api.github.com/users/hargoniX/following{/other_user}",
+      "gists_url": "https://api.github.com/users/hargoniX/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/hargoniX/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/hargoniX/subscriptions",
+      "organizations_url": "https://api.github.com/users/hargoniX/orgs",
+      "repos_url": "https://api.github.com/users/hargoniX/repos",
+      "events_url": "https://api.github.com/users/hargoniX/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/hargoniX/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "hargoniX",
+      "id": 33270164,
+      "node_id": "MDQ6VXNlcjMzMjcwMTY0",
+      "avatar_url": "https://avatars.githubusercontent.com/u/33270164?v=4",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/hargoniX",
+      "html_url": "https://github.com/hargoniX",
+      "followers_url": "https://api.github.com/users/hargoniX/followers",
+      "following_url": "https://api.github.com/users/hargoniX/following{/other_user}",
+      "gists_url": "https://api.github.com/users/hargoniX/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/hargoniX/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/hargoniX/subscriptions",
+      "organizations_url": "https://api.github.com/users/hargoniX/orgs",
+      "repos_url": "https://api.github.com/users/hargoniX/repos",
+      "events_url": "https://api.github.com/users/hargoniX/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/hargoniX/received_events",
+      "type": "User",
+      "user_view_type": "public",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "e3dcf3083fc53d44b27a4431fabf7d43181583f5",
+        "url": "https://api.github.com/repos/leanprover/comparator/commits/e3dcf3083fc53d44b27a4431fabf7d43181583f5",
+        "html_url": "https://github.com/leanprover/comparator/commit/e3dcf3083fc53d44b27a4431fabf7d43181583f5"
+      }
+    ]
+  }
+]

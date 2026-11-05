@@ -58,6 +58,7 @@ statement_audit.md` and `proof_audit.md` (2026-11-05). The plan is
 | `scripts/` | every number's regenerate script (`runtime_scale.py`, `practitioner.py`, …), written by the items |
 | `replay/` | the sandboxed replay: `README.md` with the exact commands, `logs/` (full logs git-ignored, hashes committed) |
 | `lean/` | `README.md` pointing at the companion Lean (`lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame}.lean`, left in place by the owner's decision S3), `axiom_check.lean` with its committed `axiom_check.log`, and `rediff.log` (the byte-level re-diff of the copy, written by `scripts/lean_rediff.py`) |
+| `related/` | the four texts Section 9 quotes, fetched on 2026-11-05 (`fetched/`, with their API records), and a `README.md` of files, URLs and what was not fetched |
 | `refuter/` | item 10's refuter report |
 | `ETH_AMBIGUOUS.MD` | every question the loop could not settle, one entry each, for the owner |
 
@@ -212,6 +213,23 @@ clone.)*
   `Trace` on none, `countWord` on two of the three, `sorryAx` on none; Lean
   4.34.0-rc2, Mathlib `1192d624`, our library's toolchain). `paper3/lean/README.md`
   lists the files, the line of every cited name and both logs.
+
+- **Section 9, related work and context** (item 08): `python3 -I
+  paper3/scripts/related_work.py` (from the repository root; `--check`
+  verifies without writing) locates every quotation of the section — in
+  the four texts item 08 fetched on 2026-11-05 into `paper3/related/fetched/`
+  (the arXiv API record and abstract page of 2608.14673; the `master`
+  READMEs of `leanprover/comparator`, commit `865edc14`, and
+  `ammkrn/nanoda_lib`, commit `8de7e0c4`, with both repositories' API
+  records), in the clone at `4eaee875` (`history.md` line 18, `lean/docs/378.md`,
+  `lean/ComparatorChallenges/README.md` and `SubexponentialSAT.json`) and in
+  the manuscript extract (lines 170–171, 3733–3736) — checks that
+  `literature/` holds none of the cited papers, that the replay's nanoda
+  commit equals the repository's latest, runs the prior-statement word
+  search over the six texts (none outside the manuscript; in it,
+  "practical" once at line 153 and "exhaustive" eleven times), prints the
+  SHA-256 of every fetched file and writes `latex/tables/related_sources.tex`
+  (Table 9.1). `paper3/related/README.md` lists the files and URLs.
 
 ## The replay
 

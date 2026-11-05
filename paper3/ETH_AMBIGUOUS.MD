@@ -607,3 +607,69 @@ an answer).
 - **Owner may change**: drop the extra check; or require an
   indentation-exact match (which would mean restating the `def` with
   the theorem's indentation).
+
+### 08a — the arXiv record spells the audit paper's title "OpenAIs", without the apostrophe (item 08, 2026-11-05)
+- **Ambiguous**: the brief writes the title as *A Human Audit of OpenAI's
+  AI-Generated Mathematical Proofs*; the arXiv API record and the
+  abstract page both give `A Human Audit of OpenAIs AI-Generated
+  Mathematical Proofs` (no apostrophe), and the "From:" line says "Kris
+  Sienicki" where the author list says Krzysztof.
+- **Chosen**: `refs.bib` keeps the apostrophe in the typeset title
+  (`OpenAI's`, as the brief and ordinary English have it) and records in
+  its comment and `note` that the arXiv record spells it `OpenAIs`; the
+  author names are the record's (`Mikołaj Sienicki`, `Krzysztof
+  Sienicki`). The script checks the record's spelling, so the
+  discrepancy is on file either way.
+- **Owner may change**: use the record's spelling verbatim in the
+  bibliography.
+
+### 08b — which metadata counts as "fetched" under the download rule (item 08, 2026-11-05)
+- **Ambiguous**: `TASK.md` allows item 08 to download "the arXiv abstract
+  page of 2608.14673 and the comparator and nanoda READMEs". The
+  READMEs alone do not say at which commit or date they were read, and
+  the abstract page's HTML is awkward to quote; the public API records
+  (arXiv's Atom record of the paper; GitHub's records of each repository
+  and its latest commit) carry exactly that — version dates, the commit
+  hash and date, the archived flag, the licence.
+- **Chosen**: fetched the three allowed pages (the arXiv page through
+  its API record *and* its HTML, the two READMEs raw from `master`) and
+  the four small API records, eight files in all under
+  `paper3/related/fetched/`, each hashed by the script and listed in
+  `paper3/related/README.md`; nothing else (not the audit paper's body,
+  not `lean4export`'s or `landrun`'s pages, not the nanoda author's book,
+  not Crossref, not the press). The API records are read as metadata of
+  the allowed pages, not as further sources: nothing is quoted from them
+  beyond a commit hash, a date, a licence name and a description line.
+- **Owner may change**: drop the API records and cite the READMEs with
+  the fetch date only.
+
+### 08c — DOIs of items 05 and 06 still unchecked (item 08, 2026-11-05)
+- **Ambiguous**: items 05 and 06 left fourteen `refs.bib` entries with
+  "no DOI checked" and offered the check to item 08 (05c, 06c); a
+  Crossref query is a download the rule does not list.
+- **Chosen**: not fetched. The fourteen entries stand as copied from the
+  manuscript's reference list (item 05) or from memory (item 06), each
+  so marked in its `note`; `refs.bib`'s header and `literature/MISSING.md`
+  say so. Two `@misc` entries were added for `lean4export` and
+  `landrun` by the URLs the comparator README gives (lines 10–11), each
+  marked "page not fetched".
+- **Owner may change**: run `paper1/latex/check_refs.py`'s Crossref pass
+  over `paper3/latex/refs.bib` (one command, a minute) and drop the
+  "no DOI checked" notes.
+
+### 08d — "we found no prior statement": what the search covers (item 08, 2026-11-05)
+- **Ambiguous**: the brief asks for "we found no prior statement" of the
+  title's observation and "say what was searched"; a word search over
+  six texts is not a literature search, and the manuscript's own "weaker
+  exponent" sentence and scope note come close without making the
+  observation (they say which exponent is verified, not at which sizes
+  the verified bound exceeds `2^n`).
+- **Chosen**: Section 9.6 lists the six texts (the collection's
+  `history.md` and `lean/docs/378.md`, the audit paper's abstract, the
+  two READMEs, the manuscript extract), the seven search strings, every
+  hit in the manuscript with its sense, and names the two nearest
+  earlier statements; it says in so many words that the literature at
+  large, the working group's output and the press were not searched,
+  and the "what this does not claim" list repeats it.
+- **Owner may change**: widen the search (a literature search would be
+  a new item with its own download rule), or strike the sentence.

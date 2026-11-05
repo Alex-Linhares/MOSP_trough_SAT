@@ -1,8 +1,10 @@
 % Paper 3: references. Only works the paper cites; no width-parameter
 % references (owner's scope, 2026-11-05; ETH_AMBIGUOUS.MD entry S4). DOIs
 % checked against Crossref on 2026-11-05 where given; entries without a DOI
-% name the file or URL they were checked against. Item 08 completes the
-% entries it fetches (comparator, nanoda, the human-audit paper's version).
+% name the file or URL they were checked against. Item 08 completed the
+% entries it fetched (comparator, nanoda, the human-audit paper's version) and
+% added lean4export and landrun by URL; it fetched no Crossref record, so the
+% DOIs of items 05 and 06 stay unchecked (ETH_AMBIGUOUS.MD 08c).
 
 % The manuscript's own BibTeX block, copied verbatim from
 % ~/dev/untrusted/openai-math/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/README.md
@@ -35,7 +37,12 @@
 }
 
 % The human audit of the ten results of 1 August 2026 (not of family 378).
-% Metadata from the arXiv API on 2026-11-05 (v3, 2026-09-09, 13 pages).
+% Metadata from the arXiv API record and abstract page fetched by item 08 on
+% 2026-11-05 (paper3/related/fetched/arxiv_2608.14673_{api.xml,abs.html}):
+% v1 3 Aug 2026, v2 25 Aug 2026, v3 9 Sep 2026; "13 pages, 27 references";
+% primary class cs.AI (also cs.GL, quant-ph). The record spells the title
+% without the apostrophe ("OpenAIs"); the entry keeps it. Abstract only; the
+% body was not fetched.
 @misc{SienickiSienicki2026,
   author        = {Sienicki, Miko{\l}aj and Sienicki, Krzysztof},
   title         = {A Human Audit of {OpenAI}'s {AI}-Generated Mathematical Proofs},
@@ -43,31 +50,58 @@
   eprint        = {2608.14673},
   archiveprefix = {arXiv},
   primaryclass  = {cs.AI},
-  note          = {v3, 9 September 2026},
+  note          = {v3, 9 September 2026; 13 pages; the arXiv record spells the title ``OpenAIs''},
   url           = {https://arxiv.org/abs/2608.14673}
 }
 
-% The comparator mechanism the collection uses (its README names the checks:
-% statement match by exported declarations, permitted axioms, kernel replay,
-% the landrun sandbox, enable_nanoda). Item 08 fetches and records the commit
-% and the quoted sentences.
+% The comparator mechanism the collection uses. README fetched by item 08 on
+% 2026-11-05 from the master branch (paper3/related/fetched/comparator_README_master.md,
+% SHA-256 39e03761...); latest commit 865edc14 of 2026-10-14 ("doc: migration
+% notice"); the repository is archived, Apache-2.0, and its README says the tool
+% "has been merged into core as of Lean release v4.35.0 in the form of
+% `lake comparator`" (line 3). Author per its Acknowledgement (lines 207-208).
 @misc{LeanComparator,
   author       = {{Lean FRO}},
-  title        = {comparator: checking a solution against a challenge statement},
+  title        = {Comparator: a trustworthy judge for {Lean} proofs},
   howpublished = {\url{https://github.com/leanprover/comparator}},
   year         = {2026},
-  note         = {Repository README; version and date recorded by item 08}
+  note         = {Repository README, \texttt{master} branch, commit \texttt{865edc14} (14 October 2026), fetched 5 November 2026; archived, merged into Lean core as \texttt{lake comparator} at v4.35.0}
 }
 
-% nanoda: the independent Lean 4 kernel in Rust that the comparator can replay
-% an exported environment through (enable_nanoda / external_kernels). Item 08
-% records the repository, author and commit it fetched.
+% nanoda: the external Lean 4 type checker in Rust that the comparator can
+% replay an exported environment through (enable_nanoda / external_kernels),
+% and that the replay (item 01) ran. README fetched by item 08 on 2026-11-05
+% from the master branch (paper3/related/fetched/nanoda_README_master.md,
+% SHA-256 d4d3f3be...); latest commit 8de7e0c4 of 2026-10-29 = the commit the
+% replay built (version 0.4.31); owner "ammkrn", Apache-2.0; repository
+% description "Library implementing type inference/checking functionality
+% based on the Lean theorem prover".
 @misc{Nanoda,
-  author       = {{nanoda contributors}},
-  title        = {nanoda: a type checker for {Lean}~4 written in {Rust}},
+  author       = {{ammkrn}},
+  title        = {nanoda\_lib: an external type checker for {Lean}~4, written in {Rust}},
   howpublished = {\url{https://github.com/ammkrn/nanoda_lib}},
   year         = {2026},
-  note         = {Repository README; author, version and date recorded by item 08}
+  note         = {Repository README, \texttt{master} branch, commit \texttt{8de7e0c4} (29 October 2026), version 0.4.31, fetched 5 November 2026}
+}
+
+% lean4export and landrun: the two tools the comparator README requires on
+% PATH (lines 10-11). URLs as the README gives them; neither page fetched.
+% The replay built lean4export at tag v4.34.0 (commit 076e8e57); landrun was
+% not used (the replay's sandbox is bwrap).
+@misc{Lean4Export,
+  author       = {{Lean FRO}},
+  title        = {lean4export: export a {Lean}~4 environment for external checkers},
+  howpublished = {\url{https://github.com/leanprover/lean4export}},
+  year         = {2026},
+  note         = {URL as given in the comparator README (line 11); page not fetched. The replay built tag \texttt{v4.34.0}, commit \texttt{076e8e57}}
+}
+
+@misc{Landrun,
+  author       = {{Zouuup}},
+  title        = {landrun: a sandbox for running untrusted builds},
+  howpublished = {\url{https://github.com/Zouuup/landrun}},
+  year         = {2026},
+  note         = {URL as given in the comparator README (line 10); page not fetched; not used by the replay, whose sandbox is \texttt{bwrap}}
 }
 
 % ---------------------------------------------------------------------------

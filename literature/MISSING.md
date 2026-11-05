@@ -619,3 +619,39 @@ statement in the held papers" and nothing is claimed first against them.
   arrangement of trees. *J. ACM* 32(4), 950–988. Cutwidth of trees is
   polynomial (cited in §7.1 for the regime `m < 1.0888 n` where Algorithm
   7.2's base is below 2).
+
+## Paper 3, related work (loop0015 item 08, 2026-11-05)
+
+Cited by `paper3/latex/sec9_related.tex` and not held. The two 2001 papers
+are the sources of ETH and SETH; paper 3 cites them as the manuscript of
+family 378 cites them (`reports/scratch/eth_audit/paper.txt` lines
+3733–3736, page 66) and states the hypotheses in the manuscript's words
+(its §1.1.1), quoting nothing from the originals. The audit paper is cited
+for its method only; its abstract page and arXiv API record are on disk
+(`paper3/related/fetched/`), its body is not. Item 08 fetched nothing
+beyond the three pages `TASK.md` allows, so no Crossref record was
+consulted here; the DOIs below are the ones `refs.bib` carries from the
+setup's Crossref check.
+
+- **Impagliazzo, R. & Paturi, R.** (2001). On the complexity of k-SAT.
+  *Journal of Computer and System Sciences*, 62(2), 367–375. DOI:
+  10.1006/jcss.2000.1727 — Elsevier; the source of ETH (the manuscript's
+  "[IP01, Theorem 1]") and of SETH ("[IP01, Open Problems, item 2]").
+- **Impagliazzo, R., Paturi, R. & Zane, F.** (2001). Which problems have
+  strongly exponential complexity? *Journal of Computer and System
+  Sciences*, 63(4), 512–530. DOI: 10.1006/jcss.2001.1774 — Elsevier; the
+  Sparsification Lemma and SETH's standard setting.
+- **Sienicki, M. & Sienicki, K.** (2026). A Human Audit of OpenAI's
+  AI-Generated Mathematical Proofs. arXiv:2608.14673, v3 of 9 September
+  2026, 13 pages, cs.AI. Open access; only the abstract page was fetched
+  (the download rule of `TASK.md`), so the PDF is not in `literature/`.
+  It concerns the ten results of 1 August 2026, not family 378.
+- Also cited by paper 3 and not held, listed by their items: the seven
+  sources of the hypotheses' variants that Section 6 cites through the
+  manuscript's reference list (Dinur 2016; Manurangsi & Raghavendra 2017;
+  Chalermsook et al. 2020; Carmosino et al. 2016; Dell et al. 2014; Cygan
+  et al. 2016; Williams 2016 — `refs.bib` notes, item 05) and the seven
+  tool and threshold papers Section 7 cites from memory (CaDiCaL 2.0;
+  PySAT 2018; Ganak 2019; ApproxMC 2013; BIRD 2019; Selman, Mitchell &
+  Levesque 1996; Mertens, Mézard & Zecchina 2006 — item 06). None has a
+  checked DOI (`paper3/ETH_AMBIGUOUS.MD` 05c, 06c, 08c).
