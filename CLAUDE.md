@@ -1595,6 +1595,24 @@ of the climb, and the `10¹¹` nodes at 125 are the lattice's size, not an
 inefficiency. Nothing re-solved; `solutions/` untouched; about 11
 core-hours; data under `reports/scratch/checkpoint/`.
 
+**Paper 3, title fixed by the owner (2026-11-05, no deviations):**
+*"Exponential time hypothesis is false... but the verified algorithm is slower than trying all 2^n assignments at every practical size."*
+— a reading of OpenAI's family 378 (`github.com/openai/math`, 2026-10-25;
+cloned read-only under `~/dev/untrusted/`, never built or run from inside
+except in the paper's isolated replay): what the Lean-verified statement
+says exactly (a finite multitape machine, an honest trace, the exponent
+`n (log log n)² / √log n` only, whose factor exceeds 1 for every
+`n < e^{5504}`, so the verified *guarantee* is weaker than `2^n · poly` at
+every practical size; the paper's sharper exponents are unverified), an
+independent inspection and replay of the proof (`reports/scratch/eth_audit/`:
+3,091 modules, no axiom / sorry / native_decide / implemented_by / unsafe /
+partial, 33 statement definitions identical, no recorded axiom audit, no
+CI, no second-kernel replay), what follows for fine-grained complexity and
+for the width parameters (loop0014, `reports/subexp_pathwidth.md`), and what
+it changes for a practitioner (nothing on any machine). Directory `paper3/`;
+open questions the loop could not settle go to `paper3/ETH_AMBIGUOUS.MD`
+for the owner. Ralph loop0015 writes it (`reports/paper3_plan.md`).
+
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
 - ~~Becceneri, Yanasse & Soma (2004) is still missing~~ — **obtained 2026-09-27**,
