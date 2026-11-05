@@ -1,0 +1,20 @@
+% Appendix A: formal names, one row per result, as in paper 1
+% (\leanentry{key}{result} \leannames{...}); item 07 fills the rows.
+\section{Formal names}
+\label{app:lean}
+
+Every Lean name the paper cites, with its file under
+\repofile{lean/MOSPFormalization/ETH/}; the axiom audit is
+\repofile{paper3/lean/axiom_check.lean} with its committed log.
+
+\begin{longtable}{@{}p{0.07\linewidth}p{0.43\linewidth}p{0.44\linewidth}@{}}
+\toprule
+ & result & Lean names \\
+\midrule
+\endhead
+\leanentry{subexpcount}{The comparator statement restated as a \texttt{Prop}, \(\SubexpCount\ k\), over the verbatim copy of the machine model; never proved, never an axiom} \leannames{MOSPFormalization.SubexpPathwidth.SubexpCount} \\
+\leanentry{rho-little-o}{\(\rhon = o(n)\): the verified exponent is subexponential in the limit} \leannames{MOSPFormalization.SubexpPathwidth.runtimeScale\_isLittleO} \\
+\bottomrule
+\end{longtable}
+
+\placeholder{Item 07 moves these declarations to \repofile{lean/MOSPFormalization/ETH/} and rewrites the names above to their new namespace.}

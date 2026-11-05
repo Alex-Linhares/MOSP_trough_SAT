@@ -1,0 +1,71 @@
+% Paper 3: references. Only works the paper cites; no width-parameter
+% references (owner's scope, 2026-11-05; ETH_AMBIGUOUS.MD entry S4). DOIs
+% checked against Crossref on 2026-11-05 where given; entries without a DOI
+% name the file or URL they were checked against. Item 08 completes the
+% entries it fetches (comparator, nanoda, the human-audit paper's version).
+
+% The manuscript's own BibTeX block, copied verbatim from
+% ~/dev/untrusted/openai-math/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/README.md
+% (lines 10-16). The manuscript's \date reads "17 October 2026, revised 25 October 2026".
+@misc{OAI:The-Exponential-Time-Hypothesis-is-False-October-25-2026,
+  author = {{OpenAI}},
+  title = {{The Exponential Time Hypothesis is False}},
+  howpublished = {OpenAI Math Release preprint
+                  \href{https://github.com/openai/math/blob/main/preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/paper.pdf}{OAI:The-Exponential-Time-Hypothesis-is-False-October-25-2026}},
+  year = {2026}
+}
+
+% ETH. DOI checked 2026-11-05 (Crossref: "On the Complexity of k-SAT", JCSS, 2001-03).
+@article{ImpagliazzoPaturi2001,
+  author  = {Impagliazzo, Russell and Paturi, Ramamohan},
+  title   = {On the complexity of \emph{k}-{SAT}},
+  journal = {Journal of Computer and System Sciences},
+  volume  = {62}, number = {2}, pages = {367--375}, year = {2001},
+  doi     = {10.1006/jcss.2000.1727}
+}
+
+% The sparsification lemma; SETH's standard setting. DOI checked 2026-11-05
+% (Crossref: "Which Problems Have Strongly Exponential Complexity?", JCSS, 2001-12).
+@article{ImpagliazzoPaturiZane2001,
+  author  = {Impagliazzo, Russell and Paturi, Ramamohan and Zane, Francis},
+  title   = {Which problems have strongly exponential complexity?},
+  journal = {Journal of Computer and System Sciences},
+  volume  = {63}, number = {4}, pages = {512--530}, year = {2001},
+  doi     = {10.1006/jcss.2001.1774}
+}
+
+% The human audit of the ten results of 1 August 2026 (not of family 378).
+% Metadata from the arXiv API on 2026-11-05 (v3, 2026-09-09, 13 pages).
+@misc{SienickiSienicki2026,
+  author        = {Sienicki, Miko{\l}aj and Sienicki, Krzysztof},
+  title         = {A Human Audit of {OpenAI}'s {AI}-Generated Mathematical Proofs},
+  year          = {2026},
+  eprint        = {2608.14673},
+  archiveprefix = {arXiv},
+  primaryclass  = {cs.AI},
+  note          = {v3, 9 September 2026},
+  url           = {https://arxiv.org/abs/2608.14673}
+}
+
+% The comparator mechanism the collection uses (its README names the checks:
+% statement match by exported declarations, permitted axioms, kernel replay,
+% the landrun sandbox, enable_nanoda). Item 08 fetches and records the commit
+% and the quoted sentences.
+@misc{LeanComparator,
+  author       = {{Lean FRO}},
+  title        = {comparator: checking a solution against a challenge statement},
+  howpublished = {\url{https://github.com/leanprover/comparator}},
+  year         = {2026},
+  note         = {Repository README; version and date recorded by item 08}
+}
+
+% nanoda: the independent Lean 4 kernel in Rust that the comparator can replay
+% an exported environment through (enable_nanoda / external_kernels). Item 08
+% records the repository, author and commit it fetched.
+@misc{Nanoda,
+  author       = {{nanoda contributors}},
+  title        = {nanoda: a type checker for {Lean}~4 written in {Rust}},
+  howpublished = {\url{https://github.com/ammkrn/nanoda_lib}},
+  year         = {2026},
+  note         = {Repository README; author, version and date recorded by item 08}
+}

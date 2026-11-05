@@ -1,0 +1,17 @@
+# Paper 3: the sandboxed replay's full logs are large and regenerable; their
+# hashes and the short extracts (axioms.txt, versions, the last 200 lines)
+# are committed by item 01.
+replay/logs/*.log
+replay/logs/*.jsonl
+replay/logs/*.export
+replay/logs/*.out
+# LaTeX build products (main.pdf is committed, as paper 1's is)
+latex/*.aux
+latex/*.bbl
+latex/*.blg
+latex/*.fdb_latexmk
+latex/*.fls
+latex/*.log
+latex/*.out
+latex/*.toc
+latex/*.synctex.gz

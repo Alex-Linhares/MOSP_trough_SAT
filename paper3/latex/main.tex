@@ -1,0 +1,119 @@
+% Paper 3 -- skeleton written at the setup of Ralph loop0015 (2026-11-05).
+%
+% Build: `make` in this directory (latexmk -pdf); `make check` fails on any
+% undefined reference or citation. House setup copied from paper1/latex/main.tex
+% (article class, Palatino, natbib plainnat, Appendix A of Lean names).
+%
+% THE TITLE IS FIXED BY THE OWNER AND MUST STAY VERBATIM, INCLUDING THE ELLIPSIS
+% AND THE FINAL PERIOD. The plain string is:
+%   Exponential time hypothesis is false... but the verified algorithm is slower than trying all 2^n assignments at every practical size.
+% In \title below `$2^n$` and `\ldots` are its only LaTeX; the pdftitle carries
+% the plain string. The gate (Ralph_Loops/loop0015/gate.py) checks it. Questions
+% about the wording go to ../ETH_AMBIGUOUS.MD, never into the title.
+\documentclass[11pt,letterpaper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[sc]{mathpazo}
+\linespread{1.05}
+\usepackage{courier}
+\usepackage[protrusion=true,expansion=false]{microtype}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{caption}
+\usepackage{float}
+\usepackage[section]{placeins}
+\usepackage{xcolor}
+\usepackage[hyphens]{url}
+\usepackage[title,titletoc]{appendix}
+\usepackage[authoryear,round]{natbib}
+\usepackage[colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!50!black]{hyperref}
+\hypersetup{pdftitle={Exponential time hypothesis is false... but the verified algorithm is slower than trying all 2\string^n assignments at every practical size.}}
+
+\graphicspath{{figures/}}
+\numberwithin{figure}{section}
+\numberwithin{table}{section}
+\captionsetup{font=small,labelfont=bf}
+\bibliographystyle{plainnat}
+
+% Lean names live in Appendix A (secA_appendix_lean.tex), one entry per
+% result, as in paper 1: \leanentry{key}{result} opens a row, \leannames{a, b}
+% prints the names, and the text cites an entry with \leanref{key}.
+\makeatletter
+\g@addto@macro{\UrlBreaks}{\do\_\do\.}
+\newcommand{\leannames}[1]{\def\lean@sep{}\@for\lean@n:=#1\do{\lean@sep\expandafter\path\expandafter{\lean@n}\def\lean@sep{, }}}
+\makeatother
+\newcounter{leanentry}
+\renewcommand{\theleanentry}{A.\arabic{leanentry}}
+\newcommand{\leanentry}[2]{\leavevmode\refstepcounter{leanentry}\label{lean:#1}\theleanentry & #2 &}
+\newcommand{\leangroup}[1]{\multicolumn{3}{@{}l}{\emph{#1}}\\}
+\newcommand{\leanref}[1]{(Appendix~\ref{app:lean}, \ref{lean:#1})}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% The verified exponent, rho(n) = n (ln ln(n+16))^2 / sqrt(ln(n+16)), and the
+% comparator's names, used throughout.
+\newcommand{\rhon}{\rho(n)}
+\newcommand{\runtimeScale}{\texttt{runtimeScale}}
+\newcommand{\SubexpCount}{\texttt{SubexpCount}}
+% Paths in the repository and in the clone; a placeholder box for text an item
+% still owes, as in paper 1.
+\newcommand{\repofile}[1]{\path{#1}}
+\newcommand{\clonefile}[1]{\path{#1}}
+\newcommand{\placeholder}[1]{\par\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule}{\textbf{Placeholder.} #1}}\par}
+
+% Title: fixed by the owner, verbatim (see the comment at the top).
+\title{Exponential time hypothesis is false\ldots{} but the verified algorithm is slower than trying all $2^n$ assignments at every practical size.}
+% Second author is a placeholder to be resolved by the owner (ETH_AMBIGUOUS.MD, entry S1).
+\author{Alexandre Linhares \and the MOSP project}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+\placeholder{Item 09 writes the abstract (under 200 words; no number without a
+section that regenerates it). The title's sentence made precise: what is
+verified is a guarantee with existential constants and the exponent
+$n(\log\log n)^2/\sqrt{\log n}$, whose factor exceeds $1$ for every
+$50 \le n < e^{5504}$, so the verified guarantee is weaker than the trivial
+$2^n \cdot \mathrm{poly}$ guarantee at every practical size; the machine's
+running time is unknown because the constants are never computed; the
+manuscript's sharper exponents are unverified; the statement does refute
+ETH; the audit found no flaw.}
+\end{abstract}
+
+\input{sec1_intro}
+\input{sec2_statement}
+\input{sec3_beyond}
+\input{sec4_proof}
+\input{sec5_replay}
+\input{sec6_consequences}
+\input{sec7_practitioner}
+\input{sec8_lean}
+\input{sec9_related}
+\input{sec10_conclusion}
+\input{sec11_data}
+\input{sec12_ack}
+
+\bibliography{refs}
+
+\begin{appendices}
+\input{secA_appendix_lean}
+\end{appendices}
+
+\end{document}
