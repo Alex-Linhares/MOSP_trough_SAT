@@ -1,0 +1,40 @@
+[2026-11-05 01:16:17] sandbox start; nproc 8; home /home/al; whoami al
+[2026-11-05 01:16:17] toolchain file: leanprover/lean4:v4.34.1
+[2026-11-05 01:16:17] lake version: Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)
+[2026-11-05 01:16:17] === lake exe cache get (Mathlib oleans)
+warning: iut: repository '/replay/openai-math/lean/.lake/packages/iut' has local changes
+Current branch: HEAD
+Using cache from origin: (some leanprover-community/mathlib4)
+No files to download
+Already decompressed 8908 file(s)
+[2026-11-05 01:16:25] === lake build OAI.Algorithms.SubexponentialSAT.Main (no -j: this Lake has no such option; the core cap is taskset in run_sandbox.sh)
+[2026-11-05 01:49:31] lake build exit code 0
+[2026-11-05 01:49:31] === #print axioms
+warning: belyi: repository '/replay/openai-math/lean/.lake/packages/belyi' has local changes
+warning: formal-schemes: repository '/replay/openai-math/lean/.lake/packages/formal-schemes' has local changes
+warning: elliptic-curves: repository '/replay/openai-math/lean/.lake/packages/elliptic-curves' has local changes
+warning: tempered-fundamental-groups: repository '/replay/openai-math/lean/.lake/packages/tempered-fundamental-groups' has local changes
+warning: oka: repository '/replay/openai-math/lean/.lake/packages/oka' has local changes
+warning: orbicurve-cores: repository '/replay/openai-math/lean/.lake/packages/orbicurve-cores' has local changes
+warning: pi1: repository '/replay/openai-math/lean/.lake/packages/pi1' has local changes
+warning: heights: repository '/replay/openai-math/lean/.lake/packages/heights' has local changes
+warning: genl: repository '/replay/openai-math/lean/.lake/packages/genl' has local changes
+warning: tate-curves-theta: repository '/replay/openai-math/lean/.lake/packages/tate-curves-theta' has local changes
+warning: iut: repository '/replay/openai-math/lean/.lake/packages/iut' has local changes
+'OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+[2026-11-05 01:49:40] lean: warning: belyi: repository '/replay/openai-math/lean/.lake/packages/belyi' has local changes
+warning: formal-schemes: repository '/replay/openai-math/lean/.lake/packages/formal-schemes' has local changes
+warning: elliptic-curves: repository '/replay/openai-math/lean/.lake/packages/elliptic-curves' has local changes
+warning: tempered-fundamental-groups: repository '/replay/openai-math/lean/.lake/packages/tempered-fundamental-groups' has local changes
+warning: oka: repository '/replay/openai-math/lean/.lake/packages/oka' has local changes
+warning: orbicurve-cores: repository '/replay/openai-math/lean/.lake/packages/orbicurve-cores' has local changes
+warning: pi1: repository '/replay/openai-math/lean/.lake/packages/pi1' has local changes
+warning: heights: repository '/replay/openai-math/lean/.lake/packages/heights' has local changes
+warning: genl: repository '/replay/openai-math/lean/.lake/packages/genl' has local changes
+warning: tate-curves-theta: repository '/replay/openai-math/lean/.lake/packages/tate-curves-theta' has local changes
+warning: iut: repository '/replay/openai-math/lean/.lake/packages/iut' has local changes
+Lean (version 4.34.1, x86_64-unknown-linux-gnu, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)
+[2026-11-05 01:49:40] mathlib rev:    "rev": "d13f23b723b8a846827a245b89c10fc7d3f11612",
+[2026-11-05 01:49:40] DONE rc=0

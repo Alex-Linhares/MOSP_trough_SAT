@@ -133,12 +133,15 @@ an answer).
   sandbox run; or accept `LEAN_NUM_THREADS`-style control if a later
   Lake offers one.
 
-### 01b — nanoda is named nowhere in the clone except `enable_nanoda: false` (item 01, 2026-11-05)
+### 01b — which nanoda, which lean4export (item 01, 2026-11-05)
 - **Ambiguous**: the brief says "the independent Rust kernel the
-  comparator README names"; a grep of the clone at `4eaee875` finds
-  `nanoda` only in the comparator JSON field `enable_nanoda` (every
-  challenge JSON; `false` for family 378) — no README, no document,
-  no URL.
+  comparator README names". The README of `github.com/leanprover/comparator`
+  (fetched 2026-11-05) does name it ("check with the nanoda kernel in
+  addition to the builtin one"; `cargo build --release` places
+  `nanoda_bin` in `target/release`; `COMPARATOR_NANODA`,
+  `enable_nanoda: true`), but gives no repository URL or commit; the
+  clone at `4eaee875` itself mentions `nanoda` only in the JSON field
+  `enable_nanoda` (`false` for family 378).
 - **Chosen**: the second kernel used is `ammkrn/nanoda_lib` (the
   external Lean 4 checker of the "Type checking in Lean 4" book), at
   `master` commit `8de7e0c4ed3052745a7f8725164efd9e76d84c56`
@@ -146,8 +149,8 @@ an answer).
   exporter is `leanprover/lean4export` at tag `v4.34.0` (commit
   `076e8e57…`), there being no `v4.34.1` tag, with its `lean-toolchain`
   overridden to `v4.34.1` inside the sandbox so that it is built with
-  the Lean that produced the oleans. The paper says "the comparator
-  JSON's `enable_nanoda` field", never "the comparator README".
+  the Lean that produced the oleans. The paper cites the comparator
+  README for the mechanism and the clone's JSON for the field's value.
 - **Owner may change**: the checker (another external kernel) or the
   exact `lean4export` revision (`bump-to-v4.34.0-rc2` branch exists; no
   `v4.34.1` tag on 2026-11-05).

@@ -1,0 +1,5 @@
+[2026-11-05 01:12:43] loop start: up to 24 iterations, cap 4.0 h each, model default
+[2026-11-05 01:12:43] === iteration 1: 01 The replay: the SubexponentialSAT closure built in the bwrap sandbox, the axioms record
+[2026-11-05 01:12:43] claude session it01 (cap 8.00 h) -> session_it01.log
+[2026-11-05 02:07:53] session it01: ok (exit 0, 73 tool calls)
+[2026-11-05 02:19:08] tests passed: GATE PASS

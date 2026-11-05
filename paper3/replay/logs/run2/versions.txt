@@ -1,0 +1,6 @@
+Lake version 5.0.0-src+5045d00 (Lean version 4.34.1)
+Lean (version 4.34.1, x86_64-unknown-linux-gnu, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)
+mathlib rev d13f23b723b8a846827a245b89c10fc7d3f11612 (lake-manifest.json; upstream leanprover-community/mathlib4, unpatched)
+toolchain file: leanprover/lean4:v4.34.1
+elan: installed by elan-init.sh on 2026-11-05 01:03:36 into the sandbox home
+host: Linux 7.0.0-42-generic x86_64; bwrap bubblewrap 0.11.1; 32 cores, 121 GB

@@ -1,0 +1,104 @@
+theorem OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat (k : Nat) (hk : LE.le (OfNat.ofNat 2) k) :
+  Exists
+    (fun (machine : OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine) =>
+    Exists
+      (fun (countTape : Fin (OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.tapeCount machine)) =>
+      Exists
+        (fun (answerTape : Fin (OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.tapeCount machine)) =>
+        Exists
+          (fun (C : Real) =>
+          Exists
+            (fun (A : Real) =>
+            Exists
+              (fun (S : Real) =>
+              Exists
+                (fun (d : Nat) =>
+                Exists
+                  (fun (e : Nat) =>
+                  And (LT.lt (OfNat.ofNat 0) C)
+                    (And (LT.lt (OfNat.ofNat 0) A)
+                      (And (LT.lt (OfNat.ofNat 0) S)
+                        (And (LT.lt (OfNat.ofNat 0) d)
+                          (And (LT.lt (OfNat.ofNat 0) e)
+                            (forall (n : Nat) (F : OAI.Algorithms.SubexponentialSAT.SAT.CNF (Fin n)),
+                            OAI.Algorithms.SubexponentialSAT.SAT.WidthAtMost k F → Exists
+                              (fun (time : Nat) =>
+                              Exists
+                                (fun (final : OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.LocatedCfg machine) =>
+                                And
+                                  (OAI.Algorithms.SubexponentialSAT.Computation.Trace
+                                    (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.locatedStep machine) time
+                                    (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.locatedInit machine
+                                      (OAI.Algorithms.SubexponentialSAT.Encoding.encodeCNF F)) final)
+                                  (And
+                                    (Eq
+                                      (OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.Cfg.tapes
+                                        (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.LocatedCfg.config final)
+                                        countTape)
+                                      (Turing.Tape.mk₁
+                                        (List.map Option.some
+                                          (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.countWord
+                                            (OAI.Algorithms.SubexponentialSAT.SAT.count F)))))
+                                    (And
+                                      (Eq
+                                        (OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.Cfg.tapes
+                                          (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.LocatedCfg.config final)
+                                          answerTape)
+                                        (Turing.Tape.mk₁
+                                          (List.cons
+                                            (Option.some
+                                              (Decidable.decide
+                                                (LT.lt (OfNat.ofNat 0) (OAI.Algorithms.SubexponentialSAT.SAT.count F))))
+                                            List.nil)))
+                                      (And
+                                        (Eq
+                                          (OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.Cfg.state
+                                            (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.LocatedCfg.config final))
+                                          (Sum.inl
+                                            (Decidable.decide
+                                              (LT.lt (OfNat.ofNat 0) (OAI.Algorithms.SubexponentialSAT.SAT.count F)))))
+                                        (And
+                                          (Eq
+                                            (OAI.Algorithms.SubexponentialSAT.BinaryArithmetic.toNat
+                                              (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.countWord
+                                                (OAI.Algorithms.SubexponentialSAT.SAT.count F)))
+                                            (OAI.Algorithms.SubexponentialSAT.SAT.count F))
+                                          (And
+                                            (LE.le
+                                              (List.length
+                                                (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.countWord
+                                                  (OAI.Algorithms.SubexponentialSAT.SAT.count F)))
+                                              (HAdd.hAdd n (OfNat.ofNat 1)))
+                                            (And
+                                              (LE.le (Nat.cast time)
+                                                (OAI.Algorithms.SubexponentialSAT.SqrtLog.Statement.runtimeBound C A d
+                                                  (OAI.Algorithms.SubexponentialSAT.Encoding.formulaBitLength F) n))
+                                              (forall (prefixSteps : Nat)
+                                                (intermediate :
+                                                  OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.LocatedCfg machine),
+                                              LE.le prefixSteps time →
+                                              OAI.Algorithms.SubexponentialSAT.Computation.Trace
+                                                  (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.locatedStep machine)
+                                                  prefixSteps
+                                                  (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.locatedInit machine
+                                                    (OAI.Algorithms.SubexponentialSAT.Encoding.encodeCNF F))
+                                                  intermediate →
+                                              LE.le
+                                                (Nat.cast
+                                                  (OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.visitedSpace
+                                                    intermediate))
+                                                (HMul.hMul S
+                                                  (HPow.hPow
+                                                    (HAdd.hAdd
+                                                      (Nat.cast
+                                                        (OAI.Algorithms.SubexponentialSAT.Encoding.formulaBitLength F))
+                                                      (OfNat.ofNat 1)) e)))))))))))))))))))))))) :=
+  _
+
+axiom propext {a b : Prop} : Iff a b → Eq a b
+
+axiom Quot.sound.{u} {α : Sort u} {r : α → α → Prop} {a b : α} : r a b → Eq (Quot.mk r a) (Quot.mk r b)
+
+axiom Classical.choice.{u} {α : Sort u} : Nonempty α → α
+
+Checked 95176 declarations with no errors

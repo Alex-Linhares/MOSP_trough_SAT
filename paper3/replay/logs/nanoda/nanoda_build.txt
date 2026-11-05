@@ -1,0 +1,5 @@
+   Compiling num-integer v0.1.47
+   Compiling serde_derive v1.0.228
+   Compiling num-bigint v0.5.1
+   Compiling nanoda_lib v0.4.31 (/home/al/src/nanoda_lib)
+    Finished `release` profile [optimized] target(s) in 10.68s

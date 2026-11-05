@@ -1,0 +1,29 @@
+#!/bin/bash
+# Runs INSIDE the bwrap sandbox: HOME=/home/al is the private replay home.
+set -o pipefail
+log() { echo "[$(date '+%F %T')] $*"; }
+export ELAN_HOME=$HOME/.elan PATH=$HOME/.elan/bin:/usr/local/bin:/usr/bin:/bin
+log "sandbox start; nproc $(nproc); home $HOME; whoami $(whoami)"
+if [ ! -x $ELAN_HOME/bin/elan ]; then
+  log "installing elan into $ELAN_HOME"
+  curl -sSf https://elan.lean-lang.org/elan-init.sh -o /tmp/elan-init.sh && sh /tmp/elan-init.sh -y --default-toolchain none --no-modify-path 2>&1 | tail -3
+fi
+cd /replay/openai-math/lean || exit 2
+log "toolchain file: $(cat lean-toolchain)"
+log "lake version: $(lake --version 2>&1 | head -1)"
+log "=== lake exe cache get (Mathlib oleans)"
+lake exe cache get 2>&1 | tail -5
+log "=== lake build OAI.Algorithms.SubexponentialSAT.Main -j 8"
+lake build OAI.Algorithms.SubexponentialSAT.Main -j 8 2>&1 | tee /replay/logs/build_main.log | grep -E --line-buffered 'error|Error|warning: .*sorry|Build completed|built|✔|✖' | tail -2000 > /replay/logs/build_filtered.log
+rc=${PIPESTATUS[0]}
+log "lake build exit code $rc"
+cat > /tmp/Axioms.lean <<'EOL'
+import OAI.Algorithms.SubexponentialSAT.Main
+#print axioms OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat
+EOL
+log "=== #print axioms"
+lake env lean /tmp/Axioms.lean 2>&1 | tee /replay/logs/axioms.log
+log "lean: $(lake env lean --version 2>&1)"
+log "mathlib rev: $(grep -A3 '"name": "mathlib"' lake-manifest.json | grep rev | head -1)"
+log "DONE rc=$rc"
+echo $rc > /replay/logs/DONE

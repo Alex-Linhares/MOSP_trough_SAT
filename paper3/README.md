@@ -83,17 +83,28 @@ and `defdiff.py`, read-only on the clone.)*
 
 ## The replay
 
-Started by the coordinator on 2026-11-05 at 01:03 from
-`~/dev/untrusted/replay/` (`run_sandbox.sh`: bubblewrap with read-only
-`/usr /lib /bin /etc`, a private `/home` with `/home/al` bound to
-`replay/home`, the repository invisible, network on for the lakefile's
-clone hooks and the `elan`/Mathlib downloads, `nice -n 19`; `replay.sh`
-inside: `elan` into the private home, `lake exe cache get`, `lake build
-OAI.Algorithms.SubexponentialSAT.Main -j 8`, `#print axioms` of
-`exact_count_and_sat`, exit code to `replay/logs/DONE`). *(Item 01 writes
-the rest here: the versions, the `#print axioms` output, the time, the
-hashes of the logs, whether nanoda ran; `replay/README.md` quotes both
-scripts.)*
+Done (item 01, 2026-11-05): `replay/README.md` has the exact scripts,
+the timeline, every count and hash. In one paragraph: a fresh copy of
+the clone (commit `4eaee875`) was built inside a `bwrap` sandbox
+(read-only system directories, a private home, the repository
+invisible, PID/IPC/UTS namespaces, eight cores at `nice -n 19`, network
+on for the lakefile's dependency clones and the Mathlib cache) at the
+pinned `leanprover/lean4:v4.34.1` with upstream Mathlib
+`d13f23b723b8a846827a245b89c10fc7d3f11612`: `lake build
+OAI.Algorithms.SubexponentialSAT.Main` compiled **3,091 modules** (the
+audit's closure exactly) in **33 min** with **0 `error` lines and 0
+`sorry`** lines, and `#print axioms` of
+`SqrtLogSpace.exact_count_and_sat` printed
+`[propext, Classical.choice, Quot.sound]`. A first run (01:03) failed
+at once on a `lake build -j 8` option this Lake does not have; the
+second (01:16) is the one reported. Then a **second kernel**:
+`lean4export` (tag `v4.34.0`, built with `v4.34.1`) exported the theorem
+and its dependencies (2.36 GB, 43.6 M lines) and `nanoda_lib`
+(commit `8de7e0c4`, v0.4.31) checked them: `Checked 95176 declarations
+with no errors`, three axioms, exit 0, in 110 s. Regenerate the counts
+with `bash paper3/replay/counts.sh`; the full build log and the export
+stay in `~/dev/untrusted/replay/logs/` (hashes committed under
+`replay/logs/run2/` and `replay/logs/nanoda/`).
 
 ## Open questions for the owner
 

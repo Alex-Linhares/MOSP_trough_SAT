@@ -1,0 +1,27 @@
+[2026-11-05 01:50:55] nanoda.sh start; nproc 8; rustc rustc 1.99.1 (58cf8f9c3 2026-10-13); cargo cargo 1.99.1 (5f94df478 2026-08-27)
+[2026-11-05 01:50:55] lean4export commit 076e8e57707e813375e8f9da8bf989799ace9680; toolchain file was: leanprover/lean4:v4.34.0
+[2026-11-05 01:50:55] === lake build lean4export (toolchain leanprover/lean4:v4.34.1)
+✔ [3/6] Built Main (483ms)
+✔ [4/6] Built Main:c.o (87ms)
+✔ [5/6] Built Export:c.o (1.0s)
+✔ [6/6] Built lean4export:exe (484ms)
+Build completed successfully (6 jobs).
+[2026-11-05 01:50:58] lean4export build exit 0
+[2026-11-05 01:50:58] === export: lake env lean4export OAI.Algorithms.SubexponentialSAT.Main -- OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat
+[2026-11-05 01:52:06] export exit 0; size 2355666449 bytes; lines 43633742
+[2026-11-05 01:52:06] nanoda_lib commit 8de7e0c4ed3052745a7f8725164efd9e76d84c56
+[2026-11-05 01:52:06] === cargo build --release (nanoda_lib)
+   Compiling num-integer v0.1.47
+   Compiling serde_derive v1.0.228
+   Compiling num-bigint v0.5.1
+   Compiling nanoda_lib v0.4.31 (/home/al/src/nanoda_lib)
+    Finished `release` profile [optimized] target(s) in 10.68s
+[2026-11-05 01:52:17] nanoda build exit 0
+[2026-11-05 01:52:17] === nanoda check
+[2026-11-05 01:54:07] nanoda exit 0
+axiom Quot.sound.{u} {α : Sort u} {r : α → α → Prop} {a b : α} : r a b → Eq (Quot.mk r a) (Quot.mk r b)
+
+axiom Classical.choice.{u} {α : Sort u} : Nonempty α → α
+
+Checked 95176 declarations with no errors
+[2026-11-05 01:54:07] NANODA_DONE rc=0

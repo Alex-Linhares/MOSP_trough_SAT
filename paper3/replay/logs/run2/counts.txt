@@ -1,0 +1,14 @@
+build_main.log: /home/al/dev/untrusted/replay/logs/build_main.log
+sha256:            d313f594daa3cd3713f872bde8b4d33138820eeec5a335a21a276846aa54e21e   (committed: d313f594daa3cd3713f872bde8b4d33138820eeec5a335a21a276846aa54e21e)
+total lines:       3160
+modules built:     3083   (lines '✔ [i/N] Built OAI...')
+distinct modules:  3091
+job total:         Build completed successfully (12014 jobs)
+error lines:       0
+sorry warnings:    0
+warning lines:     11   of which 'has local changes' (the lakefile's compatibility patches): 11
+build start/end:   2026-11-05 01:16:25  ->  2026-11-05 01:49:31  (exit 0)
+axioms:            'OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat' depends on axioms: [propext, Classical.choice, Quot.sound]
+lean:              Lean (version 4.34.1, x86_64-unknown-linux-gnu, commit 5045d0056413266e57c625dcd7c365b10e377c52, Release)
+mathlib rev:       d13f23b723b8a846827a245b89c10fc7d3f11612
+DONE:              0
