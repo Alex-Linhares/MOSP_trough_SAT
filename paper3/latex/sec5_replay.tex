@@ -1,126 +1,132 @@
-% Independent replay -- drafted by loop0015 item 01 (2026-11-05).
+% Independent replay -- drafted by loop0015 item 01 (2026-11-05), rewritten in
+% plain English by item 08x (2026-11-05).
 % Every number here is read from paper3/replay/logs/ (regenerate: re-run
 % ~/dev/untrusted/replay/run_sandbox.sh as paper3/replay/README.md records;
 % the counts below come from `grep -c` on the copied logs, see
 % paper3/replay/logs/run2/counts.txt).
 \section{Independent replay}
 \label{sec:replay}
+\begingroup\sloppy
 
-The repository holds no recorded \texttt{\#print axioms} output for the
-family, no continuous integration that builds its Lean, and
-\texttt{enable\_nanoda: false} in the comparator's JSON
-(Section~\ref{sec:proof}). We therefore built the solution's import
-closure ourselves, in isolation, at the toolchain the repository pins, and
-recorded what the kernel reports. This section says exactly what was run,
-where, and what came out; the scripts are quoted verbatim in
+The repository holds no saved output of the axiom check for the family,
+no automated build of its Lean, and \texttt{enable\_nanoda: false} in the
+comparator's settings (Section~\ref{sec:proof}). We therefore built the
+proof ourselves, in isolation, at the Lean version the repository pins,
+and recorded what the kernel reports. This section says exactly what was
+run, where, and what came out. The scripts are quoted verbatim in
 \repofile{paper3/replay/README.md}, and the logs are under
 \repofile{paper3/replay/logs/}.
 
 \subsection{What was run, and where}
 
 A fresh copy of the clone (commit \texttt{4eaee875}) was built inside a
-\texttt{bwrap} (bubblewrap) sandbox on the project's machine: the system
-directories bound read-only, a private \texttt{tmpfs} home with nothing of
-the real home or of this repository visible, separate PID, IPC and UTS
-namespaces, the whole sandbox confined to eight cores
-(\texttt{taskset -c 0-7}) at the lowest scheduling priority, and the
-network on, because the repository's \texttt{lakefile} clones its 41
-dependencies at build time and the Mathlib object files come from the
-Mathlib cache. Inside, \texttt{elan} was installed into the private home
-and fetched the pinned toolchain from the repository's own
-\texttt{lean-toolchain} file; then, in the clone's \texttt{lean/}
-directory, \texttt{lake exe cache get}, \texttt{lake build
-OAI.Algorithms.SubexponentialSAT.Main} (the solution's closure, not the
-collection's default target, which builds all 721 families), and
-\texttt{\#print axioms} of the one theorem the comparator names,
-\texttt{OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact\_count\_and\_sat},
-through \texttt{lake env lean}. Only text left the sandbox; nothing built
-inside it was executed outside it.
+sandbox on the project's machine. The sandbox tool is \texttt{bwrap}
+(bubblewrap). Inside it, the system directories are read-only; the home
+directory is a private, empty one (a \texttt{tmpfs}), so nothing of the real home or of
+this repository is visible; processes, inter-process communication and host names are kept apart from the host's (separate ``namespaces''); the whole sandbox is confined to
+eight cores (\texttt{taskset -c 0-7}) at the lowest scheduling
+priority; and the network is on, because the repository's build file
+(its \texttt{lakefile}) clones its 41 dependencies at build time and the compiled Mathlib comes
+from a download cache. Inside the sandbox, the Lean installer
+\texttt{elan} was installed into the private home and fetched the
+pinned Lean version from the repository's own \texttt{lean-toolchain}
+file. Then, in the clone's \texttt{lean/} directory, three commands
+ran: \texttt{lake exe cache get}, which downloads the compiled Mathlib;
+\texttt{lake build OAI.Algorithms.SubexponentialSAT.Main}, which builds
+the solution's 3,091 files and not the collection's default target,
+which would build all 721 families; and \texttt{\#print axioms} of the
+one theorem the comparator names,
+\path{OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat},
+through \texttt{lake env lean}. Only text left the sandbox; nothing
+built inside it was executed outside it.
 
 Two runs were needed. The first, started at 01:03 on 2026-11-05, failed
-at once at the build step because its command line carried \texttt{-j 8},
-an option this version of Lake does not have (the whole of its build log
-is the one line \texttt{error: unknown short option '-j'}); nothing of
-the family was compiled. The second, started at 01:16 with that option
-removed and the core cap moved to \texttt{taskset}, is the run reported
-below. Both scripts, both versions, and the launch command are in the
-README; the first run's logs are kept beside the second's.
+at once at the build step because its command line carried
+\texttt{-j 8}, an option this version of the build tool does not have
+(the whole of its build log is the one line \texttt{error: unknown short
+option '-j'}); nothing of the family was compiled. The second, started
+at 01:16 with that option removed and the core cap moved to
+\texttt{taskset}, is the run reported below. Both scripts, both
+versions, and the launch command are in the README; the first run's
+logs are kept beside the second's.
 
 \subsection{What came out}
 
 The build finished with exit code~0 in 33~minutes of wall clock on
-eight cores (01:16:25 to 01:49:31), compiling \textbf{3,091} modules
-with the prefix \texttt{OAI.Algorithms.SubexponentialSAT}---exactly the
-import closure the inspection of Section~\ref{sec:proof} enumerated, the
-same 3,091 names with an empty set difference both ways
-(\repofile{paper3/replay/counts.sh}; Lake's own job total,
-\texttt{12014}, counts the cached Mathlib and dependency modules, none of
-which was compiled). The log has no line containing \texttt{error} and
-none containing \texttt{sorry}; its eleven \texttt{warning} lines are
-Lake noting that the lakefile's compatibility patches leave eleven
-dependencies with ``local changes'', and none of the eleven is Mathlib.
-Eight source files of the closure themselves carry nineteen
-\texttt{\#print axioms} commands (seventeen files of the family's
-directory do, but nine of those are never built), so the build log
-records nineteen axiom lines as it goes, every one
-\texttt{[propext, Classical.choice, Quot.sound]}; among them
-\clonefile{SqrtLogSpace/Final.lean}, lines 197--201, prints the axioms of
-\texttt{compiled\_exact\_count\_and\_sat}, \texttt{exact\_count\_and\_sat},
-\texttt{exact\_count\_eth}, \texttt{sat\_polynomial\_space} and
-\texttt{original\_sat\_main}. The separate \texttt{\#print axioms} run
-after the build gives, for the comparator's theorem,
-\begin{quote}
-\texttt{'OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact\_count\_and\_sat'
-depends on axioms: [propext, Classical.choice, Quot.sound]}
+eight cores (01:16:25 to 01:49:31). It compiled \textbf{3,091} modules
+with the prefix \texttt{OAI.Algorithms.SubexponentialSAT}: exactly the
+set the inspection of Section~\ref{sec:proof} enumerated, the same
+3,091 names with nothing missing on either side
+(\repofile{paper3/replay/counts.sh}). The build tool's own job total,
+\texttt{12014}, counts the cached Mathlib and dependency modules as
+well, none of which was compiled. The log has no line containing
+\texttt{error} and none containing \texttt{sorry}. Its eleven
+\texttt{warning} lines are the build tool noting that the repository's
+compatibility patches leave eleven dependencies with ``local changes'',
+and none of the eleven is Mathlib.
+
+Eight source files of the closure carry nineteen \texttt{\#print
+axioms} commands (seventeen files of the family's directory do, but
+nine of those are never built), so the build log records nineteen
+axiom lines as it goes. Every one reads
+\texttt{[propext, Classical.choice, Quot.sound]}, the three standard
+axioms. Among them, \clonefile{SqrtLogSpace/Final.lean}, lines 197--201,
+prints the axioms of \texttt{compiled\_exact\_count\_and\_sat},
+\texttt{exact\_count\_and\_sat}, \texttt{exact\_count\_eth},
+\texttt{sat\_polynomial\_space} and \texttt{original\_sat\_main}. The
+separate \texttt{\#print axioms} run after the build gives, for the
+comparator's theorem,
+\begin{quote}\small
+\path{'OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat'}\\
+\texttt{depends on axioms: [propext, Classical.choice, Quot.sound]}
 \end{quote}
-(\repofile{paper3/replay/logs/run2/axioms.txt}). The versions are
-\texttt{Lean (version 4.34.1, commit 5045d005…, Release)},
-\texttt{Lake version 5.0.0-src+5045d00}, and Mathlib at
-\texttt{d13f23b723b8a846827a245b89c10fc7d3f11612} from the clone's own
-manifest, with its object files from the Mathlib cache (8,908 files).
+(\repofile{paper3/replay/logs/run2/axioms.txt}). The versions are Lean 4.34.1 (the log line reads \texttt{Lean (version
+4.34.1, commit 5045d005…, Release)}), Lake \texttt{5.0.0-src+5045d00},
+and Mathlib at revision \path{d13f23b723b8a846827a245b89c10fc7d3f11612}
+from the clone's own manifest, with its compiled files from the Mathlib cache (8,908 files).
 The replay copy is at commit \texttt{4eaee875}, the same as the pristine
-clone, and the comparator file and the solution's files hash identically
-in both (\repofile{paper3/replay/logs/run2/hashes.txt}; the comparator
-statement's SHA-256 begins \texttt{4183b205}). The full build log is
-kept out of the repository by size; its SHA-256
+clone, and the comparator file and the solution's files have the same
+hashes in both (\repofile{paper3/replay/logs/run2/hashes.txt}; the
+comparator statement's SHA-256 begins \texttt{4183b205}). The full build
+log is kept out of the repository by size; its SHA-256
 (\texttt{d313f594…}) and its last 200 lines are committed.
 
-So the sentence every later section relies on reads: \emph{replayed}---the
-solution's closure builds from source at the pinned toolchain with
-upstream Mathlib, and the kernel reports the three standard axioms and
+So the sentence every later section relies on reads: \emph{replayed}.
+The solution builds from source at the pinned Lean version with
+unpatched Mathlib, and the kernel reports the three standard axioms and
 nothing else for the theorem the comparator names. This moves the first
 three items of the inspection's trust boundary (Section~\ref{sec:proof}):
-the build is no longer OpenAI's unpublished one, the \texttt{\#print axioms}
-output is now on record, and the Mathlib revision was fetched from
-upstream and not patched.
+the build is no longer OpenAI's unpublished one, the axiom output is now
+on record, and the Mathlib revision was fetched from upstream and not
+patched.
 
-\subsection{The second kernel}
+\subsection{The second checker}
 
-The comparator's JSON for the family has \texttt{enable\_nanoda: false}:
-OpenAI's check of this family ran the Lean kernel only. We ran a second
-kernel, in the same sandbox, after the build
+The comparator's settings for the family have \texttt{enable\_nanoda:
+false}: OpenAI's check of this family ran the Lean kernel only. We ran a
+second checker, in the same sandbox, after the build
 (\repofile{paper3/replay/nanoda.sh}, recorded in the README before it
-ran): \texttt{lean4export} (tag \texttt{v4.34.0}, commit
-\texttt{076e8e57}, built with the pinned \texttt{v4.34.1} toolchain so
-that it reads the object files the build produced) exported
-\texttt{exact\_count\_and\_sat} and its transitive dependencies from the
-built environment---2,355,666,449 bytes of NDJSON, 43,633,742 lines,
-format version 3.1.0, Lean githash \texttt{5045d005…}, in 68~seconds---and
-\texttt{nanoda\_lib} \citep{Nanoda} (version 0.4.31, commit
-\texttt{8de7e0c4}, 2026-10-29; an external type checker for Lean~4
-written in Rust, which shares no code with the Lean kernel) checked that
-export with \texttt{propext}, \texttt{Classical.choice} and
-\texttt{Quot.sound} as the permitted axioms and the \texttt{Nat} and
-\texttt{String} literal extensions on. Its output
-(\repofile{paper3/replay/logs/nanoda/nanoda_check.txt}):
+ran). Two tools are involved. \texttt{lean4export} (tag
+\texttt{v4.34.0}, commit \texttt{076e8e57}, built with the pinned
+\texttt{v4.34.1} Lean so that it reads the compiled files the build
+produced) wrote out \texttt{exact\_count\_and\_sat} and everything it
+depends on from the built environment, as a plain-text file:
+2,355,666,449 bytes, 43,633,742 lines, format version 3.1.0, in
+68~seconds. Then \texttt{nanoda\_lib} \citep{Nanoda} (version 0.4.31,
+commit \texttt{8de7e0c4}, 2026-10-29), a checker for Lean~4 proofs
+written in Rust that shares no code with the Lean kernel, read that
+file and re-checked every declaration in it, with \texttt{propext},
+\texttt{Classical.choice} and \texttt{Quot.sound} as the permitted
+axioms and the \texttt{Nat} and \texttt{String} literal extensions on.
+Its output (\repofile{paper3/replay/logs/nanoda/nanoda_check.txt}):
 \begin{quote}
 \texttt{Checked 95176 declarations with no errors}
 \end{quote}
 in 110~seconds on eight cores, exit code~0, after printing back the
-theorem's statement and the three axioms from its own parse of the
-export. The export contains exactly three \texttt{axiom} declarations
-(\texttt{grep -c '"axiom"'} on the file), so nothing else could have been
-permitted. The export file (SHA-256 \texttt{bdbc9afe…},
+theorem's statement and the three axioms from its own reading of the
+file. The export contains exactly three \texttt{axiom} declarations
+(\texttt{grep -c '"axiom"'} on the file), so nothing else could have
+been permitted. The export file (SHA-256 \texttt{bdbc9afe…},
 \repofile{paper3/replay/logs/nanoda/export_sha256.txt}) stays in the
 sandbox directory by size; the configuration, the build logs and the
 checker's output are committed.
@@ -128,28 +134,28 @@ checker's output are committed.
 \subsection{What this does not claim}
 
 \begin{itemize}
-\item The replay trusts the Lean kernel of the pinned toolchain
-  (\texttt{v4.34.1}) and upstream Mathlib at the pinned revision; it
+\item The replay trusts the Lean kernel of the pinned version
+  (\texttt{v4.34.1}) and upstream Mathlib at the pinned revision. It
   moves the proof's trust from ``OpenAI's unpublished build'' to ``a
-  build we ran'', not from the Lean kernel to anything else.
-  The second kernel removes the Lean kernel from the list for the
-  theorem's dependencies as exported, but adds \texttt{lean4export}
-  (that it exports what the environment holds) and \texttt{nanoda\_lib}
-  (that it checks what it parses) to it; two independent checkers
-  agreeing is evidence, not a proof that either is correct.
+  build we ran'', not from the Lean kernel to anything else. The second
+  checker removes the Lean kernel from the list for the theorem's
+  dependencies as exported, but adds \texttt{lean4export} (that it
+  writes out what the environment holds) and \texttt{nanoda\_lib} (that
+  it checks what it reads) to it. Two independent checkers agreeing is
+  evidence, not a proof that either is correct.
 \item It is not the comparator run. The comparator checks that the
-  solution's exported statement matches the challenge's by
-  \texttt{lean4export}; we did not run that tool chain, and the
-  statement-level match the paper relies on is the textual one of
-  Section~\ref{sec:proof} (the 35 definitions and the theorem statement,
-  identical character for character after whitespace normalisation, two
-  of them up to the \texttt{noncomputable} keyword).
+  solution's exported statement matches the challenge's; we did not run
+  that tool chain, and the statement-level match the paper relies on is
+  the textual one of Section~\ref{sec:proof} (the 35 definitions and the
+  theorem statement, identical after normalising spacing, two of them up
+  to the \texttt{noncomputable} keyword).
 \item The counts above are counts of lines in one build's log on one
-  machine with the named versions; a different Lake would print different
-  job totals (the 12,014 includes the cached Mathlib modules), and a
-  different machine a different time.
+  machine with the named versions; a different build tool would print
+  different job totals (the 12,014 includes the cached Mathlib modules),
+  and a different machine a different time.
 \item Nothing here bears on what the theorem \emph{says}
   (Section~\ref{sec:statement}) or on the manuscript's unverified
   exponents (Section~\ref{sec:beyond}); a replayed proof of a weak bound
   is a replayed proof of a weak bound.
 \end{itemize}
+\par\endgroup

@@ -54,7 +54,7 @@ statement_audit.md` and `proof_audit.md` (2026-11-05). The plan is
 
 | path | content |
 |---|---|
-| `latex/` | the paper: `main.tex` (title verbatim, abstract, section inputs), `sec*.tex`, `refs.bib`, `Makefile` (`make`, `make check`), `figures/`, `tables/` |
+| `latex/` | the paper: `main.tex` (title verbatim, abstract, section inputs), `sec*.tex` (Sections 2–8 rewritten in plain English by item 08x on 2026-11-05; the dense passages they cite live in `secB_appendix_technical.tex`, Appendix B, with every line number and formula unchanged), `refs.bib`, `Makefile` (`make`, `make check`), `figures/`, `tables/` |
 | `scripts/` | every number's regenerate script (`runtime_scale.py`, `practitioner.py`, …), written by the items |
 | `replay/` | the sandboxed replay: `README.md` with the exact commands, `logs/` (full logs git-ignored, hashes committed) |
 | `lean/` | `README.md` pointing at the companion Lean (`lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame}.lean`, left in place by the owner's decision S3), `axiom_check.lean` with its committed `axiom_check.log`, and `rediff.log` (the byte-level re-diff of the copy, written by `scripts/lean_rediff.py`) |

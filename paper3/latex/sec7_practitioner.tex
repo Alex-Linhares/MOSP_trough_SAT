@@ -1,4 +1,5 @@
-% For the practitioner -- drafted by loop0015 item 06 (2026-11-05).
+% For the practitioner -- drafted by loop0015 item 06 (2026-11-05), rewritten in
+% plain English by item 08x (2026-11-05).
 % Every number of this section is produced by
 %   nice -n 19 python3 -I paper3/scripts/practitioner.py --regenerate   (the measurement)
 %   python3 -I paper3/scripts/practitioner.py                           (table, figure, stdout)
@@ -6,42 +7,46 @@
 % under solutions/. Timings are from one machine on one day with named
 % versions (tables/practitioner_meta.json). The two guarantee curves are shapes
 % at constant 1, and nothing here is a running time of the verified machine.
+% The arithmetic of the scaling is in Appendix B.
 \section{For the practitioner}
 \label{sec:practitioner}
 
-The title compares two guarantees: the verified one,
-$C(L+1)^d\,2^{A\rhon}$ with $C, A, d$ existential (comparator file lines
-136--139 and 210--211, Section~\ref{sec:statement}), and the trivial one,
-$2^n \cdot \mathrm{poly}(n+m)$ for trying every assignment. Neither is what
-a practitioner runs. What runs on a machine, for the decision bit, is a
-conflict-driven clause-learning (CDCL) solver, and for the count an exact
-or approximate model counter; and no implementation of the verified
-machine exists to run beside them. This section measures the tools a
-practitioner has, on random 3-CNF, and draws the two guarantees next to
-the measurements as shapes, so that the reader can see where each sits.
-The point is small and the section says it once: the verified guarantee
-is not the binding one on any machine, because it is above $2^n$ for
-every $n \ge 50$ (Section~\ref{sec:statement}) while the solvers are many
-orders of magnitude below $2^n$ at every size they were run at.
+The title compares two guarantees. One is the verified bound,
+$C(L+1)^d\,2^{A\rhon}$, with $C$, $A$ and $d$ never computed (comparator
+file lines 136--139 and 210--211, Section~\ref{sec:statement}). The
+other is the trivial bound for trying every assignment, $2^n$ times a
+polynomial. Neither is what a practitioner runs. What runs on a real
+machine, when the question is whether a formula can be satisfied, is a
+\emph{SAT solver}; the standard kind is called CDCL, for
+conflict-driven clause learning, a search that learns from each dead
+end it reaches. When the question is how many satisfying assignments
+there are, what runs is a \emph{model counter}, exact or approximate.
+No implementation of the verified machine exists to run beside them.
+This section measures the tools a practitioner has, on random formulas,
+and draws the two guarantees next to the measurements as shapes, so
+that the reader can see where each sits. The point is small and the section says it once: the verified guarantee is not the binding one on any machine, because it is above $2^n$ for every $n \ge 50$
+(Section~\ref{sec:statement}), while the solvers are many orders of
+magnitude below $2^n$ at every size they were run at.
 
 \subsection{Why the comparison is between guarantees and measurements}
 \label{sec:practitioner-why}
 
-The verified statement is existential in the machine (comparator line
-195 opens with \texttt{$\exists$ (machine : \ldots)}, Section~\ref{sec:statement}) and
-the solution's
-3,977 files contain no \texttt{\#eval}, no \texttt{def main} and no
-\texttt{IO} action (checked read-only by the script, which reads every
-file of the family with \texttt{open()} and counts those three patterns:
-0, 0, 0). The library proves that a machine with the stated bound
-exists and exhibits one as a Lean term inside a development with 1,048
-\texttt{noncomputable} declarations and no executable interface
+The verified statement says a machine \emph{exists} (comparator line 195
+opens with the existence quantifier, Section~\ref{sec:statement}). The
+solution's 3,977 files contain no command to run anything: no
+\texttt{\#eval}, no \texttt{def main} and no input-output (\texttt{IO})
+action. The
+script of this section checks that, reading every file of the family
+with \texttt{open()} and counting those three patterns: 0, 0, 0. The
+library proves that a machine with the stated bound exists and exhibits
+one as a mathematical term, inside a development with 1,048
+\texttt{noncomputable} declarations and no way to execute anything
 (Section~\ref{sec:proof}); nothing in the clone runs it on an input, and
 we found no implementation elsewhere. So the verified algorithm's actual
 running time on any formula is unknown, in both directions: nothing says
 it is slow, and nothing says it is fast. What is known is its
 \emph{guarantee}, and a guarantee is compared with other guarantees. The
-measurements below are of other programs entirely; they are in the
+measurements below are of other programs entirely. They are in the
 section because the question a practitioner asks is not ``which
 guarantee is smaller'' but ``what would I run'', and the answer to that
 has not changed.
@@ -49,68 +54,71 @@ has not changed.
 \subsection{What was run}
 \label{sec:practitioner-setup}
 
-\paragraph{Instances.} Random 3-CNF on $n$ variables with
-$m = \lfloor 4.26\,n \rceil$ clauses, each clause three distinct variables
-with uniform signs, generated by the script from $(n, \mathrm{seed})$;
-twenty seeds per size; $n = 20, 30, 40, 50, 60, 80, 100, 150, 200, 250,
-300, 400, 500$. The ratio $4.26$ is the empirical satisfiability
-threshold of random 3-SAT \citep{Selman1996Hard}, where decision is
-hardest for a given $n$ among random formulas (the cavity method puts the
-threshold at $4.2667$, \citealp{Mertens2006Threshold}); the sizes are
-chosen so that the smallest ones are where the title's crossing is
-($n = 50$) and the largest are where a CDCL solver on random formulas
-begins to take seconds. These are random instances only; nothing is
-claimed about structured formulas.
+\paragraph{Instances.} Random 3-CNF on $n$ variables with $m = \lfloor
+4.26\,n \rceil$ clauses, each clause three distinct variables with
+random signs, generated by the script from $(n, \mathrm{seed})$; twenty
+seeds per size; $n = 20, 30, 40, 50, 60, 80, 100, 150, 200, 250, 300,
+400, 500$. The ratio $4.26$ clauses per variable is where random 3-SAT
+switches from mostly satisfiable to mostly unsatisfiable
+\citep{Selman1996Hard}; random formulas are hardest to decide there
+(a method from statistical physics puts the threshold at $4.2667$, \citealp{Mertens2006Threshold}). The sizes are chosen so that the
+smallest ones are where the title's crossing is ($n = 50$) and the
+largest are where a CDCL solver on random formulas begins to take
+seconds. These are random instances only; nothing is claimed about
+formulas with structure.
 
-\paragraph{Tools.} CaDiCaL 1.9.5 \citep{Biere2024CaDiCaL} through
-python-sat 1.9.dev15 \citep{Ignatiev2018PySAT}, one \texttt{solve()} call,
-for the decision bit $[0 < \mathtt{count}\ F]$; Ganak 2.8.0
-\citep{Sharma2019Ganak}, through the pyganak binding (which runs its Arjun
-preprocessing and then the counter), for the exact count; ApproxMC 4.4.0
-\citep{Chakraborty2013ApproxMC, Soos2019BIRD} at its defaults
-$\varepsilon = 0.8$, $\delta = 0.2$ with the projection set equal to all
-variables, for an approximate count; and, at $n \le 30$ only, exact
-counting by enumeration over CaDiCaL with a blocking clause per model,
-which is not a counter at any larger size (it is linear in the count,
-and the count is exponential in $n$) and is here as the independent check
-of the two counters where it can reach. Ganak and ApproxMC were installed
-from PyPI for this section; no \texttt{sharpSAT}, \texttt{d4} or other
-counter binary is on the host.
+\paragraph{Tools.} CaDiCaL 1.9.5 \citep{Biere2024CaDiCaL}, a CDCL solver,
+through python-sat 1.9.dev15 \citep{Ignatiev2018PySAT}, one
+\texttt{solve()} call, for the yes-or-no answer; Ganak 2.8.0
+\citep{Sharma2019Ganak}, an exact model counter, through the pyganak binding (which runs a simplification pass called Arjun and then the counter), for the exact count; ApproxMC 4.4.0 \citep{Chakraborty2013ApproxMC,
+Soos2019BIRD}, an approximate counter, at its defaults $\varepsilon =
+0.8$, $\delta = 0.2$ (an answer within a factor $1.8$ of the truth with
+probability $0.8$), with the count taken over all variables (its ``projection set''); and,
+at $n \le 30$ only, exact counting by listing every solution with
+CaDiCaL, one at a time, which is not a counter at any larger size (its
+time grows with the count, and the count grows exponentially in $n$)
+and is here as the independent check of the two counters where it can
+reach. Ganak and ApproxMC were installed from PyPI for this section; no
+\texttt{sharpSAT}, \texttt{d4} or other counter binary is on the host.
 
 \paragraph{Protocol.} Each call runs in its own interpreter under
 \texttt{nice -n 19}, at most eight at a time on the thirty-two cores of
-an AMD Ryzen 9 9950X (Linux 7.0.0, Python 3.12.13; the machine was shared
-with other work, load average at the start in
+an AMD Ryzen 9 9950X (Linux 7.0.0, Python 3.12.13; the machine was
+shared with other work, load average at the start in
 \repofile{tables/practitioner_meta.json}), with a wall-clock budget of
-60~s per call; the time recorded is \texttt{perf\_counter} around the
-construction of the solver object and the one call, inside the child,
-with the interpreter's start-up and the import outside it. A call over
-budget is killed and recorded as censored; a size at which a tool finishes
-fewer than ten of its twenty instances ends that tool's escalation. The
-whole run took about twenty minutes (1,172~s) minutes.
+60~s per call. The time recorded is the wall clock (\texttt{perf\_counter}) around the
+construction of the solver object and the one call, inside the child
+process, with the interpreter's start-up and the import outside it. A
+call over budget is killed and recorded as \emph{censored}, that is, as
+``more than 60~s''. A size at which a tool finishes fewer than ten of
+its twenty instances ends that tool's climb to larger sizes. The whole
+run took about twenty minutes (1,172~s).
 
 \subsection{What came out}
 \label{sec:practitioner-results}
 
 Table~\ref{tab:practitioner} gives, per size, the number of satisfiable
-instances, CaDiCaL's median and maximum over the twenty seeds, the number
-of instances each counter finished with its median and maximum (a median
-over all twenty with censored runs counted as above the budget, so a
-median is a number whenever more than ten finished), and the two
-guarantees in the common scale of the next subsection.
+instances, CaDiCaL's median and maximum over the twenty seeds, the
+number of instances each counter finished with its median and maximum
+(a median over all twenty with censored runs counted as above the
+budget, so a median is a number whenever more than ten finished), and
+the two guarantees in the common scale of the next subsection.
 Figure~\ref{fig:practitioner} draws the same.
 
 \begin{table}[htbp]
 \centering
 \caption{Random 3-CNF at $m = \lfloor 4.26\,n \rceil$, twenty seeds per
-size, one machine, 60~s per call. ``sat'' is the number of satisfiable
-instances among those CaDiCaL finished; ``fin'' the number a counter finished within budget; ``med''
-and ``max'' are seconds over all twenty seeds with a censored run counted
-as $> 60$. The last two columns are the brute-force and the verified
-guarantees at constant~1, $2^n$ and $2^{\rhon}$, multiplied by the one
-common factor $t_{20}/2^{20}$ that puts $2^n$ through CaDiCaL's median at
-$n = 20$ ($t_{20} = 1.28 \times 10^{-4}$~s); they are shapes, not running times.
-Regenerate: \texttt{python3 -I paper3/scripts/practitioner.py}.}
+size, one machine, 60~s per call. Columns: $n$ variables; $m$ clauses;
+``sat'', the number of satisfiable instances among those CaDiCaL
+finished; for each tool, ``fin'', the number of instances it finished
+within budget, and ``med'' and ``max'', its median and maximum seconds
+over all twenty seeds with a censored run counted as $> 60$. The last
+two columns are the two guarantees as shapes: $2^n$ (trying every
+assignment) and $2^{\rhon}$ (the verified bound), both with constant
+$1$ and both multiplied by one common factor $t_{20}/2^{20}$ that puts
+$2^n$ through CaDiCaL's median at $n = 20$ ($t_{20} = 1.28 \times
+10^{-4}$~s). They are shapes, not running times. Regenerate:
+\texttt{python3 -I paper3/scripts/practitioner.py}.}
 \label{tab:practitioner}
 \footnotesize\setlength{\tabcolsep}{3pt}
 \input{tables/practitioner}
@@ -119,23 +127,27 @@ Regenerate: \texttt{python3 -I paper3/scripts/practitioner.py}.}
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{practitioner.pdf}
-\caption{The same data on a logarithmic time axis. Solid lines with
-markers are medians, dotted lines maxima, over the twenty seeds; a tool
-whose median is censored stops at the budget line. The two guarantees are
-drawn at constant~1 with the common factor of Table~\ref{tab:practitioner},
-so that $2^n$ passes through the $n = 20$ measurement and $2^{\rhon}$
-crosses it at $n = 50$, where $\rhon \ge n$ begins
-(Section~\ref{sec:statement}). From \texttt{paper3/scripts/practitioner.py}.}
+\caption{The same data on a logarithmic time axis, where each grid line
+is ten times the one below. Solid lines with markers are medians, dotted
+lines maxima, over the twenty seeds; a tool whose median is censored
+stops at the budget line. The two guarantees are drawn as shapes with
+the common factor of Table~\ref{tab:practitioner}, so that $2^n$ passes
+through the $n = 20$ measurement and $2^{\rhon}$ crosses it at $n = 50$,
+where the verified exponent overtakes $n$
+(Section~\ref{sec:statement}). The left panel keeps the measured
+seconds in view and lets the guarantees leave the frame; the right
+panel is the same picture on the guarantees' own scale. From
+\texttt{paper3/scripts/practitioner.py}.}
 \label{fig:practitioner}
 \end{figure}
 
 \paragraph{The checks.} On every instance where both finished, Ganak's
-count equals the enumeration's (40 instances at $n \le 30$) and
-CaDiCaL's bit equals $[\mathrm{count} > 0]$; ApproxMC's estimate is
-within its factor $1 + \varepsilon = 1.8$ of Ganak's on 178 of the
-206 instances where both finished (it promises that with
-probability $1 - \delta = 0.8$ per instance). The script exits non-zero
-if any of these fails.
+count equals the count by listing (40 instances at $n \le 30$) and
+CaDiCaL's answer equals ``count $> 0$''; ApproxMC's estimate is within
+its factor $1 + \varepsilon = 1.8$ of Ganak's on 178 of the 206
+instances where both finished (it promises that with probability
+$1 - \delta = 0.8$ per instance). The script exits non-zero if any of
+these fails.
 
 \paragraph{What the solvers did.} CaDiCaL's median is under a
 millisecond up to $n = 80$, 2.5~ms at 100, 58~ms at 200, 1.5~s at 250
@@ -145,59 +157,60 @@ the known shape of CDCL on random formulas at the threshold (the
 unsatisfiable half is the expensive half). Ganak finishes all 20 up to
 $n = 250$ (median 17.6~s there, maximum 45.7~s), 10 of 20 at 300 and
 none at 400; its median is flat at 8.3~s and 6.2~s at $n = 100$ and
-150 and lower, 2.4~s, at 200, while its maximum rises throughout ---
-the plateau looks like a fixed budget inside the binding's
-preprocessing rather than counting difficulty, and we report it as
-measured and tuned nothing (\texttt{ETH\_AMBIGUOUS.MD}, 06d). Where the
-count is positive it is small for the size: at $n = 200$ the fifteen
-satisfiable instances have between 372 and $2.5 \times 10^{12}$ models
-out of $2^{200}$. ApproxMC finishes all 20 up to $n = 200$ (median
+150 and lower, 2.4~s, at 200, while its maximum rises throughout. The
+flat stretch looks like a fixed time budget inside the binding's
+preprocessing rather than counting difficulty; we report it as measured
+and tuned nothing (\texttt{ETH\_AMBIGUOUS.MD}, 06d). Where the count is
+positive it is small for the size: at $n = 200$ the fifteen satisfiable
+instances have between 372 and $2.5 \times 10^{12}$ solutions out of
+$2^{200}$ assignments. ApproxMC finishes all 20 up to $n = 200$ (median
 0.51~s there), 18 at 250, 11 at 300 and none at 400. The sizes at which
-the three tools leave the budget --- 300 for the counters, 400 for the
-decision --- are where this measurement ends; nothing is claimed beyond
+the three tools leave the budget, 300 for the counters and 400 for the
+decision, are where this measurement ends; nothing is claimed beyond
 them.
 
 \subsection{The two guarantees beside them}
 \label{sec:practitioner-guarantees}
 
-The guarantees are drawn as shapes. Both are taken at constant 1 --- the
-polynomial factors, $C$, $A$ and $d$ are all set aside --- and both are
-multiplied by the same factor $t_{20}/2^{20}$, where $t_{20}$ is
-CaDiCaL's median at $n = 20$. The factor is one number for both curves,
-so their ratio is the ratio of the guarantees themselves,
-$2^{\rhon - n}$: below 1 for $n < 50$, equal to 1 at $n = 50$ up to the
-rounding of $\rho(50) = 50.13$, and above 1 from there (it is $2.8 \times 10^{3}$ at
-$n = 100$ and $4.0 \times 10^{51}$ at $n = 500$). A reader who prefers each curve
-scaled to the $n = 20$ point on its own would multiply $2^{\rhon}$ by a
-further $2^{20 - \rho(20)} = 2^{2.79}$ and see the two curves touch at
-$n = 20$ and the verified one above the trivial one from there on; the
-common factor is the honest choice because it keeps the crossing where
-the statement puts it (\texttt{ETH\_AMBIGUOUS.MD}, 06a).
+The guarantees are drawn as shapes. Both are taken with constant $1$
+(the polynomial factors, $C$, $A$ and $d$ are all set aside), and both
+are multiplied by the same factor, chosen so that $2^n$ passes through
+CaDiCaL's median at $n = 20$. Because the factor is one number for both
+curves, their ratio is the ratio of the guarantees themselves,
+$2^{\rhon - n}$: below $1$ for $n < 50$, equal to $1$ at $n = 50$ up to
+rounding, and above $1$ from there (it is $2.8 \times 10^{3}$ at
+$n = 100$ and $4.0 \times 10^{51}$ at $n = 500$). Scaling each curve to
+the $n = 20$ point on its own would instead make the two touch at
+$n = 20$ and put the verified one above from there on; the common
+factor is the honest choice because it keeps the crossing where the
+statement puts it (Appendix~\ref{app:tech-scaling};
+\texttt{ETH\_AMBIGUOUS.MD}, 06a).
 
 In that scale the brute-force guarantee reaches one second near
-$n = 33$ and the verified guarantee near $n = 35$; at $n = 60$,
-the largest size of the title's practical range that this section's
-smallest tools were run at, the measured CaDiCaL median is $3 \times 10^{-4}$ s against
-$2^n$ at $1.4 \times 10^{8}$ s and $2^{\rhon}$ at $5.4 \times 10^{8}$ s, 11.6 and 12.2 decades
-respectively; at $n = 500$ the decision median is above the budget (8 of 20 finished within 60~s), against
-$10^{140.6}$ s and $10^{192.2}$ s. Nothing in those decades is about the
-verified machine: the gap is between what a CDCL solver does on random
-formulas and what any $2^{\Theta(n)}$ guarantee says, and it would be
-the same gap for the brute-force guarantee alone. The one fact this
-section adds to the title is the order of the three objects: at every
-size in the table the measurement is far below $2^n$, and $2^{\rhon}$ is
-above $2^n$ from $n = 50$ on, so the verified guarantee is the largest
-of the three at every practical size and the measurement the smallest.
+$n = 33$ and the verified guarantee near $n = 35$. At $n = 60$, the
+measured CaDiCaL median is $3 \times 10^{-4}$~s, against $1.4 \times
+10^{8}$~s for $2^n$ and $5.4 \times 10^{8}$~s for $2^{\rhon}$: the
+measurement is below the two guarantees by factors of $10^{11.6}$ and
+$10^{12.2}$. At $n = 500$ the decision median is above the budget (8 of
+20 finished within 60~s), against $10^{140.6}$~s and $10^{192.2}$~s.
+Nothing in those enormous factors is about the verified machine: the
+gap is between what a CDCL solver does on random formulas and what any
+exponential guarantee says, and it would be the same gap for the
+brute-force guarantee alone. The one fact this section adds to the
+title is the order of the three objects: at every size in the table the
+measurement is far below $2^n$, and $2^{\rhon}$ is above $2^n$ from
+$n = 50$ on, so the verified guarantee is the largest of the three at
+every practical size and the measurement the smallest.
 
-One remark on what the verified machine's \emph{running time} would have
-to be, were it ever run. Nothing in this section bears on it: the
+One remark on what the verified machine's \emph{running time} would
+have to be, were it ever run. Nothing in this section bears on it: the
 constants $C, A, d$ are unknown (Section~\ref{sec:statement}), the
-machine is a Lean term, and an existential statement is not an
-implementation. The only values on record are the proof's own, $A \ge
-257$ and $C \ge 28{,}701$ (Sections~\ref{sec:statement} and
+machine is a mathematical term, and a statement that something exists
+is not a program. The only values on record are the proof's own,
+$A \ge 257$ and $C \ge 28{,}701$ (Sections~\ref{sec:statement} and
 \ref{sec:proof}); a guarantee of $2^{257\,\rhon}$ steps is a guarantee
-and not a measurement, and a different proof of the same statement could
-carry any positive constants.
+and not a measurement, and a different proof of the same statement
+could carry any positive constants.
 
 \subsection{What this does not claim}
 \label{sec:practitioner-not}
@@ -209,20 +222,21 @@ carry any positive constants.
   bindings; they are reproducible in shape and not in value, and the
   versions are those named in Section~\ref{sec:practitioner-setup} and
   in \repofile{tables/practitioner_meta.json}.
-\item \textbf{Random instances only.} Random 3-CNF at the threshold ratio
-  is one distribution; structured formulas can be harder for CDCL at
-  far smaller $n$ and easier for counters. Nothing is claimed about any
-  other distribution, and nothing about worst-case behaviour.
+\item \textbf{Random instances only.} Random 3-CNF at the threshold
+  ratio is one distribution; formulas with structure can be harder for
+  CDCL at far smaller $n$ and easier for counters. Nothing is claimed
+  about any other distribution, and nothing about worst-case behaviour.
 \item \textbf{Nothing about the verified machine's running time.} It is
   unknown, in both directions; no implementation exists to run; the
-  guarantees drawn are at constant 1 and the constants are existential.
+  guarantees drawn are at constant $1$ and the constants are never
+  computed.
 \item \textbf{Nothing about $k > 3$.} The statement is for every fixed
   $k$; the measurement is at $k = 3$.
 \item \textbf{The counters are reported, not tuned.} Ganak ran through
   its binding at defaults, preprocessing included; ApproxMC at its
   default tolerance; a different configuration gives different seconds.
-  The check against enumeration is at $n \le 30$ only.
+  The check against listing is at $n \le 30$ only.
 \item \textbf{No statement about which tool a practitioner should use.}
-  The section shows that the verified guarantee is not binding; it does
-  not rank solvers.
+  The section shows that the verified guarantee is not the binding one;
+  it does not rank solvers.
 \end{itemize}

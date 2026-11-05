@@ -282,7 +282,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   (the collection's `history.md`, the human-audit paper's abstract, the
   comparator README).
 
-- [ ] **08x The plain-English rewrite of every section drafted so far.**
+- [x] **08x The plain-English rewrite of every section drafted so far.**
   Owner's rule of 2026-11-05 (TASK.md, "The paper is written in plain
   English"). Rewrite `sec2` … `sec8` (whatever exists under
   `paper3/latex/`) sentence by sentence to that rule: short sentences,

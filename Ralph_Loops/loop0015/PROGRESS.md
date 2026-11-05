@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 8/12 SOLVED
+Current: 9/13 SOLVED (item 08x added to the list on 2026-11-05)
 
 ## Setup — 2026-11-05
 
@@ -696,3 +696,118 @@ Current: 8/12 SOLVED
   (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed in
   4:36; pathwidth_solver 123 passed in 6:35; paper 1 builds at 78 pages,
   paper 3 at 48; title verbatim; `solutions/` untouched).
+
+
+---
+
+## Iteration 9 — 2026-11-05 06:30 (item 08x, the plain-English rewrite of every section drafted so far) `[x]`
+
+### Completed
+- **Sections 2–8 rewritten sentence by sentence** to the owner's rule
+  of 2026-11-05 05:30 (`paper3/latex/sec2_statement.tex` …
+  `sec8_lean.tex`): short sentences, one idea each; every symbol
+  defined in words on first use and paraphrased where it carries the
+  argument (`ρ(n)` as "the exponent", `C(L+1)^d 2^{Aρ(n)}` as "the
+  bound", `2^n` as "trying every assignment", `o(n)` as "grows more
+  slowly than n", `O_k(1)` as "a constant that depends only on k");
+  every term of art glossed in one clause on first use in its section
+  (Lean, kernel, formula, k-CNF, satisfying assignment, comparator,
+  axiom, lemma, Turing machine, configuration, polynomial in Section 2;
+  closure, type-checks, typeclass instance, non-constructive, manifest,
+  hook, environment in Section 4; namespaces in Section 5; hypothesis,
+  ETH, SETH, derived lower bound, Sparsification Lemma, DNF/tautology,
+  regular resolution, Merlin–Arthur, Set Splitting in Section 6; SAT
+  solver, CDCL, model counter, censored, projection set in Section 7;
+  Prop/def/theorem/axiom, namespace, located step in Section 8); every
+  figure and table caption rewritten so that a layperson can read the
+  columns and the curves ("a curve above the line is a guarantee worse
+  than trying every assignment"; "each grid line is ten times the one
+  below"). Section 9 (drafted after the rule, already plain) and
+  Appendix A (a table of names) untouched (08xb).
+- **Nothing lost in precision**: "the verified guarantee" where that is
+  the fact, "verified" / "supported" / "paper-only" / "not verified" on
+  every claim, every "what this does not claim" list kept. A script
+  compared each old section (git `521b617e0`) with its rewrite: **every
+  citation key, every `\ref`/`\leanref`, every `\label`, every file
+  path and every number of the old text is present in the new text or
+  in Appendix B**; the handful of literal identifiers the rewording
+  dropped (`SqrtLog.ExecutionNativeFinal`, `SqrtLogSpace.Final`,
+  `@[default_target] lean_lib OAI`, `definition_names`, `tmpfs`,
+  `lakefile`, the `Nat`/`String` literal extensions, `IO`,
+  `perf_counter`) were restored by hand.
+- **Dense passages moved, not cut, into a new Appendix B** "Technical
+  detail behind the plain text" (`paper3/latex/secB_appendix_technical.tex`,
+  `\input` after Appendix A in `main.tex`; labels `app:tech`,
+  `app:tech-definitions`, `-theorem`, `-spine`, `-keywords`,
+  `-hypotheses`, `-scaling`): the comparator definitions line by line,
+  the theorem with its quantifiers and the proof's constants, the spine
+  of the proof with every name and line and the 35/33/2 statement
+  match, the keyword sweep item by item with the lakefile hooks, the
+  hypotheses in quantifier form with their negations and the shape-(S)
+  arithmetic, and the scaling of the two guarantee curves. The body
+  cites each subsection where it states the fact in words (08xa).
+- **Readability measured** (sentences from the `.tex` with LaTeX
+  stripped, old → new): mean words per sentence 30.2 → 17.9 (Section
+  2), 29.6 → 25.6 (3), 29.3 → 22.6 (4), 33.8 → 24.8 (5), 32.0 → 28.3
+  (6), 34.5 → 27.9 (7), 22.5 → 21.4 (8); share of sentences over 35
+  words 25% → 4%, 33% → 21%, 30% → 16%, 40% → 18%, 30% → 22%, 42% → 26%,
+  15% → 16%. Sections 3 and 6 stay longest because their quotations
+  from the manuscript are kept verbatim.
+- **One blind-reader subagent** (the item's one; read Sections 2–8 of
+  the built PDF as a layperson, edited nothing): **no overclaim found**
+  ("every section's 'what this does not claim' keeps to the guarantee");
+  about fifty stalls listed, almost all a term used before its gloss.
+  **All addressed** by 56 one-clause glosses or re-orderings in the
+  places it named (axiom, lemma, Turing machine, configuration,
+  polynomial, `O(knm)`, `o(n)`; the corollaries' objects — circuit,
+  independent set, proper colouring, perfect matching, circuit lower
+  bound, `E^NP`, constant-locality, one-way function, tensor network;
+  closure, Prop, "inhabitant"; type-checks, typeclass instances, choice
+  principle, "eventually", "it elaborates" → "Lean accepts it",
+  manifest, hooks, environment; namespaces; uniform denial, models of
+  computation, `s_k`, Sparsification Lemma, DNF/tautology, regular
+  resolution, Merlin–Arthur, Set Splitting; cavity method, Arjun,
+  projection set; namespace, located step, "countWord on two of the
+  three"); its two borderline phrasings in Section 7 reworded ("not the
+  one that matters" → "not the binding one"). Its three "clearest"
+  passages (the Section 2 glossary, the four numbered points of 2.5,
+  the "theorem stands; premise false; derives nothing" paragraphs of
+  6.3) are the model the rest was pulled toward.
+- **Pages before / after: 48 / 55** (`make -C paper3/latex check`
+  passes; the 7 extra pages are Appendix B and the glosses). Overfull
+  boxes: the baseline build of `521b617e0` had 8 (one in Section 2,
+  five in Section 5, two in Appendix A's `longtable`); after this item
+  2, both the pre-existing Appendix A ones (item 07's file, not
+  rewritten here; left for item 10, 08xb).
+- Scope check: no word of graphs, pathwidth, treewidth or MOSP added;
+  the only occurrences in Sections 2–8 and Appendix B are the
+  `SubexpPathwidth` directory name (07a), the manuscript's own
+  Corollary 1.3 objects ("a graph on v vertices", item 03's text) and
+  the `SimpleGraph` identifier in the absence search.
+- `paper3/README.md` layout row notes the rewrite and Appendix B;
+  `ETH_AMBIGUOUS.MD` entries 08xa–08xd (plainness vs precision and the
+  new appendix; Section 9 / Appendix A untouched; per-section glosses
+  pending item 09's introduction; the `A ≥ 257` / `A ≥ 258` readings
+  reconciled in Section 2's text).
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone executed; no script re-run (no number changed); one
+  subagent used.
+
+### Blockers
+- None.
+
+### Next
+- Item 09 (abstract, introduction, conclusion): the introduction's
+  first-use glosses may make the per-section ones redundant (08xc); the
+  abstract and introduction carry no formula beyond `2^n` by the rule.
+- Item 10 (refuter): read the whole paper for readability once more
+  (Section 9 and the appendices were not re-read here); the two
+  Appendix A overfull boxes; the "character for character" phrase is
+  now defined in Section 8 and used in Sections 2, 4 and 5.
+- Item 11: `paper3/README.md`'s regenerate paragraphs are unchanged
+  (no number moved); Appendix B's cited line numbers are the same ones
+  the Section 2–7 scripts check.
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 06:57
+  (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed in
+  4:36; pathwidth_solver 123 passed in 6:33; paper 1 builds at 78 pages,
+  paper 3 at 55; title verbatim; `solutions/` untouched).

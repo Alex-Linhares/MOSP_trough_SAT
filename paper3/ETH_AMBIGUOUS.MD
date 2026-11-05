@@ -673,3 +673,68 @@ an answer).
   and the "what this does not claim" list repeats it.
 - **Owner may change**: widen the search (a literature search would be
   a new item with its own download rule), or strike the sentence.
+
+### 08xa — where plainness and precision pulled apart (item 08x, 2026-11-05)
+- **Ambiguous**: the owner's rule asks for every symbol defined in words
+  and every term of art glossed, while the paper's precision rests on
+  quoted formulas (`O_k(1)`, `2^{O_k(ρ(n))}`, the manuscript's own
+  sentences), line-numbered definitions, and the theorem's quantifier
+  order. Four places could not be made plain without losing precision:
+  the theorem displayed with its quantifiers (old §2.2); the
+  definitions with their line numbers (old §2.1); the spine of the proof
+  with every name and line (old §4.5) and the keyword details (old
+  §4.3); the hypotheses in quantifier form with their negations (old
+  §6.2) and the scaling arithmetic of the guarantee curves (old §7.4).
+- **Chosen**: each is moved verbatim into a new **Appendix B, "Technical
+  detail behind the plain text"** (`secB_appendix_technical.tex`,
+  subsections B.1–B.6), and the body cites the subsection where it
+  states the fact in words. Quotations from the manuscript and from the
+  Lean keep their formulas untouched (a quotation is not ours to
+  simplify); each is preceded or followed by one plain sentence saying
+  what it means. The notation `O_k(1)` is kept only inside quotations
+  and once in Section 2, where it is defined in words ("a constant that
+  depends only on k"). Nothing was dropped: a script compared the old
+  and new sections and found every citation, cross-reference, file path
+  and number preserved; the few literal identifiers lost in rewording
+  were restored by hand.
+- **Owner may change**: fold Appendix B back into the sections (the old
+  text is in git at `521b617e0`), or drop the body's glosses where the
+  introduction (item 09) will carry them.
+
+### 08xb — Section 9 and Appendix A not rewritten (item 08x, 2026-11-05)
+- **Ambiguous**: the item says "sec2 … sec8 (whatever exists)"; Section
+  9 (related work, item 08) was drafted after the rule and already in
+  plain English, and Appendix A is a table of Lean names.
+- **Chosen**: Sections 2–8 rewritten; Section 9 and Appendix A left as
+  they are (the refuter, item 10, reads the whole paper). The two
+  overfull boxes the build reports are in Appendix A's `longtable`
+  (present before this item, item 07's) and are left for item 10; the
+  five in Section 5 and one in Section 2 that predated this item were
+  fixed in passing.
+- **Owner may change**: nothing; item 10 may touch Appendix A.
+
+### 08xc — glosses repeated per section, because the introduction is not yet written (item 08x, 2026-11-05)
+- **Ambiguous**: the rule puts the glosses "on first use"; the first use
+  of Lean, kernel, k-CNF, comparator, ETH, SETH, model counter and CDCL
+  will be in the abstract and introduction, which item 09 writes after
+  this item.
+- **Chosen**: Section 2 opens with a short glossary (Lean, kernel,
+  formula, k-CNF, satisfying assignment, comparator); Section 6 glosses
+  ETH, SETH and "a lower bound derived from a hypothesis" at its head;
+  Section 7 glosses SAT solver, CDCL and model counter; Section 8
+  glosses Prop, def, theorem and axiom. Item 09's introduction may
+  repeat them; a reader entering at any section is served either way.
+- **Owner may change**: remove the per-section glosses once the
+  introduction carries them.
+
+### 08xd — the `A ≥ 257` / `A ≥ 258` readings reconciled in the text (item 08x, 2026-11-05)
+- **Ambiguous**: Section 2 said `A ≥ 257` (the run's constant, 02c) and
+  Section 4 `A ≥ 258` (the comparator witness `A + 1`, 04c); the refuter
+  was asked to align them (PROGRESS, iteration 4).
+- **Chosen**: Section 2 now says both in one sentence: the proof as
+  written has `A ≥ 257`, "and the theorem that the comparator exhibits
+  adds one more (Section 4, `A ≥ 258`)". Sections 6 and 7 keep `257`
+  where they speak of the proof's construction; Section 4 keeps `258`
+  where it speaks of the exhibited witnesses. Both are correct readings
+  of different lines.
+- **Owner may change**: quote only one of the two throughout.

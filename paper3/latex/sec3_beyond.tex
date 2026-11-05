@@ -1,22 +1,26 @@
 % What the manuscript claims beyond the verified statement -- drafted by loop0015
-% item 03 (2026-11-05). Every manuscript quotation gives the page of paper.pdf and
-% the line of reports/scratch/eth_audit/paper.txt (page = form feeds before the
-% line + 1); every Lean location is in the clone at commit 4eaee875, read with
-% cat/sed -n only. Every page, line, fragment and number of this section is
-% checked and the two tables are written by
+% item 03 (2026-11-05), rewritten in plain English by item 08x (2026-11-05).
+% Every manuscript quotation gives the page of paper.pdf and the line of
+% reports/scratch/eth_audit/paper.txt (page = form feeds before the line + 1);
+% every Lean location is in the clone at commit 4eaee875, read with cat/sed -n
+% only. Every page, line, fragment and number of this section is checked and
+% the two tables are written by
 %   python3 -I paper3/scripts/beyond_claims.py
 % which exits non-zero if anything has moved.
 \section{What the manuscript claims beyond the verified statement}
 \label{sec:beyond}
 
 The manuscript \citep{OAI:The-Exponential-Time-Hypothesis-is-False-October-25-2026}
-is 67 pages; the comparator statement is 220 lines. Section~\ref{sec:statement}
-read the statement. This section reads the manuscript's claims one by one
-and says, for each, whether it is what the Lean theorem asserts, whether it
-follows from the Lean theorem by an argument that exists only on paper, or
-whether it rests on a bound that the Lean library does not contain. The
-collection's own scope note draws the line in two sentences, which we quote
-in full (\clonefile{lean/docs/378.md}, lines 9 and 11):
+is 67 pages long. The verified statement is 220 lines long. Section~\ref{sec:statement}
+read the statement. This section reads the manuscript's claims one by
+one. For each claim it says one of three things: this is what the Lean
+theorem asserts; this follows from the Lean theorem by an argument that
+exists only on paper; or this rests on a bound that the Lean library
+does not contain at all.
+
+The collection draws the line itself, in a short note on the family.
+We quote its two sentences in full (\clonefile{lean/docs/378.md}, lines
+9 and 11):
 \begin{quote}\small\sloppy
 ``For fixed $k \ge 2$, Lean proves that a deterministic machine exactly
 counts satisfying assignments of a canonically encoded $k$-CNF on $n$
@@ -29,8 +33,11 @@ $(n+m)^{O_k(1)}\,2^{O_k(n\log\log n/\sqrt{\log n})}$. When $m \le Dn$ for
 fixed $D > 0$, this improves to
 $(n+m)^{O_{k,D}(1)}\,2^{O_{k,D}(n/\sqrt{\log n})}$.''
 \end{quote}
-Everything below is an elaboration of that note against the manuscript's
-text and the library's files. Table~\ref{tab:beyond-claims} is the summary.
+In words (the notation $O_k(1)$ means a constant that depends only on $k$, Section~\ref{sec:statement}): the Lean proves the bound with the exponent of Section~\ref{sec:statement}, the one with the \emph{squared} double logarithm. The manuscript claims two better exponents, one with the
+double logarithm not squared, and one, for formulas with few clauses,
+with no double logarithm at all. Everything below is an elaboration of
+that note against the manuscript's text and the library's files.
+Table~\ref{tab:beyond-claims} is the summary.
 
 \subsection{Three statuses, and what ``paper-only'' means}
 \label{sec:beyond-statuses}
@@ -39,178 +46,177 @@ We tag every claim with one of three words.
 
 \begin{itemize}
 \item \textbf{Verified.} The claim is the comparator statement
-  \texttt{exact\_count\_and\_sat}, or one of its conjuncts, or a theorem of
+  \texttt{exact\_count\_and\_sat}, or one of its parts, or a theorem of
   the solution tree that the replay of Section~\ref{sec:replay} compiled
   and whose axioms it printed. Nothing else is called verified.
-\item \textbf{Supported.} The claim follows from the verified statement by
-  an argument that is on paper only: a reduction of a few lines, or a
+\item \textbf{Supported.} The claim follows from the verified statement
+  by an argument that is on paper only: a short reduction, or a
   citation. The argument is not in the Lean library, and we have not
-  checked it; what we have checked is that the only property of the
-  counter it uses is one the verified statement provides, and that the
-  exponent it inherits is therefore $\rhon$, not a sharper one.
+  checked it. What we have checked is narrower: the only property of
+  the counter the argument uses is one the verified statement provides,
+  and the exponent it inherits is therefore $\rhon$ and not a sharper
+  one.
 \item \textbf{Paper-only.} The claim rests on a bound that the Lean
-  library at commit \texttt{4eaee875} does not contain: Theorem~1.1's two
-  sharper exponents, and whatever is derived from them.
+  library at commit \texttt{4eaee875} does not contain: Theorem~1.1's
+  two sharper exponents, and whatever is derived from them.
 \end{itemize}
 
-The brief for this section had two tags, verified and paper-only; the
-middle one is ours, because the manuscript's corollaries are of two
-different kinds and a single word would have put Corollary~1.3 (a
-counting-preserving encoding into the verified counter) beside
-Corollary~1.4 (a bound whose proof calls the fixed-density exponent by
-name). In the brief's partition, ``supported'' is a sub-case of
-``paper-only'': not in the library. In no case does ``paper-only'' mean
-``wrong''. We did not read the manuscript's proofs for correctness; the
-tag records where a claim is established, not whether.
+Our working plan for this section had two tags, verified and paper-only. The
+middle one is ours. The manuscript's corollaries are of two different
+kinds, and one word would have put Corollary~1.3, an encoding into the
+verified counter, beside Corollary~1.4, a bound whose proof calls the
+sharper exponent by name. In that two-way split, ``supported'' is
+a kind of ``paper-only'': not in the library. In no case does
+``paper-only'' mean ``wrong''. We did not read the manuscript's proofs
+for correctness. The tag records where a claim is established, not
+whether it is.
 
 \subsection{The sharper exponents of Theorem~1.1}
 \label{sec:beyond-exponents}
 
 Theorem~1.1 (p.~2, lines 56--62) states two running-time bounds for the
-same deterministic algorithm: $(n+m)^{O_k(1)}\,2^{O_k(n\log\log n/\sqrt{\log n})}$
-for every $k$-CNF on $n \ge 20$ declared variables, and
-$(n+m)^{O_{k,D}(1)}\,2^{O_{k,D}(n/\sqrt{\log n})}$ when $m \le Dn$ for a
-fixed $D > 0$; both with $(n+m)^{O_k(1)}$ bits of space (line 60). The
-sentence that follows the theorem is the one the title of this paper is
-about (p.~2, lines 63--67):
+same algorithm. The first holds for every $k$-CNF on $n \ge 20$
+variables: a polynomial in $n + m$ times
+$2^{O_k(n\log\log n/\sqrt{\log n})}$. The second holds when the number of
+clauses is at most a fixed multiple $D$ of $n$: a polynomial times
+$2^{O_{k,D}(n/\sqrt{\log n})}$. Both use a polynomial amount of space
+(line 60). The sentence that follows the theorem is the one this paper's
+title is about (p.~2, lines 63--67):
 \begin{quote}\small
 ``The rational interpolation argument in Section 6.4 gives the weaker
 exponent $O_k(\rho(n))$, where
 $\rho(n) = n(\log\log n)^2/\sqrt{\log n} = n/(\log n)^{1/2+o(1)}$.
 Appendix D proves both bounds in Theorem 1.1 by tensor contraction.''
 \end{quote}
-Proposition~6.4 (p.~43, lines 2474--2476) is the weaker bound as a
-statement of its own: for each fixed $k \ge 2$, the interpolation
-algorithm counts in $(n+m)^{O_k(1)}\,2^{O_k(\rho(n))}$ bit operations and
-$(n+m)^{O_k(1)}$ bits of space, for $n \ge 20$.
+Proposition~6.4 (p.~43, lines 2474--2476) states the weaker bound on its
+own: for each fixed $k \ge 2$, the interpolation algorithm counts in a
+polynomial times $2^{O_k(\rho(n))}$ bit operations and polynomial space,
+for $n \ge 20$.
 
 \paragraph{Which of the three is in the Lean.}
-The comparator's \runtimeScale{} (lines 132--134 of the comparator file)
-is $n(\ln\ln(n+16))^2/\sqrt{\ln(n+16)}$, the squared form. The solution's
-own base-2 exponent \texttt{rho}
-(\clonefile{SqrtLogSpace/Asymptotics.lean}, lines 10--11) is
-$n(\log_2\log_2 n)^2/\sqrt{\log_2 n}$, Proposition~6.4's $\rho$ with the
-base made explicit, and \texttt{runtimeScale\_le\_four\_rho} (lines
-190--191) bounds the comparator's exponent by four times it for
-$n \ge 20$. The solution's sparsification parameters are Proposition~6.4's
-to the letter: the proof selects $\lambda_n = \lceil\log_2 n\rceil$,
+The verified exponent is the weaker one. The comparator's
+\runtimeScale{} (lines 132--134 of the comparator file) is
+$n(\ln\ln(n+16))^2/\sqrt{\ln(n+16)}$, the squared form. The solution's
+own exponent, called \texttt{rho}
+(\clonefile{SqrtLogSpace/Asymptotics.lean}, lines 10--11), is the same
+function with base-2 logarithms, and a lemma,
+\path{runtimeScale_le_four_rho} (lines 190--191), bounds the
+comparator's exponent by four times it for $n \ge 20$. The proof is built around the parameters of the manuscript's Section~6.4, the three numbers that set how the proof thins the formula before counting (its ``sparsification''), to the letter: the manuscript selects $\lambda_n = \lceil\log_2 n\rceil$,
 $\nu_n = \lceil\log_2\lambda_n\rceil$ and
 $s = \lfloor\sqrt{\lambda_n}/\nu_n^2\rfloor$, ``the largest nonnegative
-integer satisfying $s^2\nu_n^4 \le \lambda_n$'' (p.~43, lines 2480--2486),
-and \path{Asymptotics.lean} lines 14--20 define \texttt{sparsifyLambda},
-\texttt{sparsifyNu} and \texttt{sparsifySchedule} as exactly those three
-quantities in natural-number arithmetic. So the verified exponent is the
-weaker one, and the verified proof is organised around Section~6.4's
-parameters; what Appendix~D proves is not in the library in any form we
-could find (Section~\ref{sec:beyond-lean}). The general exponent
+integer satisfying $s^2\nu_n^4 \le \lambda_n$'' (p.~43, lines 2480--2486; $\lceil x\rceil$ is the smallest whole number at least $x$ and $\lfloor x\rfloor$ the largest at most $x$), and \path{Asymptotics.lean} lines 14--20 define
+\texttt{sparsifyLambda}, \texttt{sparsifyNu} and
+\texttt{sparsifySchedule} as exactly those three quantities. What
+Appendix~D of the manuscript proves is not in the library in any form we
+could find (Section~\ref{sec:beyond-lean}). So the general exponent
 $n\log\log n/\sqrt{\log n}$ and the fixed-density exponent
 $n/\sqrt{\log n}$ are \textbf{paper-only}: proved at p.~57 (lines
-3222--3246) and p.~54 (lines 3045--3064) respectively, by the contraction
-theorem of Appendix~D.
+3222--3246) and p.~54 (lines 3045--3064) respectively, by the
+contraction theorem of Appendix~D.
 
 \paragraph{Both bounds from one algorithm.}
 The manuscript notes that a single algorithm attains both paper-only
-bounds, switching on $m \le n\nu$ (p.~57, lines 3247--3250). That
-algorithm is not the verified one either.
+bounds, by switching between two methods according to the number of
+clauses (p.~57, lines 3247--3250). That algorithm is not the verified one
+either.
 
 \paragraph{The three exponents, in numbers.}
 Table~\ref{tab:beyond-exponents} puts the three exponents side by side,
-each divided by $n$ and each at constant $1$. The verified ratio is the
-one of Table~\ref{tab:runtime-scale}. The general paper-only ratio,
+each divided by $n$ and each with its constant taken to be $1$. A value
+above $1$ means the exponent is above $n$, so the bound is worse than
+trying every assignment. The verified ratio is the one of
+Table~\ref{tab:runtime-scale}. The general paper-only ratio,
 $\ln\ln n/\sqrt{\ln n}$, never reaches $1$: it peaks at $2/e = 0.736$
-where $\ln n = e^2$, that is $n = e^{e^2} \approx 1{,}618$, and falls on
-both sides. The fixed-density ratio $1/\sqrt{\ln n}$ decreases from
-$0.578$ at $n = 20$. So, at constant $1$, both paper-only guarantees sit
-below $2^n$ at every size, and the verified one sits above $2^n$ from
-$n = 50$ to $n \approx 10^{2390}$. That is the whole content of the
-title's qualifier ``verified'': the manuscript's exponents would make a
-different sentence, and they are not what the kernel checked. Two
-cautions apply to the table equally. The constants in front of every
-exponent are $O_k(1)$ or $O_{k,D}(1)$ and are not computed anywhere, in
-the manuscript or in the Lean; and the manuscript's exponents are
+at $n \approx 1{,}618$ and falls on both sides. The fixed-density ratio
+$1/\sqrt{\ln n}$ falls from $0.578$ at $n = 20$. So, at constant $1$,
+both paper-only guarantees sit below $2^n$ at every size, and the
+verified one sits above $2^n$ from $n = 50$ to $n \approx 10^{2390}$.
+That is the whole content of the word ``verified'' in the title: the
+manuscript's exponents would make a different sentence, and they are
+not what the kernel checked. Two cautions apply to the table equally.
+The constants in front of every exponent are not computed anywhere, in
+the manuscript or in the Lean. And the manuscript's exponents are
 undefined below $n = e$ and are stated for $n \ge 20$, while the
-verified one is stated for all $n$ (the $+16$). Figure~\ref{fig:central}
-draws the same three curves.
+verified one is stated for all $n$. Figure~\ref{fig:central} draws the
+same three curves.
 
 \begin{table}[htbp]
 \centering
-\caption{The three exponents of the manuscript divided by $n$, at constant
-$1$: the verified $\rhon/n = (\ln\ln(n+16))^2/\sqrt{\ln(n+16)}$
-(comparator lines 132--134); Theorem~1.1's general exponent
-$\ln\ln n/\sqrt{\ln n}$ (p.~2, line 59); its fixed-density exponent
-$1/\sqrt{\ln n}$ (p.~2, line 62). Natural logarithms throughout (p.~1,
-lines 48--49). The row $e^{e^2}$ is the peak of the general ratio
-($2/e$). Regenerate: \texttt{python3 -I paper3/scripts/beyond\_claims.py}.}
+\caption{The three exponents of the manuscript, each divided by $n$,
+with every constant taken to be $1$. A value above $1$ means the bound
+is worse than trying every assignment at that $n$. Columns: the verified
+$\rhon/n = (\ln\ln(n+16))^2/\sqrt{\ln(n+16)}$ (comparator lines
+132--134); Theorem~1.1's general exponent $\ln\ln n/\sqrt{\ln n}$ (p.~2,
+line 59); its fixed-density exponent $1/\sqrt{\ln n}$ (p.~2, line 62).
+Natural logarithms throughout (p.~1, lines 48--49). The row $e^{e^2}$ is
+where the general ratio peaks ($2/e$). Regenerate:
+\texttt{python3 -I paper3/scripts/beyond\_claims.py}.}
 \label{tab:beyond-exponents}
 \small
 \input{tables/beyond_exponents}
 \end{table}
 
 \paragraph{The abstract's form.}
-The abstract states the running time as
-$(n+m)^{O_k(1)}\,2^{n/(\log n)^{1/2+o(1)}}$ (p.~1, lines 6--9). Since
-$(\ln\ln n)^2 = (\ln n)^{o(1)}$, the verified exponent is of that form
-too, and the manuscript says so at lines 64--66. We tag the abstract's
-form \textbf{verified}, with the remark that its $o(1)$ absorbs exactly
-the factor the three rows of Table~\ref{tab:beyond-exponents} differ by:
-at $n = 10^6$ it is $(\ln\ln n)^2 = 6.9$ for the verified exponent,
-$\ln\ln n = 2.6$ for the general one and $1$ for the fixed-density one.
+The manuscript's abstract states the running time as a polynomial times
+$2^{n/(\log n)^{1/2+o(1)}}$ (p.~1, lines 6--9). The small term $o(1)$ in
+that exponent is a quantity that goes to zero as $n$ grows. The verified exponent is of that form too, because the square of a double logarithm grows more slowly than any fixed power of the logarithm (in symbols, $(\ln\ln n)^2$ is $(\ln n)^{o(1)}$), and the manuscript says so at lines 64--66. We tag the
+abstract's form \textbf{verified}, with the remark that its $o(1)$
+hides exactly the factor by which the three rows of
+Table~\ref{tab:beyond-exponents} differ: at $n = 10^6$ that factor is
+$6.9$ for the verified exponent, $2.6$ for the general one and $1$ for
+the fixed-density one.
 
 \subsection{The corollaries}
 \label{sec:beyond-corollaries}
 
+The corollaries speak of objects from the manuscript's own fields:
+circuits, graphs, maps. We gloss each in a clause where it first appears
+and define none further; a reader who needs more should go to the
+manuscript at the lines cited.
 \paragraph{Finding and sampling a satisfying assignment (p.~2, lines 68--71).}
 ``When $\#F > 0$, the standard self-reduction finds a satisfying
 assignment by fixing one variable at a time and checking that the
 remaining count is positive. Choosing each bit according to the two
 conditional counts instead gives an exactly uniform random satisfying
 assignment,'' with polynomial expected overhead and a citation.
-\textbf{Supported}: the self-reduction calls the verified counter at
-most $n$ times on formulas of the same width, and the verified statement
-provides the exact count it needs. The reduction is two sentences of
-prose and is not in the library.
+\textbf{Supported}. The method calls the verified counter at most $n$
+times on formulas of the same width, and the verified statement
+provides the exact count it needs. The method is two sentences of prose
+and is not in the library.
 
 \paragraph{Corollary 1.2, Max-$k$-SAT within $\varepsilon m$ (p.~2, lines 77--94).}
-A randomised algorithm finds an assignment satisfying at least
-$\mathrm{OPT}(F) - \varepsilon m$ clauses with probability
-$1 - 2^{-\Omega(n)}$ in time
+A randomised algorithm finds an assignment that satisfies at least
+$\mathrm{OPT}(F) - \varepsilon m$ clauses, that is, within a small
+fraction of the best possible, with high probability, in time
 \[
   (n+m)^{O_{k,\varepsilon}(1)}\,2^{O_{k,\varepsilon}(\rho(n))}
 \]
-(line 80). The corollary is stated with $\rho(n)$ itself, the
-verified exponent. Its proof samples $O(n/\varepsilon^2)$ clauses,
-builds a threshold circuit of size $O_{k,\varepsilon}(n)$, reduces it to
-a 3-CNF with $O_{k,\varepsilon}(n)$ variables by a cited lemma, and calls
-Theorem~1.1 with binary search and self-reduction (lines 82--94).
+(line 80). The corollary is stated with $\rho(n)$ itself, the verified
+exponent. Its proof samples $O(n/\varepsilon^2)$ clauses, builds a small circuit (a network of logic gates), turns the circuit into a 3-CNF with
+$O_{k,\varepsilon}(n)$ variables by a cited lemma, and calls Theorem~1.1 repeatedly, narrowing down the best value and then fixing variables one at a time (lines 82--94).
 \textbf{Supported}: the exponent matches the verified one because
-$\rho(cn) = O_c(\rho(n))$, and every call is to a fixed-width counter
-on $O(n)$ variables; the sampling, the circuit and the reduction are on
+$\rho(cn) = O_c(\rho(n))$, and every call is to a fixed-width counter on
+$O(n)$ variables; the sampling, the circuit and the reduction are on
 paper. Its randomness is in the reduction, not in the counter.
 
 \paragraph{Corollary 1.3, independent sets, colourings, perfect matchings (p.~2--3, lines 100--120).}
-The number of independent sets and, for fixed $q$, of proper
-$q$-colourings of a graph on $v$ vertices and $e$ edges in $2^{o(v)}$
-time, and the number of perfect matchings in $2^{o(v+e)}$ time, all in
-polynomial space. The encodings are explicit: one variable per vertex
-and a 2-clause per edge (lines 107--112); $q$ variables per vertex with
-exactly-one and no-equal-colour clauses, a $q$-CNF on $qv$ variables
-(lines 112--115); one variable per edge and a linear-size circuit for
-``exactly one selected edge meets each vertex'', reduced to 3-CNF with
-$O(v+e)$ variables, whose gate variables are determined by the edge
-bits so that the count is preserved (lines 116--119).
-\textbf{Supported}: the conclusion is $2^{o(\cdot)}$, which needs only
-$\rhon = o(n)$ \leanref{rho-little-o}, and each encoding is
-counting-preserving into a fixed-width CNF on $O(v)$ or $O(v+e)$
-variables. None of the three encodings is in the library.
+For a graph on $v$ vertices and $e$ edges: the number of independent sets (sets of vertices no two of which are joined by an edge) and, for fixed $q$, of proper $q$-colourings (colourings with $q$ colours such that no edge joins two vertices of the same colour), in time $2^{o(v)}$, and the number of perfect matchings (sets of edges touching every vertex exactly once) in time $2^{o(v+e)}$, all in polynomial space. The encodings are explicit: one variable per
+vertex and a clause of two literals per edge (lines 107--112); $q$
+variables per vertex with ``exactly one colour'' and ``no equal
+colours'' clauses, a $q$-CNF on $qv$ variables (lines 112--115); one
+variable per edge and a linear-size circuit for ``exactly one selected
+edge meets each vertex'', reduced to 3-CNF with $O(v+e)$ variables, with
+the extra variables fixed by the edge bits so that the count is
+preserved (lines 116--119). \textbf{Supported}: the conclusion is
+$2^{o(\cdot)}$, which needs only that $\rhon$ grows more slowly than $n$
+\leanref{rho-little-o}, and each encoding preserves the count into a
+fixed-width CNF on $O(v)$ or $O(v+e)$ variables. None of the three
+encodings is in the library.
 
 \paragraph{Corollary 1.4, a circuit lower bound for $\mathrm{E}^{\mathrm{NP}}$ (p.~3, lines 121--127).}
 ``The fixed-density case of Theorem 1.1 gives a circuit lower bound for
-$\mathrm{E}^{\mathrm{NP}}$'' (line 121): a language $L \in \mathrm{E}^{\mathrm{NP}}$
-and a constant $c > 0$ with $C_L(n) > c\,n\sqrt{\log n}$ for infinitely
-many $n$, where $C_L(n)$ counts non-input fan-in-two gates (lines
-123--127). The proof is Appendix~C.1 (p.~51--52, lines 2925--2967),
-Williams's witness-circuit argument with a local reduction, and it
-invokes the paper-only exponent in so many words: ``Put
+$\mathrm{E}^{\mathrm{NP}}$'' (line 121). A circuit lower bound is a proof that some problem needs large circuits; $\mathrm{E}^{\mathrm{NP}}$ is a class of problems whose definition is not needed here. The claim: there is a problem $L$ in that class and a constant $c > 0$ such that $L$ needs circuits of more than $c\,n\sqrt{\log n}$ gates for infinitely many $n$ (lines 123--127). The proof is Appendix~C.1 (p.~51--52, lines 2925--2967), an argument of Williams's,
+and it invokes the paper-only exponent in so many words: ``Put
 $a(t) = \sqrt{\log_2 t}$. Testing whether the count in the
 constant-density part of Theorem 1.1 is positive decides 3-SAT with $V$
 variables and at most $5V$ clauses in time $V^b\,2^{AV/a(V)}$ for fixed
@@ -223,7 +229,7 @@ which the library does not contain. What the same argument would give
 from the verified exponent is a question about the manuscript's proof,
 which we do not examine (Section~\ref{sec:beyond-not}).
 
-\paragraph{Corollary C.1, $\mathrm{E}^{\mathrm{NP}} \not\subseteq \mathrm{SIZE}(O(n))$ (p.~51, lines 2912--2916).}
+\paragraph{Corollary C.1, the class $\mathrm{E}^{\mathrm{NP}}$ has no linear-size circuits (p.~51, lines 2912--2916).}
 ``Williams proved that if ETH is false, then $\mathrm{E}^{\mathrm{NP}}$
 does not have linear-size circuits [Wil13, Theorem 6.1]. Apply this
 implication to the deterministic subexponential-time 3-SAT algorithm
@@ -234,30 +240,25 @@ The manuscript's own scope sentence applies: the corollary ``does not
 assert a superpolynomial circuit lower bound for NP'' (lines 2923--2924).
 
 \paragraph{Corollary C.2, inverting constant-locality maps (p.~52, lines 2974--2977).}
-For a Boolean map whose every output bit reads at most $d$ input bits,
-the preimage count $|G^{-1}(\vec b)|$ and a preimage in deterministic
-time $(n+m)^{O_d(1)}\,2^{O_d(\rho(n))}$ and polynomial space, for
-$n \ge 20$. Stated with $\rho(n)$. The proof writes one clause per
-forbidden local assignment, a CNF of width at most $d$ on the original
-$n$ variables with at most $2^d m$ clauses whose satisfying assignments
-are exactly the preimages, and applies Theorem~1.1 with
-$k = \max\{2, d\}$ (lines 2979--2988). \textbf{Supported}: the
-encoding is on paper; the counter and the exponent are the verified
-ones. The remark that follows, on Goldreich's candidate one-way
-functions (p.~53, lines 2994--2999), inherits the same status and the
-manuscript's own limit, ``This does not rule out one-wayness against
-polynomial-time algorithms'' (line 2999).
+For a Boolean map whose every output bit reads at most $d$ input bits (a ``constant-locality'' map), the number of inputs mapping to a given output, and one such input, in
+deterministic time $(n+m)^{O_d(1)}\,2^{O_d(\rho(n))}$ and polynomial
+space, for $n \ge 20$. Stated with $\rho(n)$. The proof writes one
+clause per forbidden local assignment, a CNF of width at most $d$ on the
+original $n$ variables with at most $2^d m$ clauses whose satisfying
+assignments are exactly the wanted inputs, and applies Theorem~1.1 with
+$k = \max\{2, d\}$ (lines 2979--2988). \textbf{Supported}: the encoding
+is on paper; the counter and the exponent are the verified ones. The remark that follows, on Goldreich's candidate one-way functions (functions easy to compute and conjectured hard to invert; p.~53, lines 2994--2999), inherits the same status and the manuscript's own
+limit, ``This does not rule out one-wayness against polynomial-time
+algorithms'' (line 2999).
 
 \subsection{Appendix D: the contraction route}
 \label{sec:beyond-appendix-d}
 
-Appendix~D, ``A sharper bound for exact counting'' (p.~53--64, from line
-3001), proves Theorem~1.1 ``by contracting Boolean tensor networks. The
-two running times reflect the number of wires in the networks'' (lines
-3002--3003). Theorem~D.1 (p.~53, lines 3017--3028) is the contraction
-theorem: a bipartite tensor network with at most $Cs$ edges, maximum
-degree at most $\lceil s^{9/10}\rceil$ and entries in
-$(\mathbb{Z}/2^{P_0}\mathbb{Z})[V]/(V^\ell)$ is contracted in
+Appendix~D of the manuscript, ``A sharper bound for exact counting''
+(p.~53--64, from line 3001), proves Theorem~1.1 ``by contracting Boolean tensor networks. The two running times reflect the number of wires in the networks'' (lines 3002--3003). A tensor network is a way of writing one large sum as a product of small tables; the terms in the rest of this paragraph are the manuscript's, and we do not define them further. Theorem~D.1 (p.~53, lines
+3017--3028) is the contraction theorem: a bipartite tensor network with
+at most $Cs$ edges, maximum degree at most $\lceil s^{9/10}\rceil$ and
+entries in $(\mathbb{Z}/2^{P_0}\mathbb{Z})[V]/(V^\ell)$ is contracted in
 $(s+L)^{O(1)}\,2^{O(s/\sqrt{\log s})}$ bit operations and polynomial
 space. The fixed-density proof (p.~54, lines 3045--3064) encodes a
 formula as a network with $O_k(n+m)$ edges and applies Theorem~D.1 with
@@ -284,27 +285,29 @@ problem. The deterministic algorithm also refutes the bounded-error
 randomized versions of ETH [\ldots] and SETH [\ldots], and of Gap-ETH.''
 And \S1.1.2 (p.~5, lines 211--212): ``Our algorithm (Theorem 1.1) solves
 \#3-SAT deterministically in $2^{o(n)}\,\mathrm{poly}(n,m)$ time and
-therefore refutes \#ETH.'' \textbf{Supported}, and by the shortest
-argument in the manuscript: the verified statement is a deterministic
-machine whose answer tape carries $[0 < \mathtt{count}\ F]$ and whose
-count tape carries the count, within $2^{o(n)}$ times a polynomial, for
-each fixed $k \ge 2$; each hypothesis is the negation of that. The
-hypotheses themselves are not defined in the library (the strings
-``ETH'' and ``SETH'' occur in the collection's Lean only in two files of
-a different family, \clonefile{lean/OAI/Combinatorics/ParityLifts/},
-which take an ETH-like proposition as a hypothesis and are not in the
-closure). Section~\ref{sec:consequences} states each hypothesis with its
-quantifiers and says exactly how the verified statement negates it; the
-two sentences the manuscript adds at lines 191--194, on unconditional
-lower bounds for restricted proof systems and on Williams's 2016
-MA-SETH protocol, are context, not claims about the result.
+therefore refutes \#ETH.'' These are the four named hypotheses about how
+hard satisfiability is, their randomised forms, and the counting
+hypothesis; Section~\ref{sec:consequences} states each one in words.
+\textbf{Supported}, and by the shortest argument in the manuscript: the
+verified statement is a deterministic machine whose answer tape says
+whether the count is positive and whose count tape carries the count,
+within a subexponential bound, for each fixed $k \ge 2$; each hypothesis
+is the denial of that. The hypotheses themselves are not defined in the
+library (the strings ``ETH'' and ``SETH'' occur in the collection's Lean
+only in two files of a different family,
+\clonefile{lean/OAI/Combinatorics/ParityLifts/}, which take an ETH-like
+proposition as a hypothesis and are not among the files the proof depends on, its closure, Section~\ref{sec:proof}).
+Section~\ref{sec:consequences} says exactly how the verified statement
+negates each one. The two sentences the manuscript adds at lines
+191--194, on unconditional lower bounds for restricted proof systems and
+on Williams's 2016 MA-SETH protocol, are context, not claims about the
+result.
 
 \paragraph{\S1.1.3 (p.~5, lines 213--243).}
 After a list of lower bounds proved from ETH or SETH (lines 213--225),
 the manuscript writes: ``Our refutation of ETH and SETH removes one basis
 for the hardness claims above. Some of the same lower bounds follow from
-weaker hypotheses that may still hold'' (lines 226--227), names the
-Orthogonal Vectors Conjecture (lines 229--232) and the hypothesis that
+weaker hypotheses that may still hold'' (lines 226--227). It names the Orthogonal Vectors Conjecture, a hypothesis about a different problem (lines 229--232), and the hypothesis that
 unrestricted CNF-SAT admits no $2^{(1-\delta)n}\,\mathrm{poly}(n,m)$
 algorithm, adding: ``Theorem 1.1 gives a running-time guarantee for each
 fixed clause width $k$, while this hypothesis allows the width to grow
@@ -326,12 +329,13 @@ Section~\ref{sec:consequences}.
 
 ``Paper-only'' is defined against the whole library at commit
 \texttt{4eaee875}, not only against the comparator file, so we say what
-else the library proves about this family. \clonefile{SqrtLogSpace/Final.lean}
-(201 lines) states five theorems, each followed by a \texttt{\#print
-axioms} directive (lines 197--201), and the replay's build log carries
-the kernel's answer for all five: the three standard axioms
+else the library proves about this family. The file
+\clonefile{SqrtLogSpace/Final.lean} (201 lines) states five theorems,
+each followed by a \texttt{\#print axioms} command, which asks Lean to
+list the axioms a proof uses (lines 197--201). The replay's build log
+carries the kernel's answer for all five: the three standard axioms
 (\repofile{paper3/replay/logs/run2/axioms_in_build.txt}).
-\begin{itemize}
+\begin{itemize}\sloppy
 \item \texttt{compiled\_exact\_count\_and\_sat} (line 10) and
   \texttt{exact\_count\_and\_sat} (line 74): the comparator statement,
   first over the explicit 80-register, 1,220-tape program and then over
@@ -339,23 +343,24 @@ the kernel's answer for all five: the three standard axioms
 \item \texttt{exact\_count\_eth} (lines 104--147): the same conclusion
   with the polynomial factor written as $(n + |F| + 1)^{d}$ instead of
   $(L+1)^d$, the exponent as $A\cdot\mathtt{rho}\ n$ in base 2, and the
-  proviso $20 \le n$ (line 109); its proof takes $2d$, $2e$ and $4A$ from
-  the comparator theorem's constants (line 132). This is Proposition~6.4's
-  $(n+m)^{O_k(1)}\,2^{O_k(\rho(n))}$ form in the library, so the
-  manuscript's polynomial factor is verified as well as its exponent; it
-  is \textbf{verified}, and it is still the weaker exponent.
+  condition $20 \le n$ (line 109); its proof sets its own constants to twice, twice and four times the comparator theorem's $d$, $e$ and $A$ (line 132). This is
+  Proposition~6.4's $(n+m)^{O_k(1)}\,2^{O_k(\rho(n))}$ form in the
+  library, so the manuscript's polynomial factor is verified as well as
+  its exponent; it is \textbf{verified}, and it is still the weaker
+  exponent.
 \item \texttt{sat\_polynomial\_space} (lines 149--183), for $k \ge 3$:
-  the answer bit satisfies \texttt{answer = true $\leftrightarrow$
-  SAT.Satisfiable F}, the decision form made explicit.
-\item \texttt{original\_sat\_main} (line 184): the proposition
-  \texttt{SqrtLog.Statement.MainTheorem}
-  (\clonefile{SqrtLog/StatementCanonical.lean}, line 37), a decision-only
+  the answer bit is true exactly when the formula is satisfiable
+  (\texttt{answer = true $\leftrightarrow$ SAT.Satisfiable F}), the
+  decision form made explicit.
+\item \texttt{original\_sat\_main} (line 184): the sentence named
+  \path{SqrtLog.Statement.MainTheorem}, a Lean \texttt{Prop}
+  (Section~\ref{sec:lean}; \clonefile{SqrtLog/StatementCanonical.lean},
+  line 37), a decision-only
   target for every width $k \ge 3$ with the same \texttt{runtimeBound},
-  stated there as a \texttt{Prop} ``no inhabitant is supplied here'' and
-  inhabited in \path{Final.lean}.
+  stated there without proof (``no inhabitant is supplied here'') and proved in \path{Final.lean}.
 \end{itemize}
 \begin{sloppypar}
-Beyond these, an identifier search over the family's 3,977 \texttt{.lean}
+Beyond these, a search for names over the family's 3,977 \texttt{.lean}
 files, by the read-only script \repofile{paper3/scripts/beyond_claims.py},
 finds no occurrence of \texttt{SimpleGraph}, \texttt{PerfectMatching},
 \texttt{Coloring}, \texttt{IndependentSet}, \texttt{CircuitSize},
@@ -365,20 +370,23 @@ finds no occurrence of \texttt{SimpleGraph}, \texttt{PerfectMatching},
 identifier: none of the corollaries, none of Appendix~D, and none of
 the hypotheses is formalised. The comparator's JSON,
 \clonefile{lean/ComparatorChallenges/SubexponentialSAT.json}, names one
-theorem, \texttt{exact\_count\_and\_sat}, and no definition. A grep is
-necessary and not sufficient (Section~\ref{sec:proof}); here it is used
-for absence, where a false negative would require a corollary to be
-formalised under none of the words its own statement uses.
+theorem, \texttt{exact\_count\_and\_sat}, and no definition. A text
+search is necessary and not sufficient (Section~\ref{sec:proof}); here
+it is used to show absence, where a miss would require a corollary to
+be formalised under none of the words its own statement uses.
 \end{sloppypar}
 
 \subsection{The table}
 
+Table~\ref{tab:beyond-claims} lists every claim examined above with its
+status and the one-line reason.
 \begin{table}[htbp]
-\caption{Every claim of the manuscript examined in this section: where it
-is stated (page of \texttt{paper.pdf}, lines of the committed extract),
-its status in the sense of Section~\ref{sec:beyond-statuses}, and the
-one-line reason. Generated, with every page and fragment checked against
-the extract and the clone, by \texttt{python3 -I paper3/scripts/beyond\_claims.py}.}
+\caption{Every claim of the manuscript examined in this section: where
+it is stated (page of \texttt{paper.pdf}, lines of the committed
+extract), its status in the sense of Section~\ref{sec:beyond-statuses}
+(verified, supported, or paper-only), and the one-line reason.
+Generated, with every page and fragment checked against the extract and
+the clone, by \texttt{python3 -I paper3/scripts/beyond\_claims.py}.}
 \label{tab:beyond-claims}
 \scriptsize
 \input{tables/beyond_claims}
@@ -402,10 +410,10 @@ the extract and the clone, by \texttt{python3 -I paper3/scripts/beyond\_claims.p
   through Corollary~1.4's argument.} A reader can rerun Appendix~C.1
   with $a(t)$ replaced by the verified rate; we did not, because it is
   a question about a paper-only proof.
-\item \textbf{No constants.} Every $O_k(1)$ and $O_{k,D}(1)$ in this
-  section is as unknown as the comparator's $C, A, S, d, e$; the
-  comparisons of Table~\ref{tab:beyond-exponents} are at constant $1$
-  and say nothing about any machine's running time.
+\item \textbf{No constants.} Every constant in this section is as
+  unknown as the comparator's $C, A, S, d, e$; the comparisons of
+  Table~\ref{tab:beyond-exponents} are at constant $1$ and say nothing
+  about any machine's running time.
 \item \textbf{Nothing beyond the collection.} Whether the sharper bounds
   have since been formalised elsewhere, or the manuscript revised, is
   not examined; what is read is the commit and the dated manuscript.

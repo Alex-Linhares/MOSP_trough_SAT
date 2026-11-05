@@ -1,0 +1,225 @@
+# session it09 started 2026-11-05 06:30:40
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the loop files and the current state of `paper3/latex`, then rewrite sections 2–8 sentence by sentence to the plain-English rule.
+  > $ date && ls -la paper3/latex/ && wc -l paper3/latex/sec*.tex paper3/latex/main.tex && cat Ralph_Loops/loop0015/iterations.md | head -80
+  > $ sed -n 80,400p Ralph_Loops/loop0015/iterations.md | grep -n "08x\|^- \[" | head -30; echo ----; cat paper3/latex/main.tex; echo ----; cat paper3/latex/Makefile
+  > $ sed -n 206,224p Ralph_Loops/loop0015/iterations.md; echo =====; head -60 paper3/ETH_AMBIGUOUS.MD; echo ....; grep -n "^## \|^### " paper3/ETH_AMBIGUOUS.MD | tai
+  > $ sed -n 188,216p paper3/ETH_AMBIGUOUS.MD; echo =====SEC2; cat -n paper3/latex/sec2_statement.tex
+  > $ cat -n paper3/latex/sec3_beyond.tex
+  > $ cat -n paper3/latex/sec4_proof.tex
+
+I'm still reading the drafted sections before rewriting them. Sections 5 through 9 are independent reads, so I'll fetch them all at once along with the tables and figure files.
+  > $ cat -n paper3/latex/sec5_replay.tex
+  > $ cat -n paper3/latex/sec6_consequences.tex
+  > $ cat -n paper3/latex/sec7_practitioner.tex
+  > $ cat -n paper3/latex/sec8_lean.tex
+  > $ cat -n paper3/latex/sec9_related.tex | head -120
+  > $ cat paper3/latex/secA_appendix_lean.tex; echo ====STUBS; cat paper3/latex/sec1_intro.tex paper3/latex/sec10_conclusion.tex paper3/latex/sec11_data.tex paper3/la
+  > $ for f in runtime_scale beyond_exponents beyond_claims hypotheses practitioner proof_inspection related_sources; do echo "== $f"; head -8 paper3/latex/tables/$f.
+  > Write /home/al/dev/MOSP/paper3/latex/secB_appendix_technical.tex
+
+Appendix B is in place. Now section 2, the statement read exactly, rewritten in plain English with the line-by-line detail moved to Appendix B.
+  > Write /home/al/dev/MOSP/paper3/latex/sec2_statement.tex
+
+Section 2 is done. Next, sections 3, 4 and 5; each is an independent rewrite, so I'll write them one after another without waiting on builds in between.
+  > Write /home/al/dev/MOSP/paper3/latex/sec3_beyond.tex
+
+Sections 2 and 3 are written. Now sections 4 and 5 together; they are independent of each other.
+  > Write /home/al/dev/MOSP/paper3/latex/sec4_proof.tex
+
+Sections 5 through 8 are all independent of one another, so I'll write all four now.
+  > Write /home/al/dev/MOSP/paper3/latex/sec5_replay.tex
+  > Write /home/al/dev/MOSP/paper3/latex/sec6_consequences.tex
+  > Write /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+  > Write /home/al/dev/MOSP/paper3/latex/sec8_lean.tex
+
+All seven sections are written. Now I'll wire Appendix B into `main.tex` and build the paper in the same step.
+  > $ cd /home/al/dev/MOSP/paper3/latex && sed -i 's|^\\input{secA_appendix_lean}$|\\input{secA_appendix_lean}\n\\input{secB_appendix_technical}|' main.tex && grep -n
+
+The build passes with 55 pages (48 before). I'll locate the eight overfull lines in the log to see which belong to my rewritten files and which were there before.
+  > $ python3 - <<'EOF'
+import re
+log=open('main.log',errors='replace').read()
+# track open files by parentheses crudely: find last "(./sec" before each Overfull
+for 
+  > $ cd /home/al/dev/MOSP && rm -rf /tmp/p3base && mkdir -p /tmp/p3base && git archive HEAD paper3/latex | tar -x -C /tmp/p3base && cd /tmp/p3base/paper3/latex && la
+  > $ cd /home/al/dev/MOSP/paper3/latex && python3 - <<'EOF'
+import re,io
+def sub(path, old, new, count=1):
+    s=open(path).read()
+    assert old in s, (path, old[:6
+  > Agent {"description": "Blind lay reader of paper 3", "prompt": "You are a blind reader for a paper that must be readable by so
+  > $ pdftotext -layout /home/al/dev/MOSP/paper3/latex/main.pdf /tmp/p3_reader.txt && grep -n "^ *[0-9] " /tmp/p3_reader.txt | head -40 && wc -l /tmp/p3_reader.txt
+  > $ sed -n 31,372p /tmp/p3_reader.txt
+  > $ sed -n 373,760p /tmp/p3_reader.txt
+  > $ sed -n 760,1190p /tmp/p3_reader.txt
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import re,subprocess
+files=['sec2_statement','sec3_beyond','sec4_proof','sec5_replay','sec6_consequences','sec7_practi
+  > $ sed -n 775,1000p /tmp/p3_reader.txt
+  > $ sed -n 1000,1190p /tmp/p3_reader.txt
+  > $ sed -n 1190,1520p /tmp/p3_reader.txt
+  > $ sed -n 1520,1875p /tmp/p3_reader.txt
+  > $ cd /home/al/dev/MOSP/paper3/latex && python3 - <<'EOF'
+def sub(path, old, new):
+    s=open(path).read(); assert old in s,(path,old[:50]); open(path,'w').write(s
+
+The edit script stopped at the second replacement (a line-break mismatch), so only the first restore applied. I'll redo the remaining restores with whitespace-tolerant matching and rebuild.
+  > $ cd /home/al/dev/MOSP/paper3/latex && python3 - <<'EOF'
+import re
+def sub(path, old_re, new):
+    s=open(path).read(); n=len(re.findall(old_re,s,flags=re.S))
+   
+  > $ grep -n "line~89" sec4_proof.tex && python3 - <<'EOF'
+import re
+s=open('sec4_proof.tex').read()
+new,n=re.subn(r"\(\\clonefile\{lean/lakefile\.lean\}, line~89\)\
+  > $ cd /home/al/dev/MOSP && nice -n 19 python3 Ralph_Loops/loop0015/gate.py > /tmp/gate_it09.log 2>&1; echo "gate exit $?" >> /tmp/gate_it09.log
+
+**Blind-reader report, Sections 2–8 of `paper3/latex/main.pdf`** (read from `/tmp/p3_reader.txt`; no files edited).
+
+**Stalls** (section · first six words · why)
+
+Section 2
+- 2.1 · "a solution, which proves it, and" · "three standard axioms" used before "axiom" is explained in words (only glossed in 8).
+- 2.2 · "In symbols, with L the length" · `O(k n m)` is the first big-O in the paper, never glossed.
+- 2.2 · "The machine is a Turing machine" · "Turing machine", "head", "cell" assumed; "configuration" then used in *Runs* without definition.
+- 2.3 · "The proof obtains them from other" · "lemma" never defined.
+- 2.3 · "The machine is explicit in one" · "compiled", "one-bit registers" unexplained.
+- 2.5 · "Trying all 2^n assignments and checking" · "polynomial" never glossed anywhere in 2–8.
+- 2.5 · "One detail of bookkeeping: inside the" · "a constant factor that A absorbs" is jargon.
+- 2.6 · "In the standard vocabulary: a deterministic" · `2^{o(n)}` used before `o(·)` is explained (first explained in 3.2 and 8.3).
+- Fig 2.1 caption · "the two curves beneath it are" · refers to "Theorem 1.1" before Section 3 introduces it.
+
+Section 3
+- 3 (quote) · "For fixed k ≥ 2, Lean" · `(L+1)^{O_k(1)}` and `2^{O_k(...)}` in a block quote before the O_k gloss of 2.3 is recalled.
+- 3.1 · "The brief for this section had" · "the brief" is an internal document the reader has never seen.
+- 3.2 · "the manuscript selects λn = ⌈log2 n⌉" · ceiling/floor symbols never glossed; what these three parameters are *for* ("sparsification") is never said.
+- 3.2 · "The verified exponent is of that" · "(ln ln n)² is (ln n)^{o(1)}" is one compressed step too many for a first reading.
+- 3.3 · "Its proof samples O(n/ε²) clauses, builds" · "circuit", "threshold circuit", "self-reduction", "binary search" all undefined.
+- 3.3 · "The number of independent sets and" · "independent set", "proper q-colouring", "perfect matching" undefined.
+- 3.3 · "The fixed-density case of Theorem 1.1" · "circuit lower bound", "class E^NP", "language L", "witness-circuit argument" — four undefined ideas in one paragraph.
+- 3.3 · "Corollary C.1, E^NP ⊄ SIZE(O(n))" · heading is pure symbols, never read out in words.
+- 3.3 · "For a Boolean map whose every" · "constant-locality", "one-way functions" undefined.
+- 3.4 · "Theorem D.1 (p. 53, lines 3017–3028)" · "bipartite tensor network", "(Z/2^{P0}Z)[V]/(V^ℓ)", "Hermite recovery", "packets" — nothing glossed.
+- 3.5 · "The hypotheses themselves are not defined" · "closure" used before 4.2 defines it; "Orthogonal Vectors Conjecture" never defined anywhere.
+- 3.6 · "original_sat_main (line 184): the proposition" · "Prop", "no inhabitant is supplied" — jargon (Prop is only glossed in 8).
+- 3.6 · "exact_count_eth (lines 104–147): the same" · "takes 2d, 2e and 4A from the comparator theorem's constants" — unclear what taking means.
+- 3.7 · "The table" · heading with no text under it; reads as an accident.
+
+Section 4
+- 4 · "What we did find is that" · "type-checks" undefined.
+- 4.3 · "The 148 instances and 40 local" · "typeclass instances", "cannot be 'inconsistent' without an axiom" — unclear to a non-specialist why this reassures.
+- 4.3 · "The only options set in the" · "pre-check on local notation" jargon.
+- 4.5 · "The compiler (SqrtLogSpace/GuardedCompiler.lean, line 131) builds" · "by a classical choice", "non-constructive" undefined.
+- 4.5 · "The cutoff itself is max 20" · "obtained from an 'eventually' statement" — unclear.
+- 4.5 · "The two branches are folded together" · "C + 28700, A + 1, …" — too compressed; reader cannot see where the sums come from.
+- 4.5 · "the only claim made about it" · "it elaborates" is Lean jargon, never glossed.
+- 4.6 · "The manifest lists 42 packages; Mathlib" · "manifest", "compatibility patches", "build hooks" — software vocabulary assumed.
+- 4.8 · "After the replay, then, the proof's" · "the environment" (Lean sense) unexplained.
+
+Section 5
+- 5.1 · "processes, inter-process communication and host names" · "namespaces" jargon.
+
+Section 6
+- 6.1 · "So the verified form is the" · "uniform denial" jargon.
+- 6.1 · "Every step of such a machine" · "standard models in which the hypotheses are stated" — which models?
+- 6.2 · "In the vocabulary of Impagliazzo and" · "s_k is the best possible rate … ETH is s_3 > 0" — compressed.
+- 6.2 · "It is also standard that SETH" · "Sparsification Lemma" undefined.
+- 6.2 · "The Nondeterministic Strong Exponential Time Hypothesis" · "k-DNF is a tautology" undefined.
+- 6.2 · "The first says that a lower" · "regular resolution", "Merlin–Arthur", "protocol" unexplained.
+- 6.3 · "For shape (S): an algorithm for" · "exponent below k log₂ c by a constant factor" — stalls.
+- 6.3 · "The manuscript's one positive transfer is" · "Set Splitting" never described as a problem.
+
+Section 7
+- 7.2 · "The ratio 4.26 clauses per variable" · "the cavity method" undefined.
+- 7.2 · "ApproxMC 4.4.0 … with the projection set" · "projection set", "Arjun preprocessing" jargon.
+
+Section 8
+- 8.1 · "Line 220 closes the last namespace." · "namespace" jargon.
+- 8.3 · "The time bound is a bound" · "located step" undefined before use.
+- 8.4 · "The result: nineteen lines on exactly" · "inductive definition", "countWord on two of the three" — unclear why that is fine.
+
+**Overclaims**: none found. Every section's "What this does not claim" keeps to the guarantee. Two borderline phrasings worth a glance: 7 intro, "the verified guarantee is not the one that matters on any machine" (reads for a moment as a statement about machines, then is qualified); 7.4, "a guarantee of 2^{257ρ(n)} steps" (hedged in the same sentence as "a guarantee and not a measurement"). Neither says the algorithm is slow or the proof is wrong.
+
+**Clearest writing, to imitate**
+1. 2.1, "A few words first, each in one sentence" — the glossary paragraph: Lean, kernel, formula, clause, satisfying assignment, comparator, each in one plain sentence before use.
+2. 2.4–2.5, "Two facts are true at once, and the title is about the second" plus the four numbered points of 2.5 — the limit fact and the practical-size fact set side by side, then the claim split into exactly four checkable sentences.
+3. 6.3, "The theorem stands; its premise is false; it derives nothing" / "A false 'if' does not make the 'then' false" — the logic of a lost premise in two short paragraphs with no symbols. (Runner-up: 8, "A definition can be badly chosen, but it cannot be false.")
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import re,subprocess
+files=['sec2_statement','sec3_beyond','sec4_proof','sec5_replay','sec6_consequences','sec7_practi
+  > $ cd /home/al/dev/MOSP/paper3/latex && python3 - <<'EOF'
+import re
+edits = [
+# ---- sec2
+('sec2_statement.tex', "the same theorem and that the proof uses only thr
+  > $ python3 - <<'EOF'
+import re
+log=open('main.log',errors='replace').read()
+for m in re.finditer(r'Overfull \\hbox[^\n]*', log):
+    pos=m.start(); before=log[:pos
+  > $ sed -i 's|\\texttt{SqrtLog.Statement.MainTheorem}|\\path{SqrtLog.Statement.MainTheorem}|' sec3_beyond.tex && grep -c "path{SqrtLog.Statement.MainTheorem}" sec3_
+  > $ python3 - <<'EOF'
+import re
+log=open('main.log',errors='replace').read()
+for m in re.finditer(r'Overfull \\hbox[^\n]*', log):
+    pos=m.start(); before=log[:pos
+  > $ python3 - <<'EOF'
+s=open('sec3_beyond.tex').read()
+old="\\item \\texttt{original\\_sat\\_main} (line 184): the sentence (a Lean \\texttt{Prop}, Section~\\ref{se
+  > $ ls -la --time-style=+%H:%M:%S main.pdf sec3_beyond.tex && python3 - <<'EOF'
+import re
+log=open('main.log',errors='replace').read()
+for m in re.finditer(r'Overfu
+
+I'm clearing the last overfull line in Section 3 (an 11-point overhang on the `original_sat_main` item) and checking on the gate run, which is independent. Both now.
+  > $ python3 - <<'EOF'
+s=open('sec3_beyond.tex').read()
+old="\\begin{itemize}\n\\item \\texttt{compiled\\_exact\\_count\\_and\\_sat} (line 10)"
+new="\\begin{itemize}
+  > $ tail -5 /tmp/gate_it09.log 2>/dev/null; echo "---"; date; cd /home/al/dev/MOSP && git status --short | grep -v "Ralph_Loops/loop0015/\(loop.log\|nohup.out\|stat
+
+The gate is still in its Lean/pytest stage (no output yet). Three independent things now: the PROGRESS section, the iterations mark, and a README note for the new appendix.
+  > $ grep -n "secA\|Appendix A\|sec9_related\|sec8_lean" paper3/README.md | head -8
+  > $ grep -n "^## \|^### \|latex/\|plain English\|Section 9" paper3/README.md | head -40
+  > $ python3 - <<'EOF'
+p='paper3/README.md'; s=open(p).read()
+old="| `latex/` | the paper: `main.tex` (title verbatim, abstract, section inputs), `sec*.tex`, `refs.b
+  > $ cd /home/al/dev/MOSP/paper3/latex && grep -n "the brief\|placeholder" sec2_statement.tex sec3_beyond.tex sec4_proof.tex sec5_replay.tex sec6_consequences.tex se
+  > $ sed -i "s/In the brief's two-way split, \`\`supported'' is/In that two-way split, \`\`supported'' is/" sec3_beyond.tex && grep -c "In that two-way split" sec3_b
+  > Read /tmp/p3_page-02.png
+
+Page 2 renders cleanly. Now the Appendix B page with the quantifier display, and in parallel a check of the gate's progress.
+  > Read /tmp/p3_page-49.png
+  > $ tail -8 /tmp/gate_it09.log; echo "---"; date; ps -eo pid,etime,comm | grep -E "lake|pytest|python3" | head -5
+
+The only thing left is the gate result. I'll wait for it in the foreground with a bounded poll, as the loop rules require.
+  > $ timeout 560 bash -c 'until grep -q "gate exit" /tmp/gate_it09.log 2>/dev/null; do sleep 20; done'; echo "poll ended $(date +%H:%M:%S)"; tail -12 /tmp/gate_it09.
+
+The gate passed. I'll record that in the PROGRESS section and confirm the final working tree.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='Ralph_Loops/loop0015/PROGRESS.md'; s=open(p).read()
+old="  the Section 2–7 scripts check.\n"
+new="""  the Section 2
+
+Item 08x is done and marked `[x]`; four items remain open (09–12), so no `LOOP_COMPLETE` line. Nothing is committed, as instructed.
+
+**What was done.** Sections 2 through 8 of `paper3/latex/` were rewritten sentence by sentence to the owner's plain-English rule. Every symbol is now defined in words on first use and paraphrased where it carries the argument, every term of art gets a one-clause gloss in the section where it first appears, and every figure and table caption explains its columns and curves for a layperson. The dense passages that could not be made plain without losing precision were moved unchanged into a new Appendix B, `secB_appendix_technical.tex`, which the body cites by subsection.
+
+**Nothing lost.** A script compared each old section with its rewrite and found every citation key, cross-reference, label, file path and number preserved in the new text or in Appendix B. The few literal identifiers the rewording dropped were restored by hand. No scope words were added; "verified", "supported", "paper-only" and "what this does not claim" stand on every claim.
+
+**Checks.**
+- The build passes with no undefined references. Pages went from 48 to 55.
+- Overfull lines went from 8 in the baseline to 2, both pre-existing in Appendix A's table of Lean names, which this item did not rewrite.
+- Mean words per sentence fell in every section, most in Section 2 (30 to 18); sentences over 35 words fell from 25–42% to 4–26%.
+- One blind-reader subagent read the built PDF as a layperson and found no overclaim. It listed about fifty places where a term was used before its gloss; all were addressed with 56 small edits in the named places.
+- The gate passed at 06:57: Lean build clean, all tests passed, both papers build, title verbatim, `solutions/` untouched.
+
+**Records.** `ETH_AMBIGUOUS.MD` has entries 08xa–08xd (where plainness and precision pulled apart and the new appendix; Section 9 and Appendix A left as they were; per-section glosses pending item 09's introduction; the `A ≥ 257` and `A ≥ 258` readings reconciled in Section 2). `PROGRESS.md` has the Iteration 9 section with the before/after page counts and the reader's findings, and `iterations.md` marks the item done. `paper3/README.md`'s layout row notes the rewrite and Appendix B.
+
+**Next for the loop.** Item 09 writes the abstract, introduction and conclusion; its first-use glosses may make some per-section ones redundant. Item 10 should re-read Section 9 and the appendices for readability and may fix the two Appendix A overfull lines.
+
+# result: success in 1641s, 51 turns, cost $17.49

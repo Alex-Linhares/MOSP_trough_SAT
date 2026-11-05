@@ -38,3 +38,8 @@
 [2026-11-05 05:58:09] claude session it08 (cap 4.00 h) -> session_it08.log
 [2026-11-05 06:19:26] session it08: ok (exit 0, 60 tool calls)
 [2026-11-05 06:30:40] tests passed: GATE PASS
+[2026-11-05 06:30:40] committed 521b617e0: 08 Related work and context.
+[2026-11-05 06:30:40] === iteration 9: 08x The plain-English rewrite of every section drafted so far.
+[2026-11-05 06:30:40] claude session it09 (cap 4.00 h) -> session_it09.log
+[2026-11-05 06:58:02] session it09: ok (exit 0, 58 tool calls)
+[2026-11-05 07:09:17] tests passed: GATE PASS
