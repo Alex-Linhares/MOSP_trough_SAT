@@ -1597,21 +1597,26 @@ core-hours; data under `reports/scratch/checkpoint/`.
 
 **Paper 3, title fixed by the owner (2026-11-05, no deviations):**
 *"Exponential time hypothesis is false... but the verified algorithm is slower than trying all 2^n assignments at every practical size."*
-— a reading of OpenAI's family 378 (`github.com/openai/math`, 2026-10-25;
-cloned read-only under `~/dev/untrusted/`, never built or run from inside
-except in the paper's isolated replay): what the Lean-verified statement
-says exactly (a finite multitape machine, an honest trace, the exponent
-`n (log log n)² / √log n` only, whose factor exceeds 1 for every
-`n < e^{5504}`, so the verified *guarantee* is weaker than `2^n · poly` at
-every practical size; the paper's sharper exponents are unverified), an
+— **about the limitation of the ETH refutation and nothing else** (owner,
+2026-11-05: no graphs, no pathwidth, no MOSP in it). The object is OpenAI's
+family 378 (`github.com/openai/math`, 2026-10-25; cloned read-only under
+`~/dev/untrusted/`, never built or run from inside except in the paper's
+sandboxed replay): what the Lean-verified statement says exactly (a finite
+multitape machine, an honest trace, constants fixed before the formula, the
+exponent `n (log log n)² / √log n` only, whose factor exceeds 1 for every
+`50 < n < e^{5504}`, so the verified *guarantee* is weaker than `2^n · poly`
+at every practical size, while the machine's actual running time is
+unknown because the constants are never computed; the manuscript's sharper
+exponents and the quantitative circuit bound are unverified), an
 independent inspection and replay of the proof (`reports/scratch/eth_audit/`:
 3,091 modules, no axiom / sorry / native_decide / implemented_by / unsafe /
 partial, 33 statement definitions identical, no recorded axiom audit, no
-CI, no second-kernel replay), what follows for fine-grained complexity and
-for the width parameters (loop0014, `reports/subexp_pathwidth.md`), and what
-it changes for a practitioner (nothing on any machine). Directory `paper3/`;
-open questions the loop could not settle go to `paper3/ETH_AMBIGUOUS.MD`
-for the owner. Ralph loop0015 writes it (`reports/paper3_plan.md`).
+CI, no second-kernel replay), which hypotheses the verified statement
+refutes and what it does not refute, and what it changes for a
+practitioner (nothing on any machine). Directory `paper3/`; open questions
+the loop could not settle go to `paper3/ETH_AMBIGUOUS.MD` for the owner.
+Ralph loop0015 writes it (`reports/paper3_plan.md`); the audit found no
+flaw, and the paper reads as a careful reading by people who checked.
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
