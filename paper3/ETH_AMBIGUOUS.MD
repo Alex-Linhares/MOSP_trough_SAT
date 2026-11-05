@@ -272,3 +272,61 @@ an answer).
   cited lines and in our `Frame.lean` (`SubexpCount`, Appendix A).
 - **Owner may change**: a `listings` block with a Unicode-capable engine
   (`lualatex`/`xelatex`) if the verbatim Lean is wanted on the page.
+
+### 03a — a third status, "supported", between verified and paper-only (item 03, 2026-11-05)
+- **Ambiguous**: the brief tags every claim "verified (a consequence of
+  the comparator statement)" or "paper-only (not in the Lean library)".
+  Corollary 1.3 (a counting-preserving encoding into the verified
+  counter, on paper) and Corollary 1.4 (a bound whose proof names the
+  fixed-density exponent) are both "not in the library", and calling
+  Corollary 1.3 "verified" would overstate what the kernel checked.
+- **Chosen**: three statuses, defined in §3.1 — *verified* (the comparator
+  statement, a conjunct, or a replayed theorem of `Final.lean`),
+  *supported* (follows from the verified statement by an argument on paper
+  only, inheriting `ρ(n)`), *paper-only* (rests on a bound the library
+  lacks) — with the sentence that "supported" is a sub-case of the brief's
+  "paper-only". Tagged supported: the self-reduction, Corollaries 1.2,
+  1.3, C.1, C.2, the §1.1.1/§1.1.2 refutations, Set Splitting. Tagged
+  paper-only: the two sharper exponents, "both bounds by tensor
+  contraction", Corollary 1.4, Appendix D, the §1.1.3 remarks.
+- **Owner may change**: collapse to the brief's two tags (then the
+  "supported" rows read "paper-only, follows from the verified statement
+  on paper"); or rename "supported".
+
+### 03b — the manuscript has 67 pages, not 64 (item 03, 2026-11-05)
+- **Ambiguous**: `TASK.md` (line 217) and `reports/paper3_plan.md` (line
+  106) say "64 pages"; the table of contents puts References on p. 64 and
+  the references run to p. 67. `pdfinfo` says 67 pages; the extract has 67
+  form feeds, one per page, and the page convention (form feeds before the
+  line + 1) matches the printed page headers everywhere it was checked
+  (pp. 2–5, 43–45, 51–57, 64).
+- **Chosen**: Section 3 says "67 pages"; `TASK.md` and the plan are left
+  as they are (item 11 updates the plan).
+- **Owner may change**: nothing, unless a different count is meant (64
+  pages before the references).
+
+### 03c — what the verified exponent would give through Corollary 1.4's argument (item 03, 2026-11-05)
+- **Ambiguous**: Corollary 1.4's proof (p. 52, lines 2949–2967) chooses its
+  threshold against the fixed-density rate `a(t) = √(log₂ t)`. Re-running
+  the same argument with the verified rate would give some weaker
+  quantitative bound. Stating what it gives is a judgement about a
+  paper-only proof, which the brief excludes; leaving it out leaves a
+  natural question unanswered.
+- **Chosen**: not worked out; §3.7 says so in one bullet ("a reader can
+  rerun Appendix C.1 with `a(t)` replaced by the verified rate; we did
+  not").
+- **Owner may change**: ask for the one-paragraph derivation (with the
+  caveat that the argument is the manuscript's and unchecked here), or
+  leave it out.
+
+### 03d — Corollary 1.2 is stated with the verified exponent but tagged "supported" (item 03, 2026-11-05)
+- **Ambiguous**: Corollary 1.2 (p. 2, lines 77–81) carries `2^{O_{k,ε}(ρ(n))}`,
+  the verified exponent, so "verified exponent" would also be a fair tag;
+  its proof is a randomised reduction (clause sampling, a threshold
+  circuit to 3-CNF) on paper, not in the library.
+- **Chosen**: "supported", with the text saying that the exponent matches
+  the verified one and that the randomness is in the reduction, not the
+  counter. Corollary C.2 (also stated with `ρ(n)`) is tagged the same way.
+- **Owner may change**: a fourth tag ("verified exponent, paper
+  reduction") for these two rows.
+

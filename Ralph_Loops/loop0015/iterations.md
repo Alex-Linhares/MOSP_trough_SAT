@@ -137,7 +137,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   figures only if a check finds a number wrong (then fix the script, not
   the picture).
 
-- [ ] **03 What the manuscript claims beyond the verified statement.**
+- [x] **03 What the manuscript claims beyond the verified statement.**
   From `paper.txt` (page = form feeds before the line + 1; cite page and
   line): Theorem 1.1's two sharper exponents (`n log log n / √log n`,
   and `n / √log n` for `m ≤ Dn`), Corollary 1.2 (its randomised

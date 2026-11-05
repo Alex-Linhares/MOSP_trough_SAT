@@ -96,6 +96,24 @@ clone.)*
   reports/scratch/eth_audit/check_encoding.py`. Every comparator line
   number is at clone commit `4eaee875`; every manuscript quote gives the
   page of `paper.pdf` and the line of `reports/scratch/eth_audit/paper.txt`.
+- **Section 3, what the manuscript claims beyond the statement** (item 03):
+  `python3 -I paper3/scripts/beyond_claims.py` checks every page, line and
+  quoted fragment of the section against the extract (page = form feeds
+  before the line + 1; `paper.pdf` has 67 pages) and every Lean location
+  against the read-only clone at `4eaee875` (`docs/378.md` lines 9 and 11,
+  the five theorems of `SqrtLogSpace/Final.lean` at lines 10, 74, 104, 149,
+  184 with their `#print axioms` at 197–201, the base-2 `rho` of
+  `Asymptotics.lean` 10–11, `runtimeScale_le_four_rho` at 190–191, the
+  sparsification parameters at 14–20, `MainTheorem` of
+  `SqrtLog/StatementCanonical.lean` line 37), searches the family's 3,977
+  `.lean` files for corollary and tensor-network identifiers (none), lists
+  the files outside the family that mention ETH/SETH (two `ParityLifts`
+  files, not in the closure), prints the three exponents of Theorem 1.1
+  divided by `n` at constant 1 (the general one peaks at `2/e = 0.736` at
+  `n = e^{e²} ≈ 1,618`; the fixed-density one is `0.578` at `n = 20` and
+  falls), and writes `latex/tables/beyond_claims.tex` (Table 3.2) and
+  `latex/tables/beyond_exponents.tex` (Table 3.1). Exit status non-zero if
+  anything has moved; `--check` verifies without writing.
 
 ## The replay
 

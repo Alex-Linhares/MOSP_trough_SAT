@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 2/12 SOLVED
+Current: 3/12 SOLVED
 
 ## Setup — 2026-11-05
 
@@ -174,3 +174,82 @@ Current: 2/12 SOLVED
 - Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 02:38
   (exit 0; pytest 1,978 + 123 passed, both papers build, title verbatim,
   `solutions/` untouched).
+
+---
+
+## Iteration 3 — 2026-11-05 02:45 (item 03, what the manuscript claims beyond the verified statement) `[x]`
+
+### Completed
+- **Read the manuscript's claims against the extract and the clone**,
+  every one with page and line (page = form feeds before the line + 1;
+  `paper.pdf` has 67 pages, not the 64 `TASK.md` says — 03b): Theorem 1.1's
+  two bounds (p. 2, 56–62), the "weaker exponent" sentence (63–67),
+  Proposition 6.4 (p. 43, 2474–2476) and its parameters (2480–2486), the
+  self-reduction (68–71), Corollary 1.2 (77–94), the transfer caveat
+  (95–99), Corollary 1.3 (100–120), Corollary 1.4 (p. 3, 123–127; proof
+  pp. 51–52, 2925–2967, which names "the constant-density part of
+  Theorem 1.1" at 2949), §1.1.1 (p. 4, 187–194), §1.1.2 (p. 5, 211–212),
+  §1.1.3 (213–243), Corollaries C.1 (p. 51, 2912–2916) and C.2 (p. 52,
+  2974–2977), Appendix D (p. 53, 3001–3028; proofs p. 54, 3045–3064 and
+  p. 57, 3222–3250; the base-2 convention 3251–3252).
+- **Tagged each** verified / supported / paper-only (the middle tag is
+  new, 03a). Verified: the comparator statement, the space bound, the
+  weaker exponent, Prop. 6.4's parameters (`Asymptotics.lean` 14–20
+  define `sparsifyLambda`, `sparsifyNu`, `sparsifySchedule` exactly as
+  the proof selects λ_n, ν_n, s), and the abstract's `2^{n/(log n)^{1/2+o(1)}}`
+  as a form. Supported: self-reduction, Cor. 1.2 (stated with ρ(n) itself,
+  03d), Cor. 1.3, Cor. C.1, Cor. C.2, the §1.1.1/§1.1.2 refutations, Set
+  Splitting. Paper-only: both sharper exponents (`docs/378.md` line 11),
+  Cor. 1.4, Appendix D, the §1.1.3 remarks.
+- **What the library carries beyond the comparator theorem**, from
+  `Final.lean` (201 lines, five theorems, `#print axioms` at 197–201, all
+  five with the three axioms in the replay's build log): `exact_count_eth`
+  (104–147) is Prop. 6.4's `(n+|F|+1)^d` form with `A·rho n` in base 2
+  and `20 ≤ n` (its proof takes `2d`, `2e`, `4A` from the comparator's
+  constants); `sat_polynomial_space` (149–183, `answer = true ↔
+  Satisfiable`); `original_sat_main` (184) inhabits
+  `SqrtLog.Statement.MainTheorem` (`StatementCanonical.lean` 37). An
+  identifier search over the family's 3,977 files finds no corollary,
+  hypothesis or tensor-network identifier; the strings ETH/SETH occur
+  outside the family only in two `ParityLifts` files of another family,
+  not in the closure.
+- **The three exponents in numbers**: at constant 1 the general paper-only
+  ratio `ln ln n/√ln n` peaks at `2/e = 0.736` (`n = e^{e²} ≈ 1,618`) and
+  the fixed-density `1/√ln n` falls from 0.578 at n = 20; both are below
+  1 at every size while the verified ratio is above 1 from 50 (Table 3.1).
+- `paper3/scripts/beyond_claims.py` (python3 -I; reads the extract and
+  the clone with `open()` only; checks 19 manuscript locations with
+  fragments and pages, 16 Lean locations with fragments, the identifier
+  absence, the ETH-string files against `closure_modules.json`, the
+  exponent facts; writes `tables/beyond_claims.tex` and
+  `tables/beyond_exponents.tex`; `ALL CHECKS PASSED`).
+- `paper3/latex/sec3_beyond.tex` drafted (8 subsections, 7 pages: the
+  scope note quoted in full, the three statuses, the sharper exponents,
+  the corollaries one by one, Appendix D, the hypotheses and fine-grained
+  remarks, what the library carries beyond the statement, the table,
+  "what this does not claim"). `make -C paper3/latex check` passes, 20
+  pages, no overfull box left in this section.
+- `paper3/README.md` Section 3 regenerate paragraph; `ETH_AMBIGUOUS.MD`
+  entries 03a–03d.
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing of
+  the clone executed (read with `sed -n`, `grep`, `cat -n`, `pdfinfo` and
+  the script's `open()` only).
+
+### Blockers
+- None.
+
+### Next
+- Item 04 (the proof inspection joined with the replay). Two line
+  citations for it to carry: `runtimeScale_le_four_rho` is at
+  `Asymptotics.lean` **190–191** (Section 2's text says 189–190; a
+  one-number fix, left for item 04 or the refuter); the five `Final.lean`
+  theorems and their `#print axioms` lines are listed above.
+- Item 05 inherits from Section 3 the quotes it needs (§1.1.1 187–191,
+  §1.1.3 226–236, the transfer caveat 95–99) with their pages.
+- Item 11: `reports/paper3_plan.md` line 106 says "64 pages"; it is 67
+  (03b).
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 03:15
+  (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed in
+  4:38, pathwidth_solver 123 passed in 6:34; paper 1 builds at 78 pages,
+  paper 3 at 20; title verbatim; `solutions/` untouched).
+
