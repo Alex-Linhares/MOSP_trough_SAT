@@ -341,7 +341,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   (`python3 Ralph_Loops/loop0015/gate.py`) run and its tail recorded in
   PROGRESS.md.
 
-- [ ] **12 Reserve.** The nanoda replay if item 01 could not do it (the
+- [x] **12 Reserve.** The nanoda replay if item 01 could not do it (the
   sandbox left in place; `lean4export` at the matching toolchain on the
   solution module; nanoda built inside the sandbox; the result into
   `paper3/replay/` and `sec5_replay.tex` updated), or whichever of 02–10

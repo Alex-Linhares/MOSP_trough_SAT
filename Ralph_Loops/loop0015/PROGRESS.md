@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 12/13 SOLVED (item 08x added to the list on 2026-11-05; item 12, the reserve, is the only one open)
+Current: 13/13 SOLVED (item 08x added to the list on 2026-11-05; item 12, the reserve, closed on 2026-11-05)
 
 ## Setup — 2026-11-05
 
@@ -1123,3 +1123,93 @@ Current: 12/13 SOLVED (item 08x added to the list on 2026-11-05; item 12, the re
   `123 passed in 392.02s (0:06:32)` · paper 1 `no undefined references;
   Pages: 78` · paper 3 `no undefined references; Pages: 64` ·
   `GATE PASS` · `exit 0`; title verbatim; `solutions/` untouched).
+
+
+---
+
+## Iteration 13 — 2026-11-05 09:10 (item 12, the reserve) `[x]`
+
+### Completed
+- **What the reserve was for**: nanoda was not needed (item 01 ran it,
+  `Checked 95176 declarations with no errors`), and no item of 02–11
+  ended short. What PROGRESS.md left for the reserve were the two
+  leftovers of items 10 and 11: the second plain-English pass over the
+  sentences the refuter counted and did not split (10c), and adding the
+  entries written after §10.2's first draft to the paper's §10.2 (11d).
+  Both done; nothing else touched.
+- **The second plain-English pass** (`ETH_AMBIGUOUS.MD` 12a): every
+  prose sentence over 45 words in Sections 2–12, Appendix A and Appendix
+  B split, one idea per sentence — about sixty edits in Sections 2–12
+  and A, and twenty-two in Appendix B applied as asserted exact
+  replacements; quotations, numbers, citations, line references and
+  Lean names unchanged. Measured by the new
+  `paper3/scripts/sentence_lengths.py` (crude, says so; `--ref <commit>`,
+  `--list N`): pieces over 45 words **95 → 26**, over 58 words **32 →
+  18**, mean words per piece 22.4 → 20.0 over all `sec*.tex` (commit
+  `66a755ac2` against the working tree); Sections 5, 7 and 8 from 6, 8
+  and 4 to zero, Section 4 from 9 to 2, Section 9 from 11 to 3, Appendix
+  B from 25 to 6. The 26 left are tables, displays, list sentences,
+  verbatim quotations from the manuscript and the fetched texts, one
+  caption-like list in Section 3, and five places where the splitter
+  joins a sentence to the next because it begins with a lowercase Lean
+  identifier. The sentence counts are cited nowhere in the paper.
+- **§10.2 extended and re-counted** (12b): the conclusion now sorts all
+  **61** entries (S1–S8, 01a–11g, 12a–12b): 7 resolved by the owner, 15
+  procedural or carried by the text (10c moved there by 12a; 11c–11f,
+  12a, 12b added), 39 open and affecting the text (a tenth group "The
+  write-up around the paper" for 10a, 10d, 11a, 11b, 11g; 10b in the
+  title group), 14 of them bibliographic or typographic (11g added). A
+  script inside the item checked every entry appears exactly once and
+  the counts add up (7 + 15 + 39 = 61); the subsection's own 54-, 102-
+  and 52-word sentences were split in the process, and its "what this
+  does not claim" bullet now dates the list (2026-11-05) instead of
+  excluding later entries.
+- **One arithmetic slip found and corrected**: `paper3/README.md`'s
+  "Open and affecting the text (36)" listed forty entries (33 before
+  item 11 plus the seven it sorted as open); corrected to the new count,
+  39, with 10c moved. Entry 11d and iteration 12's section above carry
+  the same 36 and are left as dated records; 12b says so.
+- **Write-up**: `paper3/README.md` — the "Sections 1 and 10" regenerate
+  paragraph (61 / 7 / 15 / 39), a new "second plain-English pass"
+  paragraph with the script, the open-questions section re-counted and
+  re-sorted (10c, 11d, 12a, 12b), the CLAUDE.md paragraph's gaps and
+  cost sentence (the "about forty sentences unsplit" gap removed; 61
+  entries, 39 open; thirteen sessions, items 01–12), the layout row for
+  `scripts/`. `ETH_AMBIGUOUS.MD` 12a–12b.
+- **Verified**: `make -C paper3/latex check` passes, **64 pages (64
+  before), zero overfull boxes**; the six `--check` scripts
+  (`beyond_claims`, `proof_inspection`, `consequences`, `lean_rediff`,
+  `related_work`, `practitioner`) all `ALL CHECKS PASSED` on the final
+  text; §10.2 and the Section 5 rewrite read back from the PDF
+  (`pdftotext`); the title line of `main.tex` untouched; no graph,
+  pathwidth, treewidth or MOSP word added (the grep hits on the new
+  lines are "paragraph", "bibliography", "typographic" and the
+  `SubexpPathwidth` directory name). One pre-existing note in the build
+  log, `Infinite glue shrinkage found in box being split [56]` from
+  Appendix A's `longtable`, is also in a scratch build of commit
+  `66a755ac2` (twice there, once now) and is not from this item.
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone read or executed (the check scripts read it with
+  `open()` as before); no network access; no subagent used.
+
+### Blockers
+- None.
+
+### Next
+- The loop is complete: all thirteen items marked. For the owner: fold
+  the CLAUDE.md paragraph from `paper3/README.md`'s last section (11e);
+  the 39 open entries, by number, in the README and in §10.2; the two
+  JCSS hypothesis papers cited unread (`literature/MISSING.md`).
+- If a further plain-English pass is wanted, the list sentences (the
+  §10.2 "procedural" sentence, the data statement's inventory) are what
+  is left over 45 words; `python3 -I paper3/scripts/sentence_lengths.py
+  --list 45` lists them.
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 09:35
+  (started 09:19 under `nice -n 19`; tail: `1978 passed, 2 skipped,
+  1 xfailed, 180 warnings in 276.13s (0:04:36)` · `123 passed in
+  392.98s (0:06:32)` · paper 1 `no undefined references; Pages: 78` ·
+  paper 3 `no undefined references; Pages: 64` · `GATE PASS` ·
+  `exit 0`; `lake build` ok, 0 sorry; title verbatim; `solutions/`
+  untouched).
+
+LOOP_COMPLETE

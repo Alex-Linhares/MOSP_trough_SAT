@@ -48,10 +48,10 @@ literals'' (p.~1, line~44).
 ends it with a zero (lines 57--58). \texttt{encodeList enc} prefixes each
 element's frame with a one and ends the list with a zero (lines 60--62).
 A literal becomes the number \(2\cdot\mathrm{var} + [\text{positive}]\),
-at most \(2n - 1\) (lines 64--65); a clause is its sorted list of literal
-numbers, a formula its sorted list of clauses (lines 67--71).
+at most \(2n - 1\) (lines 64--65). A clause is its sorted list of literal
+numbers, and a formula its sorted list of clauses (lines 67--71).
 \texttt{encodeCNF F} is \texttt{encodeNat n} followed by the formula's
-list of lists of unary numbers (lines 73--77), and
+list of lists of unary numbers (lines 73--77).
 \texttt{formulaBitLength F} is the length of that bit string (line 79).
 Two things follow. The number of variables \(n\) is part of the input,
 so a variable that occurs in no clause is still counted. And the length
@@ -66,19 +66,19 @@ for \(m\) clauses. The solution itself proves
 (\clonefile{SqrtLogSpace/Statement.lean}, lines 9--14). Emulating the
 definitions (\repofile{reports/scratch/eth_audit/check_encoding.py},
 random seed 1), one random formula with \(n = 125\), \(m = 500\),
-\(k = 4\) encodes to \(L = 1{,}006{,}223\) bits and one with
-\(n = 1{,}000\), \(m = 4{,}000\), \(k = 3\) to \(47.9\) million, both
-under the bound; the length depends on the formula's literals, not on
+\(k = 4\) encodes to \(L = 1{,}006{,}223\) bits, and one with
+\(n = 1{,}000\), \(m = 4{,}000\), \(k = 3\) to \(47.9\) million. Both are
+under the bound. The length depends on the formula's literals, not on
 \((n, m, k)\) alone. Nothing in the
 encoding is exponential; the unary numbers are linear in \(n\).
 
 \paragraph{The machine (lines 83--128).}
-\texttt{PrimitiveMachine} (lines 92--99) is a finite object: a number
+\texttt{PrimitiveMachine} (lines 92--99) is a finite object. It has a number
 \texttt{tapeCount} of tapes and a number \texttt{stateCount} of states,
-an input tape and a start state, a table \texttt{scan} saying which tape
-each state reads, and a table \texttt{transition} from
+an input tape and a start state, and a table \texttt{scan} saying which tape
+each state reads. Its table \texttt{transition} maps
 \(\mathtt{Fin}\ \mathtt{stateCount} \times \mathtt{Option\ Bool}\)---a
-domain of \(3 \cdot \mathtt{stateCount}\) points---into either a halting
+domain of \(3 \cdot \mathtt{stateCount}\) points---to either a halting
 answer (a \texttt{Bool}) or a next state with one action. The action type
 is Mathlib's \texttt{Turing.TM0.Stmt (Option Bool)}: move the head left or
 right, or write one of the three symbols \texttt{none}, \texttt{some
@@ -89,14 +89,14 @@ lines 118--120 and \path{Tape.lean} lines 421--423 at Mathlib
 \texttt{Cfg} (lines 103--105) is a state, halted or not, and one Mathlib
 \texttt{Tape} per tape index (a head symbol and two blank-padded halves,
 \path{Tape.lean} lines 408--414, blank \(=\) \texttt{none}).
-\texttt{step} (lines 107--119) returns \texttt{none} in a halted state;
-otherwise it reads the head of the one tape the state scans, looks the
-pair up in the table, and either halts with the answer, or writes one
+In a halted state, \texttt{step} (lines 107--119) returns \texttt{none}.
+Otherwise it reads the head of the one tape the state scans and looks the
+pair up in the table. Then it either halts with the answer, or writes one
 symbol or moves that one head by one cell and changes state. \texttt{init}
 (lines 121--124) puts the input on the input tape with the head at its
 first bit and every other tape blank (\texttt{Tape.mk}$_1$,
 \path{Tape.lean} line 494). A Lean function on a finite domain is,
-whatever term defines it, a finite table; so a step is one lookup in a
+whatever term defines it, a finite table. So a step is one lookup in a
 table of \(3 \cdot \mathtt{stateCount}\) rows, and no field of the
 structure can carry unbounded computation.
 
@@ -112,12 +112,12 @@ a trace of length 0 to a different configuration is impossible. Since
 \paragraph{Space monitoring (lines 147--189).}
 \texttt{LocatedCfg} (lines 149--153) pairs a configuration with, per tape,
 the head's current position and the least and greatest positions seen so
-far, as integers; \texttt{locatedInit} starts every head at 0 with the
-input tape's range covering the input (lines 155--159);
+far, as integers. \texttt{locatedInit} starts every head at 0 with the
+input tape's range covering the input (lines 155--159).
 \texttt{headDisplacement} is \(-1\), \(+1\) or \(0\) for a move left, a
-move right or a write (lines 161--164); \texttt{monitor} (lines 166--182)
+move right or a write (lines 161--164). \texttt{monitor} (lines 166--182)
 applies the same table lookup to update the position and the running
-minimum and maximum of the scanned tape, and nothing else;
+minimum and maximum of the scanned tape, and nothing else.
 \texttt{locatedStep} is \texttt{step} on the configuration followed by
 \texttt{monitor} (lines 184--186). \texttt{visitedSpace} (lines 188--189)
 is the sum over tapes of \(\mathrm{upper} - \mathrm{lower} + 1\): the
@@ -185,25 +185,25 @@ The machine and the five constants are quantified after \(k\) and before
 \texttt{final} are chosen. This is the standard \(O_k(1)\) reading: for
 each \(k\) one fixed finite machine and one set of constants serve every
 formula of every size. The table's size is \(O_k(1)\) in the same sense,
-with no explicit function of \(k\). There is no lower bound on \(n\): the
+with no explicit function of \(k\). There is no lower bound on \(n\). The
 manuscript's Theorem~1.1 and Proposition~6.4 are stated for \(n \ge 20\)
 (p.~2, lines 56--57; p.~43, lines 2474--2475), and the solution's
 auxiliary \texttt{exact\_count\_eth} keeps \(20 \le n\)
-(\clonefile{SqrtLogSpace/Final.lean}, lines 104--109); the exported
+(\clonefile{SqrtLogSpace/Final.lean}, lines 104--109). The exported
 theorem does not, and the \(+16\) in \(\rhon\) is what makes that
 possible.
 
-The proof's own constants, read for their values only: at the point where
+The proof's own constants, read for their values only. At the point where
 the large-input run is assembled, the exponent constant is set to
 \(A = 256 + A_t\) with \(A_t \ge 1\) taken from a leaf contract
 (\clonefile{SqrtLogSpace/NativeLargeEntry.lean}, line 51;
-\clonefile{SqrtLogSpace/NativeLeafContract.lean}, lines 792--793), and
+\clonefile{SqrtLogSpace/NativeLeafContract.lean}, lines 792--793). And
 \(1 \le C\), \(1 \le A\) are in the large-input run's own statement
 (\clonefile{SqrtLogSpace/NativeLargeEntry.lean}, line 12). The witness
 machine is compiled from a program over 80 one-bit registers and 1,220
 tapes, with \(\mathtt{countTape} = 256\) and \(\mathtt{answerTape} = 1216\)
 (\clonefile{SqrtLogSpace/Final.lean}: the program's type at line 11, the
-machine built from it at lines 98--101); its state count is
+machine built from it at lines 98--101). Its state count is
 a finite type's cardinality that nothing computes. The solution's
 internal \(\rho\) (\clonefile{SqrtLogSpace/Asymptotics.lean}, lines
 10--11) is in base 2 and is related to \texttt{runtimeScale} by
@@ -212,11 +212,11 @@ internal \(\rho\) (\clonefile{SqrtLogSpace/Asymptotics.lean}, lines
 that \(A\) absorbs.
 
 The clause-count bound used in Sections~\ref{sec:statement} and
-\ref{sec:consequences}: a \texttt{Finset} of clauses of width at most
+\ref{sec:consequences} is this. A \texttt{Finset} of clauses of width at most
 \(k\) over \(n\) variables has at most \(\sum_{j \le k}\binom{2n}{j} =
-O(n^k)\) members (\(2{,}604{,}376\) at \(n = 125\), \(k = 3\)), so
+O(n^k)\) members (\(2{,}604{,}376\) at \(n = 125\), \(k = 3\)). So
 \(m = O(n^k)\), \(L = O(k\,n\,m) = O(n^{k+1})\), and the whole bound is
-\(n^{O_k(1)}\,2^{A\rhon}\), which is \(2^{o(n)}\) in \(n\) alone because
+\(n^{O_k(1)}\,2^{A\rhon}\). That is \(2^{o(n)}\) in \(n\) alone, because
 \(\rhon/n \to 0\) \leanref{rho-little-o}.
 
 \subsection{The spine of the proof, with every line}
@@ -229,20 +229,20 @@ the clone.
 \paragraph{The machine.} The theorem's machine is
 \texttt{GuardedCompiler.primitive program} with the count tape
 \texttt{256} and the answer tape \texttt{1216} (both \texttt{: Fin 1220};
-\clonefile{SqrtLogSpace/Final.lean}, line~100), where \texttt{program}
+\clonefile{SqrtLogSpace/Final.lean}, line~100). Here \texttt{program}
 is \texttt{Native.countingProgram cutoff k} \texttt{(NativeLeafProgram.command k)}
-(line~40), a \texttt{BitProgram.Program 80 1220 labels} (line~11): a
+(line~40), of type \texttt{BitProgram.Program 80 1220 labels} (line~11). That is a
 first-order program over 80 one-bit registers, 1,220 Boolean stacks and
 a finite label set, with twelve instruction kinds
 (\clonefile{BitProgram.lean}, lines 10--26). \texttt{primitive}
 (\clonefile{SqrtLogSpace/GuardedCompiler.lean}, line~131) is a
-\texttt{noncomputable abbrev}: it takes the transition table
+\texttt{noncomputable abbrev}. It takes the transition table
 \texttt{transition p} (lines 30--47, one case per instruction) and the
 stack selector \texttt{selected p} (lines 14--17), feeds them to the
 stack compiler's controller, and renames the finite state type to
 \texttt{Fin stateCount} through \texttt{Fintype.equivFin} (line~132).
 The machine is thus a concrete table defined by pattern matching on the
-program, composed with a classical renaming of states; the theorem is
+program, composed with a classical renaming of states. The theorem is
 existential, so the noncomputability costs it nothing.
 
 \paragraph{The time bound, and the constants.} For \texttt{cutoff < n},
@@ -253,7 +253,7 @@ lines 11--33) supplies a trace of length at most
 \texttt{At} comes from the leaf program's uniform contract
 (\path{NativeLeafContract.uniform_contract}, line~39; the contract
 gives $1 \le \mathtt{At}$, \clonefile{SqrtLogSpace/NativeLeafContract.lean},
-line~793), and its cutoff is \texttt{max 20 (max Nleaf Ns)} (line~50),
+line~793). Its cutoff is \texttt{max 20 (max Nleaf Ns)} (line~50),
 with \texttt{Ns} obtained non-constructively from an eventual inequality
 (\path{Filter.eventually_atTop}, line~48). The $2^{A\cdot\mathtt{runtimeScale}\,n}$
 factor is assembled by \path{runtime_of_tree_and_leaf} (line~46)
@@ -268,28 +268,28 @@ of \clonefile{SqrtLogSpace/FiniteFallback.lean}. The two branches are
 folded by \texttt{runtime\_with\_fallback} and
 \texttt{space\_with\_fallback}
 (\clonefile{SqrtLogSpace/NativeOuterBudgets.lean}, lines 297 and 317)
-into one triple, and the witnesses the final theorem exhibits are
+into one triple. The witnesses the final theorem exhibits are
 \texttt{C + 28700, A + 1, S + 5022741, d + 2, e + 2}
 (\clonefile{SqrtLogSpace/Final.lean}, line~41). So the proof as written
 has an exponent constant of at least $258$ in front of $\rhon$, a
 polynomial degree \texttt{d} that depends on $k$ (line~51: $\mathtt{db} + (4(k-2)+2) + \mathtt{df} + 2$) and a leading constant of at least
-$28{,}701$; none of these is in the statement, which asserts only that
-they are positive, and none of \texttt{At}, \texttt{db}, \texttt{df} is
+$28{,}701$. None of these is in the statement, which asserts only that
+they are positive. None of \texttt{At}, \texttt{db}, \texttt{df} is
 computed anywhere.
 
 \paragraph{Where a hidden cost model would live, and why it cannot.}
 The compile lemmas conclude in
-the comparator's own vocabulary: \path{GuardedCompiler.primitive_execution}
+the comparator's own vocabulary. \path{GuardedCompiler.primitive_execution}
 (\clonefile{SqrtLogSpace/GuardedCompiler.lean}, lines 160--162) turns a
 source run of \texttt{n} steps into \texttt{RunsIn (primitive p).step
 (7 * n)}, with the overhead \texttt{7} proved as a theorem
-(\texttt{compiler\_overhead}, lines 152--153), and
+(\texttt{compiler\_overhead}, lines 152--153).
 \path{CompileSpace.compile_word_answer_space}
 (\clonefile{SqrtLogSpace/CompileSpace.lean}, lines 125--143) produces a
 \texttt{Computation.Trace (locatedStep (primitive p)) time \ldots} with
 $\mathtt{time} \le 7\cdot\mathtt{sourceSteps}$ and
 $\mathtt{visitedSpace}\ \mathtt{intermediate} \le s\,(\mathtt{bound} + \mathtt{input.length} + 15)$ on
-every prefix (lines 134, 135 and 143); \path{primitive_located_step}
+every prefix (lines 134, 135 and 143). \path{primitive_located_step}
 (\clonefile{SqrtLogSpace/GuardedCompiler.lean}, line~600) is the per-step
 form. \texttt{Trace}, \texttt{locatedStep} and \texttt{visitedSpace} are
 the challenge's definitions (its lines 87--90 and 149--189), and
@@ -303,9 +303,9 @@ false.
 (\clonefile{SqrtLogSpace/NativeOuter.lean}, lines 50--51) yields
 \texttt{final.stacks ABI.countStack = countWord (SAT.count F)} and
 \texttt{final.stacks ABI.answerStack = [decide (0 < SAT.count F)]} from
-the canonical DFS execution, and
+the canonical DFS execution.
 \path{Native.counting_primitive_from_entry} (line~73) transports
-both to the primitive machine's tapes; \texttt{countWord\_toNat} and
+both to the primitive machine's tapes. \texttt{countWord\_toNat} and
 \texttt{countWord\_count\_length} supply the decoding and length clauses
 of the statement.
 
@@ -314,7 +314,7 @@ import the challenge file: \clonefile{SqrtLogSpace/Final.lean} begins
 (lines 1--3) with \texttt{NativeLargeEntry}, \texttt{SqrtLogSpace.Statement}
 and \texttt{SqrtLog.StatementCanonical}. The library re-declares every
 definition the statement uses under the same fully qualified names, in
-seven files: the SAT vocabulary in \clonefile{SAT.lean}, the bit
+seven files. These are: the SAT vocabulary in \clonefile{SAT.lean}, the bit
 arithmetic in \clonefile{BinaryArithmetic.lean}, the nine encoding
 functions in \clonefile{Encoding.lean}, the machine in
 \clonefile{Computation.lean}, \texttt{runtimeScale} and
@@ -322,15 +322,15 @@ functions in \clonefile{Encoding.lean}, the machine in
 space instrumentation in \clonefile{SqrtLogSpace/VisitedTape.lean} and
 \texttt{countWord} in \clonefile{SqrtLogSpace/EncodingBounds.lean}
 (line~17, the challenge's line~147). The definition diff compares 35
-declarations: 33 are identical character for character after whitespace
-normalisation, and the remaining two, \texttt{runtimeScale} and
+declarations. 33 are identical character for character after whitespace
+normalisation. The remaining two, \texttt{runtimeScale} and
 \texttt{runtimeBound}, differ only in that the challenge writes
 \texttt{noncomputable def} where the library opens a
 \texttt{noncomputable section} (\clonefile{SqrtLog/StatementScale.lean},
 line~15). The theorem statement itself, from \texttt{theorem
-exact\_count\_and\_sat} to \texttt{:= by}, is identical in the two files,
-1,353 characters raw and 1,124 after normalisation, at line~194 of the
-challenge and line~74 of \clonefile{SqrtLogSpace/Final.lean}; the
+exact\_count\_and\_sat} to \texttt{:= by}, is identical in the two files:
+1,353 characters raw and 1,124 after normalisation. It is at line~194 of the
+challenge and line~74 of \clonefile{SqrtLogSpace/Final.lean}. The
 challenge's proof is the single word \texttt{sorry} at its line~218.
 
 \subsection{The keyword sweep, item by item}
@@ -342,16 +342,16 @@ This is the detail behind Section~\ref{sec:proof-keywords}. The only
 (\clonefile{SqrtLog/LeafProgramPreparedRecoveryQuery.lean}, line~15, and
 \clonefile{SqrtLog/LeafProgramPreparedRecoveryWitness.lean}, line~14),
 which switch off a pre-check on local notation and have no bearing on
-soundness; there is no \texttt{maxHeartbeats}, \texttt{maxRecDepth} or
+soundness. There is no \texttt{maxHeartbeats}, \texttt{maxRecDepth} or
 \texttt{autoImplicit} option anywhere in the closure, and the lakefile
 sets \texttt{autoImplicit} to \texttt{false} for the whole package
 (\clonefile{lean/lakefile.lean}, line~9). Nine declarations are
-\texttt{opaque}, and every one carries a body: three recovery functions
-(\texttt{queryRecovery} at line~59 of
+\texttt{opaque}, and every one carries a body. Three are recovery functions:
+\texttt{queryRecovery} at line~59 of
 \clonefile{SqrtLog/LeafProgramPreparedRecoveryQuery.lean}, with its
-\texttt{:= by} at line~86; \texttt{rawRecovery} and
+\texttt{:= by} at line~86, and \texttt{rawRecovery} and
 \texttt{fixedRecovery} at lines 178 and 198 of
-\clonefile{SqrtLog/LeafProgramPreparedRecoveryWitness.lean}) and six
+\clonefile{SqrtLog/LeafProgramPreparedRecoveryWitness.lean}. Six are
 \texttt{private opaque} constants of a subtype
 \texttt{\{ports // ports = \ldots\}}, each with an explicit value
 (line~22 of \clonefile{SqrtLog/LeafProgramQueryCleanup.lean} and five
@@ -385,12 +385,12 @@ JSON.
 \label{app:tech-hypotheses}
 
 This is the detail behind Section~\ref{sec:consequences-hypotheses}.
-The property used throughout: for each fixed $k \ge 2$ there is one
-deterministic machine which, on the canonical encoding of any
+The property used throughout is this. For each fixed $k \ge 2$ there is one
+deterministic machine. On the canonical encoding of any
 \texttt{WidthAtMost}~$k$ formula $F$ on $n$ variables (comparator line
-38), halts with \texttt{countWord (count F)} on its count tape (lines
-203--204, 147), the bit $[0 < \mathtt{count}\ F]$ on its answer tape and
-in its halting state (lines 205--207), within $C\,(L+1)^d\,2^{A\rhon}$
+38), it halts with \texttt{countWord (count F)} on its count tape (lines
+203--204, 147) and the bit $[0 < \mathtt{count}\ F]$ on its answer tape and
+in its halting state (lines 205--207). It does so within $C\,(L+1)^d\,2^{A\rhon}$
 steps (lines 210--211). Since $\rhon/n \to 0$ \leanref{rho-little-o},
 for every $\delta > 0$ there is an $n_0(k, \delta)$ beyond which the
 bound is below $2^{\delta n}$; below $n_0$ the bound is a constant
@@ -424,12 +424,12 @@ because $\rhon = o(n)$; below $n_0$ the exponential factor is a
 constant. So each $k$ has a $2^{(1-\varepsilon)n}(n+m)^{O_k(1)}$
 algorithm, and the polynomial's degree depending on $k$ is exactly what
 the hypothesis's ``for a fixed $k$'' permits. For the record, SETH
-implies ETH: if 3-SAT had a $2^{o(n)}$ algorithm then, by the
-Sparsification Lemma of \citet{ImpagliazzoPaturiZane2001}, which reduces
+implies ETH. Suppose 3-SAT had a $2^{o(n)}$ algorithm. The
+Sparsification Lemma of \citet{ImpagliazzoPaturiZane2001} reduces
 $k$-SAT on $n$ variables to $2^{\varepsilon n}$ instances with
-$O_{k,\varepsilon}(n)$ clauses and so, after the clause-splitting
-reduction, to 3-SAT on $O_{k,\varepsilon}(n)$ variables, so would
-$k$-SAT for every fixed $k$.
+$O_{k,\varepsilon}(n)$ clauses, and so, after the clause-splitting
+reduction, to 3-SAT on $O_{k,\varepsilon}(n)$ variables. Then
+$k$-SAT would have such an algorithm too, for every fixed $k$.
 
 \paragraph{Gap-ETH.} The negation of the manuscript's form: for every
 $\delta, \gamma > 0$ there is an $O(2^{\gamma n})$ algorithm that
@@ -448,9 +448,9 @@ the randomised form as well.
 $\varepsilon > 0$ such that every fixed $k$ has a nondeterministic
 $2^{(1-\varepsilon)n}(n+m)^{O(1)}$ algorithm for unsatisfiability. The
 verified machine's answer bit is \texttt{false} exactly when
-$\mathtt{count}\ F = 0$ (lines 205--207), so it decides unsatisfiability
+$\mathtt{count}\ F = 0$ (lines 205--207). So it decides unsatisfiability
 deterministically within the SETH bound above for every $\varepsilon$
-and every $k$; and a deterministic machine is a nondeterministic one
+and every $k$. And a deterministic machine is a nondeterministic one
 whose only computation path is the deterministic run, so every
 acceptance convention for nondeterministic time is met.
 
@@ -460,12 +460,12 @@ The verified machine at $k = 3$ halts with \texttt{countWord (count F)}
 on its count tape, a binary word of length at most $n + 1$ that decodes
 to $\mathtt{count}\ F$ (lines 203--204, 208--209), within the same bound.
 
-\paragraph{Shape (S) in detail.} For a theorem ``SETH $\Rightarrow$ no
-$(c-\varepsilon)^k$ algorithm for $Y$'', a $(c-\varepsilon)^k$ algorithm
+\paragraph{Shape (S) in detail.} Take a theorem ``SETH $\Rightarrow$ no
+$(c-\varepsilon)^k$ algorithm for $Y$''. A $(c-\varepsilon)^k$ algorithm
 for $Y$ obtained from the verified statement would need the exponent of
-the SAT instance to be below $k \log_2 c$ by a constant factor, and the
+the SAT instance to be below $k \log_2 c$ by a constant factor. The
 verified statement's exponent is $A\rho(n')$ in the variable count $n'$
-of the SAT instance with $A$ unknown; no value of $A$ is on record below
+of the SAT instance, with $A$ unknown. No value of $A$ is on record below
 $257$, and no base $c$ is derived from the verified statement for any
 $Y$.
 
@@ -477,20 +477,20 @@ Both guarantees are taken at constant 1 (the polynomial factors, $C$,
 $A$ and $d$ set aside) and both are multiplied by the same factor
 $t_{20}/2^{20}$, where $t_{20} = 1.28 \times 10^{-4}$~s is CaDiCaL's
 median at $n = 20$. The factor is one number for both curves, so their
-ratio is the ratio of the guarantees themselves, $2^{\rhon - n}$: below
+ratio is the ratio of the guarantees themselves, $2^{\rhon - n}$. That ratio is below
 1 for $n < 50$, just above 1 at $n = 50$ ($\rho(50) = 50.14$, ratio
 $1.10$), and above 1 from there ($2.8 \times 10^{3}$ at
 $n = 100$ and $4.0 \times 10^{51}$ at $n = 500$). A reader who prefers
 each curve scaled to the $n = 20$ point on its own would multiply
-$2^{\rhon}$ by a further $2^{20 - \rho(20)} = 2^{2.79}$ and see the two
+$2^{\rhon}$ by a further $2^{20 - \rho(20)} = 2^{2.79}$. That reader would see the two
 curves touch at $n = 20$ and the verified one above the trivial one
-from there on; the common factor keeps the crossing where the statement
+from there on. The common factor keeps the crossing where the statement
 puts it (\texttt{ETH\_AMBIGUOUS.MD}, 06a). In that scale the
 brute-force guarantee reaches one second near $n = 33$ and the verified
-guarantee near $n = 35$; at $n = 60$ the measured CaDiCaL median is
-$3 \times 10^{-4}$~s against $2^n$ at $1.4 \times 10^{8}$~s and
+guarantee near $n = 35$. At $n = 60$ the measured CaDiCaL median is
+$3 \times 10^{-4}$~s, against $2^n$ at $1.4 \times 10^{8}$~s and
 $2^{\rhon}$ at $5.4 \times 10^{8}$~s, 11.6 and 12.2 decades
-respectively; at $n = 500$ the decision median is above the budget
+respectively. At $n = 500$ the decision median is above the budget
 (8 of 20 finished within 60~s), against $10^{140.6}$~s and
 $10^{192.2}$~s. Regenerate: \texttt{python3 -I paper3/scripts/practitioner.py}.
 

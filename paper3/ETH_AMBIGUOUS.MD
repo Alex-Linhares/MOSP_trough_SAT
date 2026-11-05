@@ -1043,3 +1043,73 @@ an answer).
   `git add -A` take it.
 - **Owner may change**: cite the Lean 4 reference manual or the Mathlib
   repository instead of the two conference papers.
+
+### 12a — the second plain-English pass: what counted as a long sentence, and what was left (item 12, 2026-11-05)
+- **Ambiguous**: 10c left "about forty sentences of 46–58 words" for
+  the reserve item, by the refuter's crude count. Which pieces of text
+  the plain-English rule reaches was open: the manuscript's and the
+  fetched texts' quotations are verbatim and cannot be split; table
+  rows, displayed formulas, list sentences (the entry lists of §10.2,
+  the data statement's inventory) and captions are not prose
+  sentences; and a sentence that ends before a lowercase Lean
+  identifier (`closure.py`, `step`, `frame`) is joined to the next by
+  any splitter that looks for a capital letter.
+- **Chosen**: every prose sentence over 45 words in Sections 2–12,
+  Appendix A and Appendix B was split, one idea per sentence, with
+  quotations, numbers, citations and line references unchanged (about
+  sixty edits; Appendix B's twenty-two as asserted exact replacements).
+  The measure is `paper3/scripts/sentence_lengths.py` (crude, stated as
+  such in its docstring, run from the repository root; `--ref <commit>`
+  measures a committed version, `--list N` lists the pieces over N
+  words): pieces over 45 words 95 → 26 and over 58 words 32 → 18 over
+  all section files, mean words per piece 22.4 → 20.0; by file, Section
+  5 went from 6 to 0, Section 7 from 8 to 0, Section 8 from 4 to 0,
+  Section 4 from 9 to 2, Section 9 from 11 to 3, Appendix B from 25 to
+  6. The 26 left are, by inspection: ten tables, displays or list
+  sentences; nine verbatim quotations; five lowercase-identifier joins
+  that are two or three sentences already; one caption-like list in
+  Section 3 (the five theorems of `Final.lean`); and the fifteen-entry
+  "procedural" sentence of §10.2, which is a list. No number in the
+  paper changed; the six `--check` scripts pass unchanged; the build is
+  64 pages with no overfull box. The sentence counts are bookkeeping and
+  are cited nowhere in the paper. 10c is therefore moved from "open" to
+  "procedural or carried by the text" in §10.2 and in the README.
+- **Owner may change**: split the list sentences too (the §10.2
+  "procedural" sentence could become a list environment); or lower the
+  threshold below 45 words, which would reach about a hundred more
+  pieces, many of them quotations.
+
+### 12b — the conclusion's §10.2 extended to every entry, including this item's own, and re-counted; the README's open count corrected (item 12, 2026-11-05)
+- **Ambiguous**: 11d left the eleven entries written after the first
+  draft of §10.2 (10a–10d, 11a–11g) in the README only, and §10.2's
+  "what this does not claim" said later entries are "in the file and
+  not here". The reserve item adds two entries of its own (12a, this
+  one), so the choice was between leaving §10.2 at 48 as the refuter
+  read it, or extending it once to the final count and re-sorting.
+  Also found: the README's heading "Open and affecting the text (36)"
+  listed forty entries (7 + 12 + 40 = 59, the file's own total; 33 open
+  before item 11 plus the seven it sorted as open — 10a, 10b, 10d, 11a,
+  11b, 11g and 10c — is 40, not 36); PROGRESS.md's iteration-12 section
+  and entry 11d carry the same 36.
+- **Chosen**: §10.2 now sorts all sixty-one entries: 7 resolved by the
+  owner in writing (unchanged); 15 procedural or carried by the text
+  (the eight before, plus 10c by 12a, 11c, 11d, 11e, 11f, 12a and
+  12b); 39 open and affecting the text, in the same groups as before
+  plus a tenth group "The write-up around the paper" (10a, 10d, 11a,
+  11b, 11g), with 10b added to the title group; fourteen of the 39
+  bibliographic or typographic (the thirteen before plus 11g). A script
+  run inside the item checked that every entry of the file appears
+  exactly once in the subsection and that the three counts and the
+  fourteen add up; the long "forty-four … four … forty-eight" sentence
+  is rewritten as short sentences. The "what this does not claim" bullet
+  now says the list is complete to the day it was last re-counted,
+  2026-11-05, including the reading's and the final pass's entries.
+  The README's open-questions section is re-counted to 61 / 7 / 15 / 39
+  with the same sorting; entry 11d and PROGRESS.md's iteration 12 are
+  left as the dated records of what they said, with the correction
+  noted here and in iteration 13. The README's "Sections 1 and 10"
+  regenerate paragraph is updated to match.
+- **Owner may change**: restore §10.2 to the 48-entry list the refuter
+  read and keep the later entries in the README only (11d's choice);
+  or move the whole list out of the paper into the README and leave
+  §10.2 with the counts.

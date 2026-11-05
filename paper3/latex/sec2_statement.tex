@@ -86,14 +86,14 @@ One random formula with 125 variables, 500 clauses and width 4 becomes
 $1{,}006{,}223$ bits; one with 1,000 variables, 4,000 clauses and width
 3 becomes 47.9 million bits. Both numbers are from a script that
 imitates the definitions on formulas it draws with its random seed fixed
-at 1, \repofile{reports/scratch/eth_audit/check_encoding.py}; the length
-depends on which literals a formula holds, so another formula of the same
+at 1, \repofile{reports/scratch/eth_audit/check_encoding.py}. The length
+depends on which literals a formula holds. So another formula of the same
 size gives a nearby number, always under the bound. Nothing in the
 encoding grows exponentially.
 
 \paragraph{The machine (lines 83--128).}
-The machine is a Turing machine, the textbook model of a computer: a finite control that reads and writes symbols on tapes, one cell at a time. This one has several tapes: a finite table of states, a finite number of tapes, and a rule that, in each state, reads
-one cell of one tape and then either stops with a yes-or-no answer, or
+The machine is a Turing machine, the textbook model of a computer: a finite control that reads and writes symbols on tapes, one cell at a time. This one has several tapes. It consists of a finite table of states, a finite number of tapes, and one rule per state. The rule reads
+one cell of one tape and then does one of three things: it stops with a yes-or-no answer, or
 writes one symbol, or moves one head by one cell. Every part of it is
 finite. A step is one lookup in a table with three rows per state. No
 part of the machine can hide an unbounded computation inside a step.

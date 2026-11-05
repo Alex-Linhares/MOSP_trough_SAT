@@ -1,0 +1,180 @@
+# session it13 started 2026-11-05 09:11:29
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the reserve item's inputs: entry 10c in `ETH_AMBIGUOUS.MD` (the sentence list), the refuter report, and the current state of the paper build.
+  > $ cat Ralph_Loops/loop0015/iterations.md && echo ---- && grep -n "10c\|11d\|10b\|10d" paper3/ETH_AMBIGUOUS.MD | head -30 && echo ---- && ls paper3/latex paper3/re
+  > $ sed -n 840,1000p paper3/ETH_AMBIGUOUS.MD
+  > $ cat > /tmp/longsent.py <<'EOF'
+import re, sys, glob
+def strip(t):
+    t = re.sub(r'(?<!\\)%.*', '', t)
+    t = re.sub(r'\\(label|ref|cite[pt]?|leanref|eqref|inp
+  > $ python3 /tmp/longsent.py 45 | grep -v secB_ | sed 's/paper3\/latex\///'
+  > $ sed -i 's/se\[:110\]/se/' /tmp/longsent.py && python3 /tmp/longsent.py 45 | grep -v secB_ | grep -v '\[[0-9][0-9][0-9]\]' | sed 's/paper3\/latex\///' | grep -E 
+  > $ cd /home/al/dev/MOSP/paper3/latex && echo "== sec2:73" && sed -n 73,80p sec2_statement.tex && echo "== sec2:94" && sed -n 94,100p sec2_statement.tex && echo "==
+  > $ echo "== sec2:81" && sed -n 81,92p sec2_statement.tex && echo "== sec3:312" && sed -n 312,323p sec3_beyond.tex && echo "== sec3:348" && sed -n 348,372p sec3_bey
+  > Edit /home/al/dev/MOSP/paper3/latex/sec2_statement.tex
+
+I'm splitting the long sentences section by section; Section 2's first edit is in, and the remaining Section 2 and 3 edits are independent of each other, so I'll apply them together.
+  > Edit /home/al/dev/MOSP/paper3/latex/sec2_statement.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec3_beyond.tex
+  > $ sed -n 200,210p sec3_beyond.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec3_beyond.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec3_beyond.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec3_beyond.tex
+
+Continuing the Section 3 splits, then the Section 4 and 5 ones; I'll view the remaining Section 4 and 5 source paragraphs in the same step so the next round of edits can go out together.
+  > Edit /home/al/dev/MOSP/paper3/latex/sec3_beyond.tex
+  > $ for r in 37,44 108,114 131,142 222,228 244,252 275,283 289,296; do echo "== sec4:$r"; sed -n ${r}p sec4_proof.tex; done; for r in 22,32 46,52 71,78 108,120 139,
+  > $ echo "== sec4:142-150" && sed -n 142,150p sec4_proof.tex && echo "== sec4:253-266" && sed -n 253,266p sec4_proof.tex && echo "== sec5:120-126" && sed -n 120,126
+  > $ sed -n 266,272p sec4_proof.tex
+
+Now the Section 4 and 5 edits, all independent, in one round.
+  > Edit /home/al/dev/MOSP/paper3/latex/sec4_proof.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec4_proof.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec4_proof.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec4_proof.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec4_proof.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec4_proof.tex
+
+Section 4 is done; now the six Section 5 edits, which are all independent, go out together.
+  > Edit /home/al/dev/MOSP/paper3/latex/sec5_replay.tex
+  > $ sed -n 32,40p sec5_replay.tex && echo ==== && sed -n 76,84p sec5_replay.tex
+  > $ sed -n 40,44p sec5_replay.tex && echo ==== && grep -n "The replay copy is at commit" sec5_replay.tex && sed -n "$(grep -n 'The replay copy is at commit' sec5_re
+  > Edit /home/al/dev/MOSP/paper3/latex/sec5_replay.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec5_replay.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec5_replay.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec5_replay.tex
+  > $ for r in 53,70 178,186 249,262 318,334; do echo "== sec6:$r"; sed -n ${r}p sec6_consequences.tex; done; for r in 14,20 34,40 88,96 104,110 180,186 194,200 210,2
+  > $ show(){ f=$1; shift; for pat in "$@"; do n=$(grep -n -F -- "$pat" $f | head -1 | cut -d: -f1); echo "== $f:$n  [$pat]"; sed -n "$((n-1)),$((n+6))p" $f; done; };
+  > $ cat > /tmp/show.py <<'EOF'
+import sys,re
+f=sys.argv[1]; lines=open(f).read().split('\n')
+for pat in sys.argv[2:]:
+    words=pat.split()
+    hit=None
+    for i i
+  > $ p(){ echo "== $1:$2"; sed -n "$2p" $1; }; p sec6_consequences.tex 186,200; p sec7_practitioner.tex 38,46; p sec7_practitioner.tex 188,192; p sec7_practitioner.t
+
+Now the Section 6–9 and 11–12 and Appendix A edits, all independent of each other, in one round. Section 10's long sentences I'll rewrite together with the §10.2 re-count.
+  > Edit /home/al/dev/MOSP/paper3/latex/sec6_consequences.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec6_consequences.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec6_consequences.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec6_consequences.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec6_consequences.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+
+Section 6 is done. The remaining Section 7, 8, 9, 11, 12 and Appendix A splits are all independent of one another, so I'm sending them all now.
+  > Edit /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+  > $ sed -n 46,50p sec7_practitioner.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+  > $ sed -n 212,220p sec7_practitioner.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec8_lean.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec8_lean.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec8_lean.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec8_lean.tex
+
+Section 8 is done. The remaining splits are the seven in Section 9 and one each in Sections 11, 12 and Appendix A; none depends on another, so here they all are at once.
+  > Edit /home/al/dev/MOSP/paper3/latex/sec9_related.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec9_related.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec9_related.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec9_related.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec9_related.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec9_related.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec9_related.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec11_data.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/sec12_ack.tex
+  > Edit /home/al/dev/MOSP/paper3/latex/secA_appendix_lean.tex
+  > $ echo "== sec9 internals" && python3 /tmp/show.py sec9_related.tex "How it checks them is in its" && echo && echo "== sec10 §10.2 full" && sed -n 50,160p sec10_c
+  > $ cd /home/al/dev/MOSP/paper3 && echo "== sec9 177-186" && sed -n 177,186p latex/sec9_related.tex && echo && echo "== README open questions" && n=$(grep -n "^## O
+  > $ n=$(grep -n "^## Open questions" README.md | cut -d: -f1) && sed -n "${n},$((n+75))p" README.md
+  > $ echo "== sec9 183-196" && sed -n 183,196p latex/sec9_related.tex && echo && echo "== counts elsewhere" && grep -n "forty-eight\|forty-four\|thirty-three\|fifty-
+  > $ cd /home/al/dev/MOSP/paper3/latex && python3 - <<'EOF'
+import re
+f='sec10_conclusion.tex'; t=open(f).read()
+start=t.index('The paper was written under a rule th
+  > Edit /home/al/dev/MOSP/paper3/latex/sec9_related.tex
+  > $ python3 - <<'EOF'
+import re
+t=open('sec10_conclusion.tex').read()
+s=t.index('\\subsection{The questions this reading left open, by entry}'); e=t.index('\\subsec
+
+The arithmetic checks out: 61 entries, each exactly once, split 7 / 15 / 39 with 14 bibliographic. Next I need the build result and the before/after sentence counts, which don't depend on each other.
+  > $ cd /home/al/dev/MOSP && nice -n 19 make -C paper3/latex check 2>&1 | tail -8; echo "overfull:"; grep -c "Overfull" paper3/latex/main.log; pdfinfo paper3/latex/m
+  > $ cat > paper3/scripts/sentence_lengths.py <<'EOF'
+#!/usr/bin/env python3
+"""Sentence lengths of paper 3's LaTeX sections (item 12, 2026-11-05).
+
+Crude and stated
+  > $ sed -i 's/se\[:100\]/se/' paper3/scripts/sentence_lengths.py && python3 -I paper3/scripts/sentence_lengths.py --list 45 | grep "^    line\|^sec" | grep -B0 -A10
+  > $ python3 -I paper3/scripts/sentence_lengths.py --list 45 | awk '/^sec/{f=$1} /^    line/{if (f!="secB_appendix_technical.tex") print f, substr($0,1,160)}'; echo 
+  > Edit /home/al/dev/MOSP/paper3/latex/sec10_conclusion.tex
+  > $ cat -n paper3/latex/secB_appendix_technical.tex | sed -n 40,130p
+
+Appendix B is the one file not yet touched; I'm reading its second half, and in parallel running the six `--check` scripts the README lists, since nothing I changed should move them.
+  > $ cat -n paper3/latex/secB_appendix_technical.tex | sed -n 130,330p
+  > $ cat -n paper3/latex/secB_appendix_technical.tex | sed -n 330,500p
+  > $ python3 - <<'PYEOF'
+f='paper3/latex/secB_appendix_technical.tex'; t=open(f).read()
+R=[
+# B.1 encoding
+(r"""A literal becomes the number \(2\cdot\mathrm{var} + [
+  > $ nice -n 19 make -C paper3/latex check 2>&1 | grep -i "undefined\|Pages\|error" ; echo "overfull: $(grep -c Overfull paper3/latex/main.log)"
+  > $ grep -n -B3 -A3 "Infinite glue" paper3/latex/main.log | head -30; echo; echo "== was it in the committed log?"; git show HEAD:paper3/latex/main.log 2>/dev/null 
+  > $ rm -rf /tmp/p3head && mkdir -p /tmp/p3head && git archive HEAD paper3/latex | tar -x -C /tmp/p3head && cd /tmp/p3head/paper3/latex && (nice -n 19 latexmk -pdf -
+  > $ for s in beyond_claims proof_inspection consequences lean_rediff related_work practitioner; do printf "%-18s " $s; nice -n 19 python3 -I paper3/scripts/$s.py --
+  > $ python3 -I paper3/scripts/sentence_lengths.py --list 45 | awk '/^sec/{f=$1} /^    line/{print f, substr($0,1,120)}'
+  > $ echo "== sec7 caption" && sed -n 110,122p paper3/latex/sec7_practitioner.tex && echo && echo "== README headers" && grep -n "^## \|^### " paper3/README.md && ec
+  > Edit /home/al/dev/MOSP/paper3/latex/sec7_practitioner.tex
+  > $ echo "== README 288-323" && sed -n 288,323p paper3/README.md && echo && echo "== README 515-532" && sed -n 515,532p paper3/README.md && echo && echo "== README 
+  > $ echo "=== BEFORE ===" && python3 -I paper3/scripts/sentence_lengths.py --ref 66a755ac2 | tail -1 && echo "=== AFTER ===" && python3 -I paper3/scripts/sentence_l
+  > $ nice -n 19 python3 Ralph_Loops/loop0015/gate.py > /tmp/gate_it13.log 2>&1; echo "gate exit $?" >> /tmp/gate_it13.log
+  > $ cat >> paper3/ETH_AMBIGUOUS.MD <<'EOF'
+
+### 12a — the second plain-English pass: what counted as a long sentence, and what was left (item 12, 2026-11-05)
+- **Am
+
+The ledger entries are in. Now the README's bookkeeping edits, a check on the gate's progress, and a verification that the ledger has exactly the 61 entries I counted, all independent.
+  > $ python3 - <<'PYEOF'
+f='paper3/README.md'; t=open(f).read()
+R=[
+("""  The conclusion's §10.2 sorts every `ETH_AMBIGUOUS.MD` entry written
+  before it (48, throug
+  > $ echo "--- gate log:"; cat /tmp/gate_it13.log | tail -5; echo "--- gate task output:"; tail -5 "/tmp/claude-1000/-home-al-dev-MOSP/17474a62-7527-453d-99c4-703178
+  > $ echo "--- gate processes:"; ps -eo pid,etime,args | grep -F "gate.py" | grep -v grep | cut -c1-80; ps -eo pid,etime,args | grep -E "^ *[0-9]+ +[0-9:]+ +(lake|py
+  > $ echo "--- scope grep on changed tex (new lines only):"; git diff -U0 paper3/latex/ | grep "^+" | grep -v "^+++" | grep -i -c "graph\|pathwidth\|treewidth\|MOSP"
+  > $ python3 - <<'PYEOF'
+f='Ralph_Loops/loop0015/PROGRESS.md'; t=open(f).read()
+old='Current: 12/13 SOLVED (item 08x added to the list on 2026-11-05; item 12, the re
+
+The gate passed. Last step: record its tail in PROGRESS.md, confirm every item is marked, and add the `LOOP_COMPLETE` line.
+  > $ head -12 /tmp/gate_it13.log | grep -i "lake build\|sorry" | head -3; python3 - <<'PYEOF'
+f='Ralph_Loops/loop0015/PROGRESS.md'; t=open(f).read().rstrip('\n')
+t+=
+
+Item 12, the reserve, is done and the loop is complete: all 13 items are marked, the gate passed, and `LOOP_COMPLETE` is at the end of PROGRESS.md. Nothing is committed, as instructed.
+
+**What the reserve turned out to be.** nanoda was not needed, since item 01 ran it, and no item ended short. The two leftovers the earlier sessions had named were the second plain-English pass (entry 10c) and extending the conclusion's open-questions list to the entries written after its first draft (entry 11d). I did both.
+
+**The plain-English pass.** Every prose sentence over 45 words in Sections 2 to 12 and both appendices was split into one idea per sentence, with quotations, numbers, citations, line references and Lean names unchanged. A new crude measure, `paper3/scripts/sentence_lengths.py`, gives the before and after:
+
+| | before | after |
+|---|---|---|
+| pieces over 45 words | 95 | 26 |
+| pieces over 58 words | 32 | 18 |
+| mean words per piece | 22.4 | 20.0 |
+
+The 26 left are tables, displayed formulas, list sentences, verbatim quotations, and places where the splitter joins two sentences because the second starts with a lowercase Lean identifier. The counts are bookkeeping and appear nowhere in the paper.
+
+**The conclusion's list.** Section 10.2 now sorts all 61 ledger entries: 7 resolved by the owner, 15 procedural or carried by the text, 39 open and affecting the text, 14 of those bibliographic or typographic. A script checked that every entry appears exactly once and the counts add up. On the way I found that the README's heading said 36 open entries while listing 40, an arithmetic slip from item 11. The README is corrected; the dated ledger entry and iteration-12 section are left as records, with the correction noted in entry 12b.
+
+**Verification.** The paper builds at 64 pages with zero overfull boxes. All six `--check` scripts pass unchanged. The title line is untouched, no graph or width word was added, and nothing under `solutions/` changed. The gate passed with the Lean build clean, zero `sorry`, and all tests green. One build-log note about a `longtable` on page 56 predates this session, which I confirmed by building the committed version in a scratch directory.
+
+**For the owner.** The CLAUDE.md paragraph in the README's last section is drafted and not applied (entry 11e). The 39 open entries are listed by number in the README and in Section 10.2. The two ledger entries this session wrote are 12a and 12b.
+
+# result: success in 1516s, 97 turns, cost $14.52

@@ -111,7 +111,7 @@ every one of the nine has a body, and the kernel checks that body
 against its type, so nothing is assumed. The 1,048 \texttt{noncomputable}
 declarations, the eight \texttt{open Classical} and the four explicit
 uses each of \texttt{Classical.choice} and \texttt{propext} are the
-classical reasoning the comparator permits. The 148 instances and 40 local instances are standard bookkeeping declarations (``typeclass instances'') that tell Lean, for example, that a type is finite or a property is decidable; they are harmless because such a declaration can only make a false claim by way of an axiom, and there is none. The only options set in the closure switch off a check on notation in two files and have no bearing on soundness.
+classical reasoning the comparator permits. The 148 instances and 40 local instances are standard bookkeeping declarations (``typeclass instances''). They tell Lean, for example, that a type is finite or a property is decidable. They are harmless, because such a declaration can only make a false claim by way of an axiom, and there is none. The only options set in the closure switch off a check on notation in two files and have no bearing on soundness.
 Appendix~\ref{app:tech-keywords} lists every one of these with its file
 and line.
 
@@ -131,17 +131,17 @@ counted; the script column says which script produced it. Regenerate:
 The solution does not import the challenge file. Instead the library
 declares again, under the same names, every definition the statement
 uses, spread over seven files. So one has to check that the two copies
-agree. The definition diff compares \textbf{35} declarations:
+agree. The definition diff compares \textbf{35} declarations.
 \textbf{33} are identical character for character once spacing is
-ignored, and the remaining two, \texttt{runtimeScale} and
-\texttt{runtimeBound}, differ only in that the challenge marks each
-definition \texttt{noncomputable} by itself where the library marks a
-whole section so (\clonefile{SqrtLog/StatementScale.lean}, line~15), a
-difference the kernel does not see. The theorem statement itself, from
+ignored. The remaining two, \texttt{runtimeScale} and
+\texttt{runtimeBound}, differ in one keyword only: the challenge marks each
+definition \texttt{noncomputable} by itself, where the library marks a
+whole section so (\clonefile{SqrtLog/StatementScale.lean}, line~15). The kernel does not see that
+difference. The theorem statement itself, from
 its first word to the start of its proof, is \textbf{identical} in the
-two files, 1,353 characters raw and 1,124 after normalisation, at
-line~194 of the challenge and line~74 of
-\clonefile{SqrtLogSpace/Final.lean}; the challenge's proof is the single
+two files: 1,353 characters raw and 1,124 after normalisation. It sits at
+line~194 of the challenge and at line~74 of
+\clonefile{SqrtLogSpace/Final.lean}. The challenge's proof is the single
 word \texttt{sorry} at its line~218. Appendix~\ref{app:tech-spine} names
 the seven files.
 
@@ -221,9 +221,9 @@ content of the other three thousand files, and the only claim made about it here
 
 The Lean version is fixed (\clonefile{lean/lean-toolchain}:
 \texttt{leanprover/lean4:v4.34.1}; \clonefile{lean/lakefile.lean}
-line~8: \texttt{fixedToolchain := true}). The manifest (the list of the packages the build depends on, each at an exact version) lists 42 packages; Mathlib is pinned to upstream revision
+line~8: \texttt{fixedToolchain := true}). The manifest (the list of the packages the build depends on, each at an exact version) lists 42 packages. Mathlib is pinned to upstream revision
 \texttt{d13f23b723b8a846827a245b89c10fc7d3f11612} at
-\path{leanprover-community/mathlib4}, and the audit of 2026-11-05
+\path{leanprover-community/mathlib4}. The audit of 2026-11-05
 confirmed that revision on GitHub as the upstream commit that moves to
 \texttt{v4.34.1}. The repository carries 23 compatibility patches under
 \clonefile{lean/patches/}, \textbf{none for Mathlib}; every one is for a
@@ -263,10 +263,10 @@ evidence, not about the proof.
   this family rests on one implementation of the kernel. Of the
   collection's 418 challenge JSONs, 413 set \texttt{enable\_nanoda} to
   \texttt{false}, two to \texttt{true}, and three omit the key. The
-  comparator's README describes the check as: build challenge and
-  solution in a sandbox, export both, match each named theorem's
-  statement with every declaration it uses, confine the proof to the
-  permitted axioms, and have the Lean kernel accept it; with nanoda on,
+  comparator's README describes the check in five steps: build challenge and
+  solution in a sandbox; export both; match each named theorem's
+  statement with every declaration it uses; confine the proof to the
+  permitted axioms; and have the Lean kernel accept it. With nanoda on,
   the exported environment is replayed through the independent checker
   as well \citep{Nanoda}. Section~\ref{sec:related} records the
   versions.
@@ -275,9 +275,9 @@ evidence, not about the proof.
 Two smaller consistency facts, for the record. The manuscript's source
 is dated ``17 October 2026, revised 25 October 2026''
 (\clonefile{preprints/The-Exponential-Time-Hypothesis-is-False-October-25-2026/build/main_full_version.tex},
-line~25); the collection's history file mentions the family once, in the
+line~25). The collection's history file mentions the family once, in the
 sentence that names the working group at whose request the materials
-were released (\clonefile{history.md}, line~18), and its only
+were released (\clonefile{history.md}, line~18). Its only
 ``Formalization Fix'' entry (line~7) concerns another family. And the
 scope note \clonefile{lean/docs/378.md} states the verified exponent as
 $n(\log\log n)^2/\sqrt{\log n}$ (line~9), which is what the library
@@ -286,11 +286,11 @@ proves and what Section~\ref{sec:beyond} compares with the manuscript's.
 \subsection{The trust boundary, joined with the replay}
 \label{sec:proof-trust}
 
-Before anything was run, the proof's trust rested on five things:
+Before anything was run, the proof's trust rested on five things.
 (i) OpenAI's unpublished build, since nothing showed the closure
-type-checks; (ii) the absence of any recorded axiom output; (iii) the
+type-checks. (ii) The absence of any recorded axiom output. (iii) The
 Lean kernel of \texttt{v4.34.1} and Mathlib \texttt{d13f23b7} being what
-upstream publishes; (iv) the comparator run, not reproduced; (v) no
+upstream publishes. (iv) The comparator run, not reproduced. (v) No
 second checker for this family. Table~\ref{tab:proof-trust} says which
 of the five Section~\ref{sec:replay} moved.
 

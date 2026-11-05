@@ -34,20 +34,20 @@ from a download cache. Inside the sandbox, the Lean installer
 \texttt{elan} was installed into the private home and fetched the
 pinned Lean version from the repository's own \texttt{lean-toolchain}
 file. Then, in the clone's \texttt{lean/} directory, three commands
-ran: \texttt{lake exe cache get}, which downloads the compiled Mathlib;
-\texttt{lake build OAI.Algorithms.SubexponentialSAT.Main}, which builds
-the solution's 3,091 files and not the collection's default target,
-which would build the whole collection (its \clonefile{README.md}, line 16, counts 721 manuscripts in 373 families); and \texttt{\#print axioms} of the
+ran. The first, \texttt{lake exe cache get}, downloads the compiled Mathlib.
+The second, \texttt{lake build OAI.Algorithms.SubexponentialSAT.Main}, builds
+the solution's 3,091 files. It does not build the collection's default target,
+which would build the whole collection (its \clonefile{README.md}, line 16, counts 721 manuscripts in 373 families). The third is \texttt{\#print axioms} of the
 one theorem the comparator names,
 \path{OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat},
 through \texttt{lake env lean}. Only text left the sandbox; nothing
 built inside it was executed outside it.
 
 Two runs were needed. The first, started at 01:03 on 2026-11-05, failed
-at once at the build step because its command line carried
-\texttt{-j 8}, an option this version of the build tool does not have
-(the whole of its build log is the one line \texttt{error: unknown short
-option '-j'}); nothing of the family was compiled. The second, started
+at once at the build step. Its command line carried
+\texttt{-j 8}, an option this version of the build tool does not have.
+The whole of its build log is the one line \texttt{error: unknown short
+option '-j'}, and nothing of the family was compiled. The second, started
 at 01:16 with that option removed and the core cap moved to
 \texttt{taskset}, is the run reported below. Both scripts, both
 versions, and the launch command are in the README; the first run's
@@ -88,9 +88,9 @@ comparator's theorem,
 and Mathlib at revision \path{d13f23b723b8a846827a245b89c10fc7d3f11612}
 from the clone's own manifest, with its compiled files from the Mathlib cache (8,908 files).
 The replay copy is at commit \texttt{4eaee875}, the same as the pristine
-clone, and the comparator file and the solution's files have the same
-hashes in both (\repofile{paper3/replay/logs/run2/hashes.txt}; the
-comparator statement's SHA-256, a fingerprint of a file's bytes that two different files do not share in practice, begins \texttt{4183b205}). The full build
+clone. The comparator file and the solution's files have the same
+hashes in both (\repofile{paper3/replay/logs/run2/hashes.txt}). A hash here is a SHA-256, a fingerprint of a file's bytes that two different files do not share in practice; the
+comparator statement's begins \texttt{4183b205}. The full build
 log is kept out of the repository by size; its SHA-256
 (\texttt{d313f594…}) and its last 200 lines are committed.
 
@@ -109,18 +109,17 @@ The comparator's settings for the family have \texttt{enable\_nanoda:
 false}: OpenAI's check of this family ran the Lean kernel only. We ran a
 second checker, in the same sandbox, after the build
 (\repofile{paper3/replay/nanoda.sh}, recorded in the README before it
-ran). Two tools are involved. \texttt{lean4export} (tag
-\texttt{v4.34.0}, commit \texttt{076e8e57}, built with the pinned
+ran). Two tools are involved. The first is \texttt{lean4export} (tag
+\texttt{v4.34.0}, commit \texttt{076e8e57}), built with the pinned
 \texttt{v4.34.1} Lean so that it reads the compiled files the build
-produced) wrote out \texttt{exact\_count\_and\_sat} and everything it
-depends on from the built environment, as a plain-text file:
-2,355,666,449 bytes, 43,633,742 lines, format version 3.1.0, in
-68~seconds. Then \texttt{nanoda\_lib} \citep{Nanoda} (version 0.4.31,
+produced. It wrote out \texttt{exact\_count\_and\_sat} and everything it
+depends on from the built environment, as a plain-text file. That file is
+2,355,666,449 bytes and 43,633,742 lines, in format version 3.1.0, and took
+68~seconds to write. The second is \texttt{nanoda\_lib} \citep{Nanoda} (version 0.4.31,
 commit \texttt{8de7e0c4}, 2026-10-29), a checker for Lean~4 proofs
-written in Rust that shares no code with the Lean kernel, read that
-file and re-checked every declaration in it, with \texttt{propext},
-\texttt{Classical.choice} and \texttt{Quot.sound} as the permitted
-axioms and the \texttt{Nat} and \texttt{String} literal extensions on.
+written in Rust that shares no code with the Lean kernel. It read that
+file and re-checked every declaration in it. The permitted axioms were \texttt{propext},
+\texttt{Classical.choice} and \texttt{Quot.sound}, and the \texttt{Nat} and \texttt{String} literal extensions were on.
 Its output (\repofile{paper3/replay/logs/nanoda/nanoda_check.txt}):
 \begin{quote}
 \texttt{Checked 95176 declarations with no errors}
@@ -147,11 +146,11 @@ checker's output are committed.
   it checks what it reads) to it. Two independent checkers agreeing is
   evidence, not a proof that either is correct.
 \item It is not the comparator run. The comparator checks that the
-  solution's exported statement matches the challenge's; we did not run
-  that tool chain, and the statement-level match the paper relies on is
-  the textual one of Section~\ref{sec:proof} (the 35 definitions and the
+  solution's exported statement matches the challenge's. We did not run
+  that tool chain. The statement-level match the paper relies on is
+  the textual one of Section~\ref{sec:proof}: the 35 definitions and the
   theorem statement, identical after normalising spacing, two of them up
-  to the \texttt{noncomputable} keyword).
+  to the \texttt{noncomputable} keyword.
 \item The counts above are counts of lines in one build's log on one
   machine with the named versions; a different build tool would print
   different job totals (the 12,014 includes the cached Mathlib modules),

@@ -76,13 +76,13 @@ bound $C\,(L+1)^d\,2^{A\rhon}$ (lines 210--211). Four features of that property 
   constants are chosen after $k$ and before $n$
   (Section~\ref{sec:statement}); there is no $n \ge 20$ condition in the
   comparator statement, though the manuscript's Theorem~1.1 carries one
-  (p.~2, lines 56--57). So the verified form is the strong form of the denial, one algorithm for every rate at once: a single algorithm that runs within $2^{\delta n}$ times a
-  polynomial for every $\delta$ at once, where the denial of a
+  (p.~2, lines 56--57). So the verified form is the strong form of the denial, one algorithm for every rate at once. A single algorithm runs within $2^{\delta n}$ times a
+  polynomial for every $\delta$. The denial of a
   hypothesis of the form ``for every $\delta$ there is an algorithm''
   would have allowed a different algorithm for each $\delta$.
 \item \textbf{The machine model is the conservative one.} The
   comparator's machine is a multitape Turing machine that moves one head
-  one cell or writes one symbol per step. Every step of such a machine is a bounded amount of work on any of the standard models of computation (random-access machines, other kinds of Turing machine) in which the hypotheses are stated, so the bound transfers to those models with at
+  one cell or writes one symbol per step. Every step of such a machine is a bounded amount of work on any of the standard models of computation in which the hypotheses are stated (random-access machines, other kinds of Turing machine). So the bound transfers to those models with at
   most a constant factor per step, which the polynomial absorbs. The
   input is the manuscript's own encoding, of length polynomial in
   $n + m$; converting from any other reasonable encoding is polynomial
@@ -185,9 +185,9 @@ tautology [CGI$^+$16],'' citing \citet{Carmosino2016}. (A $k$-DNF is the mirror 
 unsatisfiability with a saving over $2^n$. Its denial: there is a saving
 that every fixed $k$ allows, for a guessing algorithm. The verified
 machine's answer bit is \texttt{false} exactly when the count is zero
-(lines 205--207), so it decides unsatisfiability deterministically within
+(lines 205--207). So it decides unsatisfiability deterministically within
 the SETH bound of the previous paragraph for every $\varepsilon$ and
-every $k$; and a deterministic machine is a guessing machine that never
+every $k$. And a deterministic machine is a guessing machine that never
 guesses, so every convention for nondeterministic time is met. The
 manuscript's ``decides both satisfiability and unsatisfiability'' (line
 188) is this.
@@ -247,8 +247,8 @@ in $2^{n/2}\,\mathrm{poly}(n,m)$ time [Wil16, Theorem 3.3]''
 \label{sec:consequences-lower-bounds}
 
 The manuscript's \S1.1.3 opens with a list of lower bounds that were
-proved from ETH or from SETH (p.~5, lines 213--225), for problems with
-exponential algorithms and for problems with polynomial ones, and then
+proved from ETH or from SETH (p.~5, lines 213--225). The list covers problems with
+exponential algorithms and problems with polynomial ones. Then it
 says what its result does to them (lines 226--227):
 \begin{quote}\small
 ``Our refutation of ETH and SETH removes one basis for the hardness
@@ -322,8 +322,8 @@ Orthogonal Vectors Conjecture, which it states and then relates to SETH:
 OVC [Wil05, VW19]'' (lines 231--232). That implication is a theorem
 with a false premise, like (E) and (S): it says nothing about OVC either
 way, and nothing in the verified statement is about orthogonal vectors.
-The second is the form of SETH for formulas of unrestricted width, which
-we quote with the manuscript's list of the problems it covers elided
+The second is the form of SETH for formulas of unrestricted width. We
+quote it with the manuscript's list of the problems it covers elided
 (lines 233--236):
 \begin{quote}\small
 ``The lower bounds for [\ldots] also follow from the hypothesis that

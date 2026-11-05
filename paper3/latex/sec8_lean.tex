@@ -39,10 +39,10 @@ Appendix~\ref{app:lean}.
 
 The comparator file of family~378,
 \clonefile{lean/ComparatorChallenges/SubexponentialSAT.lean}, has 220
-lines. Lines 1--190 define the objects the theorem speaks about: the
-formulas, their encoding as a string of bits, the multitape machine, its
-step and its starting configuration, the exponent $\runtimeScale$ and
-the bound built from it, the count word, and the bookkeeping that
+lines. Lines 1--190 define the objects the theorem speaks about. These are the
+formulas and their encoding as a string of bits; the multitape machine, its
+step and its starting configuration; the exponent $\runtimeScale$ and
+the bound built from it; the count word; and the bookkeeping that
 records which tape cells a run has visited. Lines 191--219 state the
 theorem \texttt{exact\_count\_and\_sat} and end it with \texttt{sorry},
 the placeholder that a solution must replace. Line 220 closes the last namespace (a grouping of names).
@@ -60,11 +60,11 @@ SHA-256 against the hash the header records, and that the clone is at
 commit \texttt{4eaee875}. The log is \repofile{paper3/lean/rediff.log}.
 
 So the copy holds the theorem's \emph{vocabulary} and not the theorem.
-The \texttt{sorry} at line 218 is outside the copied range, and our file
-has no \texttt{sorry} and no axiom declaration outside its comments (the
-same script counts them: zero and zero in each of our two files; the two
-words do occur in comments, \texttt{PrimitiveMachine.lean} line 10 and
-\texttt{Frame.lean} lines 13 and 83, saying that nothing is one). Everything in the
+The \texttt{sorry} at line 218 is outside the copied range. Our file
+has no \texttt{sorry} and no axiom declaration outside its comments. The
+same script counts them: zero and zero in each of our two files. The two
+words do occur in comments, at \texttt{PrimitiveMachine.lean} line 10 and
+\texttt{Frame.lean} lines 13 and 83, saying that nothing is one. Everything in the
 copy is a definition. A definition can be badly chosen, but it cannot be
 false; what the definitions mean is Section~\ref{sec:statement}'s
 subject, and the copy adds nothing to it.
@@ -83,10 +83,10 @@ def, and the condition $2 \le k$ is carried by a second def,
 \texttt{ExactCountAndSat}, which says ``for every $k \ge 2$,
 \(\SubexpCount\ k\)'' (Appendix~\ref{app:lean}, \ref{lean:subexpcount}
 and \ref{lean:exactcountandsat}). In words, \(\SubexpCount\ k\) is the
-sentence of Section~\ref{sec:statement}: one fixed machine, on every
+sentence of Section~\ref{sec:statement}. One fixed machine, on every
 formula of width at most $k$, writes the exact number of satisfying
-assignments, answers whether there is one, runs within the bound built
-from $\runtimeScale$, and visits only polynomially many cells.
+assignments and answers whether there is one. It runs within the bound built
+from $\runtimeScale$, and it visits only polynomially many cells.
 
 The same script checks that the body is the comparator's. It takes the
 23 lines after \texttt{def SubexpCount (k : }$\mathbb{N}$\texttt{) : Prop :=}
@@ -163,7 +163,7 @@ cd lean && lake env lean ../paper3/lean/axiom_check.lean \
   > ../paper3/lean/axiom_check.log
 \end{verbatim}
 and the log is committed. The result: nineteen lines on exactly the
-three standard axioms; \texttt{Trace} on no axiom at all (it is defined by construction rules and carries no proof); \texttt{countWord} on two of the three (a proof may use fewer than the three, and fewer is never a concern); \texttt{sorryAx} on none. The library it runs against is built with
+three standard axioms. \texttt{Trace} is on no axiom at all; it is defined by construction rules and carries no proof. \texttt{countWord} is on two of the three; a proof may use fewer than the three, and fewer is never a concern. \texttt{sorryAx} appears on none. The library it runs against is built with
 Lean~4.34.0-rc2 and Mathlib at \texttt{1192d624}, neither of which is
 what the clone pins (Lean~4.34.1, Mathlib \texttt{d13f23b7},
 Section~\ref{sec:proof}). That the copied model is accepted unchanged

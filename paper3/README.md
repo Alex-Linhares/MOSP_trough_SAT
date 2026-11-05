@@ -86,7 +86,7 @@ one-line note of the counts the paper has since corrected). The plan is
 | path | content |
 |---|---|
 | `latex/` | the paper: `main.tex` (title verbatim, abstract, section inputs), `sec1_intro.tex` … `sec12_ack.tex`, `secA_appendix_lean.tex` (the Lean names), `secB_appendix_technical.tex` (the dense passages Sections 2–7 cite, with every line number and formula), `refs.bib` (24 entries, DOIs checked), `Makefile` (`make`, `make check`), `figures/` (PDF and PNG, each with its script under `scripts/`), `tables/` (generated `.tex`, the measurement's raw CSV and metadata), `data/doi_check.json` (the registry cache), `doi_check.log` (the run of record), `main.pdf` (committed) |
-| `scripts/` | every number's regenerate script, one per section (below); each runs under `python3 -I`, reads the clone and the extract with `open()` only, and has a `--check` mode |
+| `scripts/` | every number's regenerate script, one per section (below); each runs under `python3 -I`, reads the clone and the extract with `open()` only, and has a `--check` mode; plus `sentence_lengths.py`, the plain-English bookkeeping measure (item 12), which reads only this directory |
 | `replay/` | the sandboxed replay: `README.md` (isolation, timeline, both scripts verbatim in both versions, every count and hash), `run_sandbox.sh`, `replay.sh`, `run_sandbox_nanoda.sh`, `nanoda.sh`, `counts.sh`, `logs/{run1,run2,nanoda}/` (the short logs and hashes; the full build log and the export are git-ignored and identified by SHA-256) |
 | `lean/` | `README.md` pointing at the companion Lean (`lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame}.lean`, left in place by the owner's decision S3), `axiom_check.lean` with its committed `axiom_check.log`, and `rediff.log` (the byte-level re-diff of the copy, written by `scripts/lean_rediff.py`) |
 | `related/` | the four texts Section 9 quotes, fetched on 2026-11-05 (`fetched/`, with their API records and hashes), and a `README.md` of files, URLs and what was not fetched |
@@ -295,11 +295,11 @@ python3 paper3/scripts/check_refs.py              # the bibliography's DOIs (net
   2.17 near a 24-digit `n`, 3,091 files, 33 minutes, 95,176 declarations,
   500 variables) are Sections 2, 4, 5 and 7's, each cited with its
   section; the abstract is 198 words (`\emph` stripped, `$2^n$` one word).
-  The conclusion's §10.2 sorts every `ETH_AMBIGUOUS.MD` entry written
-  before it (48, through 09d): 7 resolved by the owner, 8 procedural or
-  already carried by the text, 33 open and affecting the text, by entry
-  number; the entries written after it (10a–10d, 11a–11g) are listed
-  below only, as its "what this does not claim" says.
+  The conclusion's §10.2 sorts every `ETH_AMBIGUOUS.MD` entry (61 as of
+  item 12, through 12b): 7 resolved by the owner, 15 procedural or
+  already carried by the text, 39 open and affecting the text, by entry
+  number (item 09 wrote it for the first 48 as 7 / 8 / 33; item 12
+  extended and re-counted it, 12b). The same sorting is below.
 - **The data statement and the acknowledgements** (item 11): no number
   of their own; the data statement names the paths above, the
   acknowledgements the versions Sections 5, 7 and 8 record.
@@ -320,6 +320,14 @@ python3 paper3/scripts/check_refs.py              # the bibliography's DOIs (net
   subagent (21 findings, 17 fixed, 4 recorded as 10a–10d); the family-side
   "ETH" count it prompted is now a check in `beyond_claims.py` and the page
   of extract line 153 a check in `related_work.py`.
+- **The second plain-English pass** (item 12, the reserve): no number in
+  the paper. `python3 -I paper3/scripts/sentence_lengths.py` (from the
+  repository root; `--ref <commit>` for a committed version, `--list N`
+  to list the pieces over N words) is the crude measure behind
+  `ETH_AMBIGUOUS.MD` 12a: pieces over 45 words 95 → 26 and over 58 words
+  32 → 18 across every `sec*.tex`, mean 22.4 → 20.0 words, between commit
+  `66a755ac2` and the working tree of 2026-11-05; the 26 left are tables,
+  displays, list sentences, verbatim quotations and splitter artefacts.
 
 ## The replay: status and hashes
 
@@ -395,28 +403,35 @@ of the proof's 3,091 modules is copied.
 
 ## Open questions for the owner, by entry
 
-Every entry of `ETH_AMBIGUOUS.MD` (59 on 2026-11-05: S1–S8 from the setup,
-01a–10d from the items, 11a–11g from this write-up), one clause each. The
-paper's §10.2 sorts the first 48 the same way; the owner resolves an entry
-by editing the paper and striking it, or by leaving it.
+Every entry of `ETH_AMBIGUOUS.MD` (61 on 2026-11-05: S1–S8 from the setup,
+01a–10d from the items, 11a–11g from this write-up, 12a–12b from the
+reserve item), one clause each. The paper's §10.2 sorts all 61 the same
+way (since item 12; item 11 had listed the entries after 09d here only).
+The owner resolves an entry by editing the paper and striking it, or by
+leaving it.
 
 **Resolved by the owner in writing (7).** S1 the author line; S3 the Lean
 left in place (07a follows it); S4 cite the manuscript first, no width
 references; S6 the counters; S7 the phrase "for every 50 ≤ n < e^5504";
 S8 the replay's toolchain.
 
-**Procedural, or corrections the text already carries (12).** S5 the
+**Procedural, or corrections the text already carries (15).** S5 the
 per-item cap of the driver; 01a the sandbox's core cap (`-j 8` → `taskset`);
 03b the manuscript has 67 pages, not 64; 04b `enable_nanoda: false` on 413
 of 418, not 416; 04d `#print axioms` in 8 closure files / 19 commands; 04e
 42 manifest packages, not 41; 06b `pyapproxmc` was already installed,
 `pyganak` installed; 08xb Section 9 and Appendix A not rewritten by the
-plain-English item (drafted plain); 11c the two audits annotated, not
+plain-English item (drafted plain); 10c the sentences over 45 words the
+refuter left, split by item 12 (12a); 11c the two audits annotated, not
 edited, and the budget comment fixed; 11d the entries after 09d listed
-here and not in §10.2; 11e the CLAUDE.md paragraph drafted below and not
-applied; 11f the plan's §0 updated by annotation and a new §0.9.
+here, and since item 12 in §10.2 too; 11e the CLAUDE.md paragraph drafted
+below and not applied; 11f the plan's §0 updated by annotation and a new
+§0.9; 12a the scope of the second plain-English pass (quotations, tables,
+lists and captions left); 12b §10.2 extended to all entries and
+re-counted, and this section's open count corrected (it said 36 and
+listed 40).
 
-**Open and affecting the text (36).**
+**Open and affecting the text (39).**
 - *The title and its figures*: S2 `2^n` typeset with a superscript; 02a
   three drawings of one function; 02b the central figure's peak and `+16`;
   10b the title's "is slower" against the paper's non-claim of any running
@@ -449,8 +464,7 @@ applied; 11f the plan's §0 updated by annotation and a new §0.9.
   09a the third clause in words, no formula beyond `2^n`; 09b which numbers
   the abstract carries; 09c the sorting of the entries is the owner's to
   redo; 09d "people who checked" is the author and the assistant the
-  acknowledgements disclose; 10c about forty sentences of 46–58 words left
-  unsplit (item 12 could split them).
+  acknowledgements disclose.
 - *The write-up*: 10a thirteen DOIs added from Crossref, which the download
   list did not name; 10d the refuter's recorded findings (the placeholders,
   now written; the audits, now annotated); 11a the data statement's
@@ -459,7 +473,7 @@ applied; 11f the plan's §0 updated by annotation and a new §0.9.
   assistant; 11g the Lean 4 and Mathlib references copied from paper 1's
   bibliography.
 
-Fourteen of the 36 are bibliographic or typographic (S2, 02a, 02b, 02d,
+Fourteen of the 39 are bibliographic or typographic (S2, 02a, 02b, 02d,
 03a, 03d, 04a, 05c, 06c, 08a, 08b, 08c, 08xa, 11g); the rest are choices
 about what the text says, each a sentence that can be struck without
 touching any number.
@@ -521,11 +535,11 @@ paper (arXiv 2608.14673) concerns the August results, not 378; "we found
 no prior statement" of the title's observation, bounded to six texts.
 **The stance**: no flaw found, none asserted; a careful reading by people
 who checked. **Gaps**: the comparator run not reproduced; the two JCSS
-hypothesis papers cited unread (`literature/MISSING.md`); about forty
-sentences of 46–58 words unsplit (10c); the title's "is slower" rests on
-§2.5 and §7.4 (10b); 59 entries in `paper3/ETH_AMBIGUOUS.MD`, 36 open and
-affecting the text, sorted in Section 10.2 and in the README. Cost: eleven
-sessions and about 6.5 h of wall clock for items 01–10 (the replay's 33
-min inside), $133 of the $4,000 budget. Nothing under `solutions/` touched;
+hypothesis papers cited unread (`literature/MISSING.md`); the title's
+"is slower" rests on §2.5 and §7.4 (10b); 61 entries in
+`paper3/ETH_AMBIGUOUS.MD`, 39 open and affecting the text, sorted in
+Section 10.2 and in the README. Cost: thirteen sessions and about 7.5 h
+of wall clock for items 01–12 (the replay's 33 min inside), under $160
+of the $4,000 budget. Nothing under `solutions/` touched;
 no MOSP or pathwidth run; the only compute on random 3-CNF the script
 generates and the sandboxed build.

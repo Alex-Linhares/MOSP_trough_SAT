@@ -10,9 +10,9 @@
 
 This section places the paper beside what others have written about the
 same family and about the mechanism that checked it. There are five
-things to place it beside: what the collection says about itself; the two
-papers that stated the hypotheses; a published human audit of an earlier
-batch of OpenAI's results; the checking tool, called the comparator; and
+things to place it beside. First, what the collection says about itself. Second, the two
+papers that stated the hypotheses. Third, a published human audit of an earlier
+batch of OpenAI's results. Fourth, the checking tool, called the comparator. Fifth,
 the second proof checker, called nanoda, that we ran in
 Section~\ref{sec:replay}. The section ends by saying where we looked for
 an earlier statement of the title's observation and what we found.
@@ -66,17 +66,17 @@ exponents). Its table (line 17) links the result to the one comparator
 statement, \clonefile{lean/ComparatorChallenges/SubexponentialSAT.lean}.
 So the collection itself records that the verified exponent is the weaker
 one. What it does not record is what the weaker exponent means at any
-size: that $\rhon$, the verified exponent, is larger than $n$ for every
-$n$ between $50$ and $e^{5504}$, so that the verified bound with constant
+size. The verified exponent $\rhon$ is larger than $n$ for every
+$n$ between $50$ and $e^{5504}$. So the verified bound with constant
 one sits above $2^n$ at every size anyone will ever run
 (Section~\ref{sec:statement}). That is the title's observation, and the
 note does not make it.
 
 The third document is \clonefile{lean/ComparatorChallenges/README.md},
-ten lines. It says how the collection's checks are run: ``Install
+ten lines. It says how the collection's checks are run. First: ``Install
 \texttt{comparator}, \texttt{landrun}, and \texttt{lean4export}, and make
-them available on \texttt{PATH}.'' (line 3), then from the \texttt{lean/}
-directory \texttt{lake update}, \texttt{lake exe cache get}, and
+them available on \texttt{PATH}.'' (line 3). Then, from the \texttt{lean/}
+directory, \texttt{lake update}, \texttt{lake exe cache get}, and
 \texttt{lake env comparator} on a family's JSON (lines 7--9; the example
 is another family's). The JSON for this family has six fields
 (Section~\ref{sec:related-comparator} reads them).
@@ -180,13 +180,13 @@ In plain words: the solution proves exactly the sentence
 the challenge posed, uses only the agreed axioms (the three standard ones
 in the example configuration, line 27), and passes the kernel, the small
 core of Lean that checks proofs. How it checks them is in its
-``Internals'' (lines 184--200), six steps: build the challenge inside a
-sandbox; export its declarations with \texttt{lean4export}; do the same
-for the solution; ``Verify that all declarations used in the statement of
+``Internals'' (lines 184--200), in six steps. Build the challenge inside a
+sandbox. Export its declarations with \texttt{lean4export}. Do the same
+for the solution. Then ``Verify that all declarations used in the statement of
 all relevant theorems in \texttt{Challenge} are the same as in the
-\texttt{Solution} environment'' (lines 191--192); ``Verify that the body
+\texttt{Solution} environment'' (lines 191--192). Then ``Verify that the body
 of all relevant theorems in the \texttt{Solution} environment only uses
-axioms listed in \texttt{permitted\_axioms}'' (lines 195--196); and
+axioms listed in \texttt{permitted\_axioms}'' (lines 195--196). Finally,
 ``Replay the \texttt{Solution} environment into the Lean kernel'' (line
 197). The first guarantee is therefore a match of the statement's
 declarations as exported, not a textual comparison of the two files.
@@ -199,7 +199,7 @@ that concerns the kernel is the fifth: ``The Lean kernel is correct (with
 Lean kernel or the \texttt{external\_kernels} is correct')'' (lines
 43--44). The sandbox is \texttt{landrun} (line 10), a tool that confines
 the build so that a malicious solution file cannot tamper with the
-checker; the README notes that its trusted base ``naturally includes the
+checker. The README notes that its trusted base ``naturally includes the
 operating system and hardware it is running on, plus its sandboxing
 mechanism'' (line 58). External kernels are optional: ``Comparator can
 additionally check solutions with external kernels'' (line 70), and ``For
@@ -227,9 +227,9 @@ comparator itself.
 \subsection{nanoda}
 \label{sec:related-nanoda}
 
-nanoda is the second checker \citep{Nanoda}. Its README, fetched from
-the \texttt{master} branch of \texttt{ammkrn/nanoda\_lib} on 2026-11-05,
-says what it is in one sentence (line 3): ``This is an external type
+nanoda is the second checker \citep{Nanoda}. Its README was fetched from
+the \texttt{master} branch of \texttt{ammkrn/nanoda\_lib} on 2026-11-05.
+It says what it is in one sentence (line 3): ``This is an external type
 checker for the Lean 4 programming language and theorem prover.'' The
 repository's description line is ``Library implementing type
 inference/checking functionality based on the Lean theorem prover''; the
@@ -241,7 +241,7 @@ project'' (line 23). Its axiom rule is the comparator's: ``The average
 Lean user will want to permit the three semi-official axioms, which are
 \texttt{Quot.sound}, \texttt{Classical.choice}, and \texttt{propext}, and
 most export files will also rely on \texttt{Lean.trustCompiler}'' (line
-33); the export we checked contains the first three and no fourth
+33). The export we checked contains the first three and no fourth
 (Section~\ref{sec:replay}). Two kernel extensions for arithmetic on
 literals are off by default and ``enable or disable the Nat and String
 kernel extensions'' (line 39); the replay turned both on.
@@ -274,8 +274,8 @@ proof's own fallback for small inputs (lines 2480 and 2487, where the
 algorithm uses ``exhaustive search'' below the cutoff
 $n \ge 20$). The nearest earlier statements are the manuscript's own
 sentence that Lean verifies ``the weaker exponent'' (page 2, lines
-63--67; Section~\ref{sec:beyond}) and the scope note: both say the
-verified exponent is the weaker one, and neither says at what sizes the
+63--67; Section~\ref{sec:beyond}) and the scope note. Both say the
+verified exponent is the weaker one. Neither says at what sizes the
 verified bound exceeds $2^n$, which is the title's point. Within these
 texts we found no prior statement of it. The search is bounded by that
 list: we did not search the literature at large, the working group's

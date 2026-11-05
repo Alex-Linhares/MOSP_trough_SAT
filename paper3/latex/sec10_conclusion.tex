@@ -31,10 +31,10 @@ the verified statement is exactly what the manuscript says follows: the
 hypotheses fall, the lower bounds derived from them lose their premise,
 and the conclusions of those lower bounds are untouched
 (Section~\ref{sec:consequences}). For anyone who runs a solver, nothing
-changes (Section~\ref{sec:practitioner}). The two facts are true at
-once, and neither diminishes the other: in the limit the exponent is
-smaller than the number of variables by any factor one names, which is
-a theorem in our own Lean (Section~\ref{sec:lean}); on every size anyone
+changes (Section~\ref{sec:practitioner}). Two facts are true at
+once, and neither diminishes the other. In the limit, the exponent is
+smaller than the number of variables by any factor one names; that is
+a theorem in our own Lean (Section~\ref{sec:lean}). On every size anyone
 will write down, it is larger.
 
 \subsection{What is claimed, and what is not}
@@ -57,24 +57,32 @@ replay's logs and hashes are under \repofile{paper3/replay/}.
 \subsection{The questions this reading left open, by entry}
 \label{sec:conclusion-open}
 
-The paper was written under a rule that no question stops the work: a
-choice between two sound ways of saying or doing a thing is made,
-recorded in \repofile{paper3/ETH_AMBIGUOUS.MD} as one numbered entry
-with what was ambiguous, what was chosen and what the author may want
-to change, and the writing goes on. Forty-four entries were written
-before this section and four by it. We reviewed all forty-eight and
-sort them here. Fifteen need no decision: seven were resolved by the
-author in writing (S1, the author line; S3, where the companion Lean
-lives, with 07a following it; S4, no width references; S6, the model
-counters; S7, the phrase ``for every $50 \le n < e^{5504}$''; S8, the
-replay's Lean version) and eight are procedural or are corrections
-already carried by the text (S5, the per-item time cap of the writing
-driver; 01a, the sandbox's core cap; 03b, the manuscript has 67 pages;
-04b, 04d and 04e, three counts corrected from an earlier audit; 06b, a
-counter installed for Section~\ref{sec:practitioner}; 08xb, which
-sections the plain-English rewrite covered). The thirty-three below
-affect the text and are open: in each case the text stands as chosen,
-and the entry says what would change.
+The paper was written under a rule that no question stops the work.
+A choice between two sound ways of saying or doing a thing is made and
+recorded in \repofile{paper3/ETH_AMBIGUOUS.MD} as one numbered entry.
+The entry says what was ambiguous, what was chosen and what the author
+may want to change. Then the writing goes on. Sixty-one entries were
+written in all: forty-four before the first draft of this section,
+four by that draft, eleven by the reading of the whole paper and the
+write-up that followed it, and two by the final pass. We reviewed all
+sixty-one and sort them here. Twenty-two need no decision. Seven were
+resolved by the author in writing: S1, the author line; S3, where the
+companion Lean lives, with 07a following it; S4, no width references;
+S6, the model counters; S7, the phrase ``for every $50 \le n <
+e^{5504}$''; S8, the replay's Lean version. Fifteen are procedural, or
+are corrections the text already carries: S5, the per-item time cap of
+the writing driver; 01a, the sandbox's core cap; 03b, the manuscript
+has 67 pages; 04b, 04d and 04e, three counts corrected from an earlier
+audit; 06b, a counter installed for Section~\ref{sec:practitioner};
+08xb, which sections the plain-English rewrite covered; 10c, the long
+sentences the first reading left, since split; 11c, two audit files
+annotated rather than edited; 11d, the later entries listed in the
+repository's README, and since here too; 11e, a paragraph for the
+repository's instructions file, drafted and not applied; 11f, the
+plan's record of what was done; 12a and 12b, the scope of the final
+pass and this list's own re-count. The thirty-nine below affect the
+text and are open. In each case the text stands as chosen, and the
+entry says what would change.
 
 \begin{description}\setlength{\itemsep}{1pt}
 \item[The title and its figures.] S2: $2^n$ is typeset with a
@@ -82,7 +90,10 @@ and the entry says what would change.
   PDF's metadata. 02a: Section~\ref{sec:statement} carries both the
   two-panel Figure~\ref{fig:central} and Figure~\ref{fig:runtime-scale},
   three drawings of one function. 02b: the central figure's peak is
-  placed analytically and its legend carries the $+16$.
+  placed analytically and its legend carries the $+16$. 10b: the
+  title's ``is slower'' is reconciled with the paper's non-claim of any
+  running time by Sections~\ref{sec:statement} and
+  \ref{sec:practitioner}, and by nothing in the title itself.
 \item[The statement (Section~\ref{sec:statement}).] 02c: a proof-side
   fact, the constant $256 + A_t$, is quoted in the statement section
   for its value. 02d: the Lean theorem is transcribed as a display, not
@@ -115,9 +126,9 @@ and the entry says what would change.
 \item[For the practitioner (Section~\ref{sec:practitioner}).] 06a: the
   two guarantee curves share one scale factor, so that they cross where
   the statement puts the crossing. 06c: seven references for the tools
-  and the threshold are from memory, with no DOI checked. 06d: the
-  counters are reported at their defaults, including a plateau that
-  looks like a preprocessing budget.
+  and the threshold were typed from memory; their DOIs have since been
+  checked (10a). 06d: the counters are reported at their defaults,
+  including a plateau that looks like a preprocessing budget.
 \item[Our Lean (Section~\ref{sec:lean}).] 07b: the axiom audit prints
   two lines with fewer than the three axioms, and ``every line on the
   three'' is read as ``nothing beyond the three''. 07c: the re-diff also
@@ -126,8 +137,9 @@ and the entry says what would change.
 \item[Related work (Section~\ref{sec:related}).] 08a: the audit paper's
   title is typeset with an apostrophe the arXiv record lacks. 08b: four
   small public records were fetched beside the three allowed pages, for
-  their dates and commits. 08c: fourteen references carry no checked
-  DOI. 08d: ``we found no earlier statement'' is bounded to six texts.
+  their dates and commits. 08c: fourteen references carried no checked
+  DOI at the time; thirteen have since been found (10a). 08d: ``we
+  found no earlier statement'' is bounded to six texts.
 \item[Plain English, and this section.] 08xa: the dense passages were
   moved into Appendix~\ref{app:tech}, not cut. 08xc: the glosses are
   repeated in each section and now also in the introduction. 09a: the
@@ -139,12 +151,20 @@ and the entry says what would change.
   is the author's to redo. 09d: ``people who checked'' in the stance
   sentence is read as the author and the assistant the acknowledgements
   disclose.
+\item[The write-up around the paper.] 10a: thirteen DOIs were added
+  from a registry the download rule did not name. 10d: the reading's
+  findings that were recorded and not fixed at the time; the two it
+  names have since been written and annotated. 11a: the data statement
+  takes its repository address and licence from our first paper. 11b:
+  the acknowledgements name the second reading as a second session of
+  the same assistant. 11g: the references for Lean~4 and Mathlib are
+  copied from our first paper's bibliography.
 \end{description}
 
-Thirteen of the thirty-three are bibliographic or typographic (S2, 02b,
-02d, 05c, 06c, 08a, 08b, 08c and the five spelling, placement and
-tagging choices of 02a, 03a, 03d, 04a, 08xa); the rest are choices
-about what the text says, and each is a sentence that can be struck
+Fourteen of the thirty-nine are bibliographic or typographic: S2, 02b,
+02d, 05c, 06c, 08a, 08b, 08c, 11g, and the five spelling, placement and
+tagging choices of 02a, 03a, 03d, 04a, 08xa. The rest are choices
+about what the text says. Each is a sentence that can be struck
 without touching any number.
 
 \subsection{What this does not claim}
@@ -156,8 +176,9 @@ without touching any number.
   are Sections~\ref{sec:statement}, \ref{sec:proof} and
   \ref{sec:replay}'s.
 \item \textbf{The list of open questions is complete to the day it was
-  written.} Entries added after it, by the reading of the whole paper
-  that follows this draft, are in the file and not here.
+  last re-counted}, 2026-11-05, and includes the entries of the reading
+  of the whole paper and of the final pass. Any entry added after that
+  day is in the file and not here.
 \item \textbf{No question is answered here.} Each entry records a
   choice and what would change; the author's answer, where there is
   one, is in the file's ``Owner resolutions'' and in the text.

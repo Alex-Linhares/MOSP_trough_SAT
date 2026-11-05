@@ -24,8 +24,8 @@ there are, what runs is a \emph{model counter}, exact or approximate.
 No implementation of the verified machine exists to run beside them.
 This section measures the tools a practitioner has, on random formulas,
 and draws the two guarantees next to the measurements as shapes, so
-that the reader can see where each sits. The point is small and the section says it once: the verified guarantee is not the binding one on any machine, because it is above $2^n$ for every $n \ge 50$
-(Section~\ref{sec:statement}), while the solvers are many orders of
+that the reader can see where each sits. The point is small and the section says it once. The verified guarantee is not the binding one on any machine, because it is above $2^n$ for every $n \ge 50$
+(Section~\ref{sec:statement}). The solvers, meanwhile, are many orders of
 magnitude below $2^n$ at every size they were run at.
 
 \subsection{Why the comparison is between guarantees and measurements}
@@ -40,10 +40,10 @@ script of this section checks that, reading every file of the family
 with \texttt{open()} and counting those three patterns, each as a whole
 word at the start of a line or before a type (so \texttt{def mainProgram}
 is not \texttt{def main}): 0, 0, 0. The
-library proves that a machine with the stated bound exists and exhibits
-one as a mathematical term, inside a development with 1,048
+library proves that a machine with the stated bound exists, and exhibits
+one as a mathematical term. That term sits inside a development with 1,048
 \texttt{noncomputable} declarations and no way to execute anything
-(Section~\ref{sec:proof}); nothing in the clone runs it on an input, and
+(Section~\ref{sec:proof}). Nothing in the clone runs it on an input, and
 we found no implementation elsewhere. So the verified algorithm's actual
 running time on any formula is unknown, in both directions: nothing says
 it is slow, and nothing says it is fast. What is known is its
@@ -86,11 +86,11 @@ the two counters where it can reach. Ganak and ApproxMC were installed from PyPI
 \texttt{sharpSAT}, \texttt{d4} or other counter binary is on the host.
 
 \paragraph{Protocol.} Each call runs in its own interpreter under
-\texttt{nice -n 19}, at most eight at a time on the thirty-two cores of
-an AMD Ryzen 9 9950X (Linux 7.0.0, Python 3.12.13; the machine was
-shared with other work, load average at the start in
-\repofile{tables/practitioner_meta.json}), with a wall-clock budget of
-60~s per call. The time recorded is the wall clock (\texttt{perf\_counter}) around the
+\texttt{nice -n 19}, at most eight at a time, with a wall-clock budget of
+60~s per call. The machine is an AMD Ryzen 9 9950X with thirty-two cores
+(Linux 7.0.0, Python 3.12.13). It was
+shared with other work; the load average at the start is in
+\repofile{tables/practitioner_meta.json}. The time recorded is the wall clock (\texttt{perf\_counter}) around the
 construction of the solver object and the one call, inside the child
 process, with the interpreter's start-up and the import outside it. A
 call over budget is killed and recorded as \emph{censored}, that is, as
@@ -101,23 +101,23 @@ run took about twenty minutes (1,172~s).
 \subsection{What came out}
 \label{sec:practitioner-results}
 
-Table~\ref{tab:practitioner} gives, per size, the number of satisfiable
-instances, CaDiCaL's median and maximum over the twenty seeds, the
-number of instances each counter finished with its median and maximum
-(a median over all twenty with censored runs counted as above the
-budget, so a median is a number whenever more than ten finished), and
+Table~\ref{tab:practitioner} gives, per size, four things. First, the number of satisfiable
+instances. Second, CaDiCaL's median and maximum over the twenty seeds. Third, the
+number of instances each counter finished, with its median and maximum;
+a median is taken over all twenty, with censored runs counted as above the
+budget, so it is a number whenever more than ten finished. Fourth,
 the two guarantees in the common scale of the next subsection.
 Figure~\ref{fig:practitioner} draws the same.
 
 \begin{table}[htbp]
 \centering
 \caption{Random 3-CNF at $m = \lfloor 4.26\,n \rceil$, twenty seeds per
-size, one machine, 60~s per call. Columns: $n$ variables; $m$ clauses;
-``sat'', how many of the twenty instances CaDiCaL found satisfiable (at
+size, one machine, 60~s per call. The columns are these. $n$ is the number of variables and $m$ the number of clauses.
+``sat'' is how many of the twenty instances CaDiCaL found satisfiable; at
 $n = 400$ and $500$ only 10 and 8 finished, every one of them
-satisfiable); for each tool, ``fin'', the number of instances it finished
-within budget, and ``med'' and ``max'', its median and maximum seconds
-over all twenty seeds with a censored run counted as $> 60$. The last
+satisfiable. For each tool, ``fin'' is the number of instances it finished
+within budget, and ``med'' and ``max'' are its median and maximum seconds
+over all twenty seeds, with a censored run counted as $> 60$. The last
 two columns are the two guarantees as shapes: $2^n$ (trying every
 assignment) and $2^{\rhon}$ (the verified bound), both with constant
 $1$ and both multiplied by one common factor $t_{20}/2^{20}$ that puts
@@ -186,8 +186,8 @@ $2^{\rhon - n}$: below $1$ for $n < 50$, equal to $1$ at $n = 50$ up to
 rounding, and above $1$ from there (it is $2.8 \times 10^{3}$ at
 $n = 100$ and $4.0 \times 10^{51}$ at $n = 500$). Scaling each curve to
 the $n = 20$ point on its own would instead make the two touch at
-$n = 20$ and put the verified one above from there on; the common
-factor is the honest choice because it keeps the crossing where the
+$n = 20$ and put the verified one above from there on. The common
+factor is the honest choice, because it keeps the crossing where the
 statement puts it (Appendix~\ref{app:tech-scaling};
 \texttt{ETH\_AMBIGUOUS.MD}, 06a).
 
@@ -202,10 +202,10 @@ Nothing in those enormous factors is about the verified machine: the
 gap is between what a CDCL solver does on random formulas and what any
 exponential guarantee says, and it would be the same gap for the
 brute-force guarantee alone. The one fact this section adds to the
-title is the order of the three objects: at every size in the table the
+title is the order of the three objects. At every size in the table the
 measurement is far below $2^n$, and $2^{\rhon}$ is above $2^n$ from
-$n = 50$ on, so the verified guarantee is the largest of the three at
-every practical size and the measurement the smallest.
+$n = 50$ on. So the verified guarantee is the largest of the three at
+every practical size, and the measurement the smallest.
 
 One remark on what the verified machine's \emph{running time} would
 have to be, were it ever run. Nothing in this section bears on it: the
@@ -214,8 +214,8 @@ machine is a mathematical term, and a statement that something exists
 is not a program. The only values on record are the proof's own:
 $A \ge 257$ in its construction (Section~\ref{sec:statement}), and
 $A \ge 258$ with $C \ge 28{,}701$ in the theorem it exhibits
-(Section~\ref{sec:proof}); a guarantee of $2^{257\,\rhon}$ steps is a guarantee
-and not a measurement, and a different proof of the same statement
+(Section~\ref{sec:proof}). A guarantee of $2^{257\,\rhon}$ steps is a guarantee
+and not a measurement. A different proof of the same statement
 could carry any positive constants.
 
 \subsection{What this does not claim}
