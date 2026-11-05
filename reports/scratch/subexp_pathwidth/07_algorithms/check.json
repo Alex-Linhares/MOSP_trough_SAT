@@ -1,0 +1,188 @@
+{
+ "nmax": 7,
+ "a_line_graph": {
+  "checked_without_K2_component": 1110,
+  "with_K2_component": 53,
+  "fail_K2_case_cw_le_max_1_vsL": 0,
+  "fail_lower": 0,
+  "fail_upper": 0,
+  "fail_equality_delta_le_3": 0,
+  "fail_map_line_to_vertex": 0,
+  "fail_map_vertex_to_line": 0,
+  "excess_by_delta": {
+   "delta=2": {
+    "0": 40
+   },
+   "delta=3": {
+    "0": 164
+   },
+   "delta=4": {
+    "0": 120,
+    "1": 300
+   },
+   "delta=5": {
+    "0": 48,
+    "1": 336
+   },
+   "delta=6": {
+    "0": 4,
+    "1": 61,
+    "2": 37
+   }
+  }
+ },
+ "a_algorithm_7_2": {
+  "subcubic": 253,
+  "fail_value": 0,
+  "fail_witness": 0
+ },
+ "a_base_table": [
+  {
+   "case": "forest, m = n \u2212 1",
+   "m_over_n": 1.0,
+   "base": 1.89,
+   "below_2": true
+  },
+  {
+   "case": "threshold",
+   "m_over_n": 1.0889,
+   "base": 2.0,
+   "below_2": false
+  },
+  {
+   "case": "m = 1.2 n",
+   "m_over_n": 1.2,
+   "base": 2.1466,
+   "below_2": false
+  },
+  {
+   "case": "m = 1.25 n (e.g. 2.5-regular)",
+   "m_over_n": 1.25,
+   "base": 2.216,
+   "below_2": false
+  },
+  {
+   "case": "cubic, m = 1.5 n",
+   "m_over_n": 1.5,
+   "base": 2.5983,
+   "below_2": false
+  },
+  {
+   "case": "expansion G\u00b0, 2m = 3n (item 03)",
+   "m_over_n": 3.0,
+   "base": 6.7513,
+   "below_2": false
+  }
+ ],
+ "a_converse": {
+  "identity G": {
+   "diff": {
+    "0": 127,
+    "1": 122,
+    "2": 3
+   },
+   "skipped": 0,
+   "graphs": 252,
+   "constant": false
+  },
+  "line graph L(G)": {
+   "diff": {
+    "-1": 12,
+    "0": 61,
+    "1": 76,
+    "2": 78,
+    "3": 22,
+    "4": 1,
+    "5": 2
+   },
+   "skipped": 0,
+   "graphs": 252,
+   "constant": false
+  },
+  "hub (v-h_v, h_u-h_w)": {
+   "diff": {
+    "0": 12,
+    "1": 222,
+    "2": 18
+   },
+   "skipped": 0,
+   "graphs": 252,
+   "constant": false
+  },
+  "cross hub (v-h_v, h_u-w, u-h_w)": {
+   "diff": {
+    "1": 18,
+    "2": 25,
+    "3": 105,
+    "4": 64,
+    "5": 39,
+    "6": 1
+   },
+   "skipped": 0,
+   "graphs": 252,
+   "constant": false
+  },
+  "1-subdivision": {
+   "diff": {
+    "0": 124,
+    "1": 74
+   },
+   "skipped": 54,
+   "graphs": 198,
+   "constant": false
+  },
+  "pendant double": {
+   "diff": {
+    "0": 12,
+    "1": 222,
+    "2": 18
+   },
+   "skipped": 0,
+   "graphs": 252,
+   "constant": false
+  },
+  "degree-clique expansion G\u00b0": {
+   "diff": {
+    "0": 72,
+    "1": 51,
+    "2": 57
+   },
+   "skipped": 72,
+   "graphs": 180,
+   "constant": false
+  }
+ },
+ "b1_cobipartite": {
+  "atlas_graphs": 149,
+  "partitions": 496,
+  "fail_value": 0,
+  "fail_witness": 0,
+  "random": 200,
+  "random_fail": 0
+ },
+ "b2_twins": {
+  "atlas": 1252,
+  "fail_value": 0,
+  "fail_witness": 0,
+  "graphs_with_fewer_classes": 884,
+  "mosp_matrices": 296,
+  "mosp_fail_value": 0,
+  "mosp_fail_witness": 0
+ },
+ "b3_starlike": {
+  "exhaustive": 2592,
+  "fail_value": 0,
+  "fail_witness": 0,
+  "fail_decomposition": 0,
+  "random": 200,
+  "random_fail": 0
+ },
+ "c_edge_search": {
+  "checked": 153,
+  "es_minus_cw": {
+   "0": 153
+  },
+  "not_equal": 0
+ },
+ "seconds": 90.8
+}

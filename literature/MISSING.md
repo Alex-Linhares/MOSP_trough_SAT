@@ -594,3 +594,28 @@ of it is now copied into this development.
   (`reports/subexp_pathwidth.md` §2). The verified exponent is
   `n (log log n)² / √log n`; the paper's sharper exponents are paper-only
   (§1.0).
+
+## Pathwidth, cutwidth and edge search on bounded-degree graphs (loop0014 item 07, 2026-11-05)
+
+The classical ties between pathwidth and cutwidth that `reports/subexp_pathwidth.md`
+§3.4.3 and §7 meet, none held; attribution in §7 is "we found no prior
+statement in the held papers" and nothing is claimed first against them.
+
+- **Makedon, F. & Sudborough, I.H.** (1989). On minimizing width in linear
+  layouts. *Discrete Applied Mathematics* 23(3), 243–265. Cutwidth,
+  topological bandwidth and search number on graphs of maximum degree 3; the
+  likely source of `cw = vs(L(G))` for `Δ ≤ 3` (§7, Theorem 7.1) and of
+  `es = cw` for `Δ ≤ 3` (§7.5, checked on every subcubic atlas graph with
+  `n + 2m ≤ 20`, not proved here).
+- **Chung, F.R.K. & Seymour, P.D.** (1989). Graphs with small bandwidth and
+  cutwidth. *Discrete Mathematics* 75, 113–119. `cw ≤ O(Δ · pw)`-type bounds.
+- **Korach, E. & Solel, N.** (1993). Tree-width, path-width, and cutwidth.
+  *Discrete Applied Mathematics* 43(1), 97–101. `pw ≤ cw`; `tw ≤ pw ≤ tw · log n`.
+- **Monien, B. & Sudborough, I.H.** (1988). Min cut is NP-complete for edge
+  weighted trees. *Theoretical Computer Science* 58, 209–229. Cutwidth and
+  vertex separation NP-complete on planar graphs of maximum degree 3 (§3.1
+  row 9; the construction is not held, §3.6).
+- **Yannakakis, M.** (1985). A polynomial algorithm for the min-cut linear
+  arrangement of trees. *J. ACM* 32(4), 950–988. Cutwidth of trees is
+  polynomial (cited in §7.1 for the regime `m < 1.0888 n` where Algorithm
+  7.2's base is below 2).

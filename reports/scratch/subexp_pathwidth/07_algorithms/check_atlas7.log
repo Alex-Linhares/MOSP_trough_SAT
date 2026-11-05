@@ -1,0 +1,27 @@
+[a] line graph: 1252 atlas graphs to 7 vertices
+  checked 1110 without a K₂ component (53 with one: cw ≤ max(1, vs(L)) failures 0); cw ≤ vs(L) failures 0; excess bound failures 0; equality (Δ ≤ 3) failures 0; map failures 0 / 0
+  excess vs(L) − cw by Δ: {'delta=2': {'0': 40}, 'delta=3': {'0': 164}, 'delta=4': {'0': 120, '1': 300}, 'delta=5': {'0': 48, '1': 336}, 'delta=6': {'0': 4, '1': 61, '2': 37}}
+  Algorithm 7.2 on 253 subcubic graphs: value failures 0, witness failures 0
+  base: {'case': 'forest, m = n − 1', 'm_over_n': 1.0, 'base': 1.89, 'below_2': True}
+  base: {'case': 'threshold', 'm_over_n': 1.0889, 'base': 2.0, 'below_2': False}
+  base: {'case': 'm = 1.2 n', 'm_over_n': 1.2, 'base': 2.1466, 'below_2': False}
+  base: {'case': 'm = 1.25 n (e.g. 2.5-regular)', 'm_over_n': 1.25, 'base': 2.216, 'below_2': False}
+  base: {'case': 'cubic, m = 1.5 n', 'm_over_n': 1.5, 'base': 2.5983, 'below_2': False}
+  base: {'case': 'expansion G°, 2m = 3n (item 03)', 'm_over_n': 3.0, 'base': 6.7513, 'below_2': False}
+[a'] converse candidates on the subcubic atlas graphs
+  identity G                           cw(T) − vs(G): {0: 127, 1: 122, 2: 3}  (skipped 0 with > 14 vertices)
+  line graph L(G)                      cw(T) − vs(G): {-1: 12, 0: 61, 1: 76, 2: 78, 3: 22, 4: 1, 5: 2}  (skipped 0 with > 14 vertices)
+  hub (v-h_v, h_u-h_w)                 cw(T) − vs(G): {0: 12, 1: 222, 2: 18}  (skipped 0 with > 14 vertices)
+  cross hub (v-h_v, h_u-w, u-h_w)      cw(T) − vs(G): {1: 18, 2: 25, 3: 105, 4: 64, 5: 39, 6: 1}  (skipped 0 with > 14 vertices)
+  1-subdivision                        cw(T) − vs(G): {0: 124, 1: 74}  (skipped 54 with > 14 vertices)
+  pendant double                       cw(T) − vs(G): {0: 12, 1: 222, 2: 18}  (skipped 0 with > 14 vertices)
+  degree-clique expansion G°           cw(T) − vs(G): {0: 72, 1: 51, 2: 57}  (skipped 72 with > 14 vertices)
+[b1] cobipartite vertex separation
+  149 cobipartite atlas graphs, 496 partitions: value failures 0, witness failures 0; random (a + b ≤ 12): 200, failures 0
+[b2] twin-class vertex separation and the MOSP form
+  atlas: value failures 0, witness failures 0 (884 graphs have u < n); MOSP matrices 296: value failures 0, pattern-order failures 0
+[b3] starlike pathwidth (Gustedt Algorithm 6.3 with witness)
+  exhaustive to 7: 2592 graphs, value failures 0, witness failures 0, decomposition failures 0; random (6–14 vertices): 200, failures 0
+[c] edge search against cutwidth on subcubic graphs
+  153 subcubic graphs with n + 2m ≤ 20: es − cw distribution {0: 153}
+done in 90.8 s; results in reports/scratch/subexp_pathwidth/07_algorithms/check.json

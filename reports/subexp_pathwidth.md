@@ -2523,3 +2523,452 @@ from the unary code) are applied. Report: `06_crossover/refuter.md`.
     python3 -m pytest tests/test_subexp_crossover.py -q
     cd lean && lake build && lake env lean ../$D/axiom_check.lean | tee ../$D/axiom_check.log
     python3 Ralph_Loops/loop0014/gate.py
+
+## 7. New exact algorithms by exact linear transformation, unconditional (item 07, 2026-11-05)
+
+*Plan §0.5 item 07 as re-planned on 2026-11-04 (`iterations.md`): the
+converse of item 03's expansion, item 04's algorithms as algorithms with
+proofs and code, any further exact transformation at blow-up `≤ 2`. Every
+statement below was checked on every graph of the atlas to 7 vertices
+before it was written (§7.6; `python -m learning.subexp_algorithms`,
+90.8 s); code `learning/subexp_algorithms.py`, tests
+`tests/test_subexp_algorithms.py` (10 tests); scratch
+`reports/scratch/subexp_pathwidth/07_algorithms/`. Nothing here is
+conditional on the counting theorem; nothing here is in Lean (item 08).
+Nothing was solved on any instance on record.*
+
+### 7.0 Which direction carries the base, and what the item asks
+
+Item 03 proved `cw(G) = vs(G°)` for `Δ(G) ≤ 3` with `G°` on `2m`
+vertices (§3.4.3). That is the direction that turns a vertex-separation
+algorithm into a cutwidth algorithm: run it on `G°`. The item's (a) asks
+for the *converse* (`vs(G)` as the cutwidth of a linear-size graph) "so
+that the published `O(1.89ⁿ)` pathwidth algorithm becomes an exact
+cutwidth algorithm on subcubic graphs". The converse would not do that:
+with `cw(T(G)) = vs(G)`, a *cutwidth* algorithm computes pathwidth, and
+cutwidth has no base below 2 to offer (§1.1). What the converse buys is
+the other half of an equivalence (`PathwidthSubexpOn subcubic ↔
+CutwidthSubexpOn subcubic` in the frame of §2, item 08's business). So
+this section does three things in (a): it improves the *forward*
+direction from `2m` vertices to `m` — the line graph, Theorem 7.1 — which
+halves the exponent of the transfer; it states the resulting cutwidth
+algorithm with its base per vertex of `G`, honestly, against 2 (Algorithm
+7.2: **not below 2 on cubic graphs**, `1.89^{3/2} = 2.598`; below 2 only
+for `m < 1.0888 n`); and it explores the converse on seven candidate
+transformations without finding one (§7.2). Then (b) states item 04's
+three algorithms with proofs, witnesses and code (§7.3), and (c) records
+the one further exact transformation at blow-up `≤ 2` we have, edge
+search on subcubic graphs, which rests on a checked, unproved equality
+(§7.5).
+
+Conventions as in §3.4: a layout of `G` is an ordering `σ` of `V`;
+`vs_σ(t)` counts the placed vertices with an unplaced neighbour after `t`
+placements; `cw_σ(t)` counts the edges with exactly one endpoint among the
+first `t`; `vs = min_σ max_t vs_σ(t)`, `cw = min_σ max_t cw_σ(t)`. `L(G)`
+is the line graph: a vertex per edge, two adjacent iff the edges share an
+endpoint; `|V(L(G))| = m`. For a vertex `v` with at least one edge in a
+layout of `L(G)`, `ℓ(v)` is the position of its last edge.
+
+### 7.1 (a) The line graph carries cutwidth to vertex separation at blow-up `m/n`
+
+**Theorem 7.1.** For every graph `G` with `m` edges and maximum degree `Δ`:
+
+- (i) if no component of `G` is a single edge, `cw(G) ≤ vs(L(G))`;
+- (ii) `vs(L(G)) ≤ cw(G) + max(0, ⌊Δ/2⌋ − 1)`.
+
+Hence `cw(G) = vs(L(G))` whenever `Δ ≤ 3` and no component is a single
+edge; a single edge has `cw = 1` and an edgeless line graph, and in
+general `cw(G) ≤ max(1, vs(L(G)))` for every graph with an edge (cutwidth
+and vertex separation of a disjoint union are the maxima over components,
+and `L` of a disjoint union is the disjoint union). The excess in (ii) is
+attained at every `Δ ≥ 2` by the star `K_{1,Δ}` (`cw = ⌈Δ/2⌉`,
+`vs(L) = vs(K_Δ) = Δ − 1`).
+
+*Proof of (i).* Let `e_1, …, e_m` be a layout of `L(G)` of value `k`. At
+the `L`-cut `q` (edges `e_1..e_q` placed) a placed edge is counted iff it
+shares an endpoint with an unplaced edge. Let `P_q = {v : ℓ(v) ≤ q}` be
+the vertices *complete* at `q` (every incident edge placed); isolated
+vertices are laid out last and contribute to no cut.
+
+*Claim A: `|∂P_q| ≤ vs_L(q)`.* An edge `xz` with `x ∈ P_q`, `z ∉ P_q` is
+placed (its position is at most `ℓ(x) ≤ q`) and shares `z` with `z`'s last
+edge, which is unplaced; distinct edges give distinct counted vertices
+of `L`.
+
+*Claim B: `P_q ∖ P_{q−1}` is contained in the endpoints of `e_q`*, so it
+has at most two vertices, and two exactly when `e_q = uw` is the last edge
+of both `u` and `w`.
+
+The vertex layout is: the vertices in order of `ℓ`, i.e. the sets
+`P_0 ⊂ P_1 ⊂ … ⊂ P_m`, with each double step `P_{q−1} → P_q = P_{q−1} ∪
+{u, w}` split by the rule below. Its cuts are the `∂P_q`, bounded by `k`
+by Claim A, and one intermediate cut per double step. Write `P = P_{q−1}`,
+`a_u = |N(u) ∩ P|`, `b_u = |N(u) ∖ (P ∪ {w})|`, and `a_w`, `b_w` likewise.
+Adding `u` first gives `|∂(P ∪ {u})| = |∂P| − a_u + 1 + b_u`. At the
+`L`-cut `q − 1`, besides the `|∂P|` edges of Claim A, every edge `uy` with
+`y ∈ N(u) ∖ (P ∪ {w})` and every `wy` with `y ∈ N(w) ∖ (P ∪ {u})` is
+counted: it is placed (its position is below `q`, since `e_q` is the last
+edge of `u` and of `w` and it is not `e_q`), and `y ∉ P ∪ {u, w}` has
+`ℓ(y) ≥ q` and `ℓ(y) ≠ q`, so `y`'s last edge is unplaced; none of these
+has an endpoint in `P`, so they are distinct from the edges of Claim A.
+Hence `vs_L(q − 1) ≥ |∂P| + b_u + b_w` and `|∂(P ∪ {u})| ≤ vs_L(q − 1) + 1
+− a_u − b_w ≤ k` as soon as `a_u + b_w ≥ 1`. Symmetrically, adding `w`
+first costs at most `k` as soon as `a_w + b_u ≥ 1`. **The rule**: add `u`
+first if `u` has a neighbour in `P` or `w` has a neighbour outside
+`P ∪ {u, w}`; otherwise add `w` first. Both options fail only when
+`a_u = b_u = a_w = b_w = 0`, i.e. when `u` and `w` have no neighbour but
+each other — a single-edge component, excluded. (Which endpoint the rule
+names first depends on which is called `u`; the refuter checked that both
+labellings satisfy the bound on every `L`-layout, §7.8. On a graph *with* a
+single-edge component the map can exceed the bound — path `0—1—2` plus
+edge `3—4`, `L`-layout `(0,1), (3,4), (1,2)`, `vs = 1`, mapped order
+`0, 4, 3, 1, 2` of cutwidth 2 — which is why Algorithm 7.2 sets those
+components aside first.) ∎
+
+*Proof of (ii).* Let `v_1, …, v_n` be a layout of `G` of cutwidth `k`.
+Order the edges by (position of the earlier endpoint, position of the
+later endpoint): this is the layout of `L(G)`. For each `i` let `a_i` be
+the number of edges from `v_i` to earlier vertices, `b_i` to later ones,
+and `c_i` the number of edges crossing the gap just before `v_i`, so
+`c_i ≤ k` and `c_i − a_i + b_i ≤ k` (the gap just after `v_i`). The
+`L`-cuts are the pairs `(i, j)`, `0 ≤ j ≤ b_i`: every edge whose earlier
+endpoint precedes `v_i` is placed, plus the first `j` edges from `v_i` to
+later vertices. A placed edge `xy` with `x` before `v_i` has all edges at
+`x` placed, so it is counted iff an edge at `y` is unplaced, which needs
+`y` at or after `v_i`: such an edge crosses the gap before `v_i`, so there
+are at most `c_i` of them, and among them the `a_i` with `y = v_i` are
+counted only if `j < b_i`. A placed edge from `v_i` to a later vertex is
+counted at most once, and there are `j` of them. So the count at `(i, j)`
+is at most `(c_i − a_i) + a_i [j < b_i] + j`. For `j = b_i` this is
+`c_i − a_i + b_i ≤ k`. For `j < b_i` it is at most `c_i + j ≤ c_i + b_i −
+1 ≤ k + b_i − 1` and also `(c_i − a_i + b_i) + a_i − (b_i − j) ≤ k + a_i
+− 1`; so at most `k + min(a_i, b_i) − 1 ≤ k + ⌊Δ/2⌋ − 1`, and there is no
+such cut when `b_i = 0`. ∎
+
+Two remarks. `L(G)` is `G°` with the matching edges contracted (each
+`(v, e)—(w, e)` pair into the vertex `e`), so `vs(L(G)) ≤ vs(G°)` by
+minor-monotonicity of pathwidth, consistent with §3.4.3 in both
+directions; the point of Theorem 7.1 is that the contraction loses
+nothing at `Δ ≤ 3` and halves the vertex count. And the by-last-edge map
+of (i) is *not* the first-draft map: that one broke ties by degree and
+failed on the path `0—4—3—2` with the `L`-layout `(3,4), (2,3), (0,4)`
+(`vs(L) = 1`, the mapped order `3, 2, 4, 0` has cutwidth 2); the rule
+above was found by writing the proof of the intermediate cut and is what
+the code implements (`vertex_layout_from_line_layout`). The check caught
+it before the statement was made.
+
+**Algorithm 7.2 (cutwidth of a graph of maximum degree 3, with a witness).**
+Input `G` with `Δ(G) ≤ 3`. (1) Set aside the single-edge components and
+the isolated vertices. (2) Build `L(G')` of the rest, `m'` vertices.
+(3) Run a vertex-separation algorithm with a witness layout on `L(G')`.
+(4) Map the layout to a vertex order by completion with the rule of (i).
+(5) Append the set-aside components, each single edge consecutively.
+Output `max(vs(L(G')), [a single edge was set aside])` and the order.
+
+*Correctness.* Theorem 7.1 (i) and (ii) at `Δ ≤ 3` on `G'`; the cut
+inside an appended single edge crosses one edge and nothing else, since
+`G'` is complete by then; a disjoint union's cutwidth is the maximum.
+
+*Running time.* One run of the vertex-separation algorithm on `m'`
+vertices plus `O(m²)` for the maps. With the `O*(2^N)` subset DP, which
+is what `cutwidth_subcubic` implements (`vs_layout`, with argmin
+pointers), `O*(2^m)`; with Kitsunai, Kobayashi, Komuro, Tamaki & Tano
+(2016, held) Theorem 1 — directed pathwidth in `O(1.89^N)`, of which
+undirected pathwidth is the special case stated in their §1 — the
+*decision* is `O(1.89^m)`, and the witness follows from the feasible-set
+bookkeeping of their dynamic program as for any Bellman–Held–Karp
+recursion (we do not re-derive their algorithm; the `O*(2^m)` DP is what
+is checked here).
+
+**The base, per vertex of `G`.** `1.89^m = (1.89^{m/n})^n`:
+
+| class of `G` | `m / n` | base `1.89^{m/n}` | below 2? |
+|---|---|---|---|
+| forest (`m = n − 1`) | 1 | 1.890 | yes (and cutwidth of trees is polynomial, Yannakakis 1985, not held) |
+| threshold | `log 2 / log 1.89 = 1.0888` | 2.000 | — |
+| `m = 1.2 n` | 1.2 | 2.147 | no |
+| `m = 1.25 n` | 1.25 | 2.216 | no |
+| **cubic** (`m = 1.5 n`) | 1.5 | **2.598** | **no** |
+| item 03's `G°` (`2m = 3n`) | 3 | 6.751 | no |
+
+(`base_table`; regenerate with `python -c "from learning.subexp_algorithms
+import base_table; print(base_table())"`.) So **the transfer does not give a
+base below 2 for cutwidth on cubic graphs, nor on subcubic graphs in
+general**: `α = m/n ≤ 3/2` and `1.89^{3/2} = 2.598 > 2`. It gives one on
+subcubic graphs with `m < 1.0888 n` — connected graphs with cyclomatic
+number below `0.0888 n + 1` — where we found no record of a base below 2
+either and make no claim that the regime is interesting. Bentert et al.
+(2025, held) §1 call beating `O*(2ⁿ)` for cutwidth an explicit open
+problem; **nothing here settles it.** The honest statement is: cutwidth
+on graphs of maximum degree 3 is in `O*(min(2^n, 1.89^m))`, by the
+cutwidth DP on the one side and Algorithm 7.2 on the other, and the two
+cross at `m = 1.0888 n`.
+
+### 7.2 (a') The converse: explored, not found
+
+A converse is a map `T` with `|V(T(G))| = O(n)` and `cw(T(G)) = vs(G) + c`
+(or any invertible affine relation) on every subcubic `G`. Seven
+candidates were tabulated by brute force on all 253 subcubic atlas graphs
+with at least two vertices (`converse_exploration`; `cw(T(G)) − vs(G)`,
+target graphs above 14 vertices skipped and counted):
+
+| `T` | `|V(T)|` | `cw(T(G)) − vs(G)` on the 253 | constant? |
+|---|---|---|---|
+| `G` itself | `n` | 0: 127, 1: 122, 2: 3 | no |
+| `L(G)` | `m` | −1: 12, 0: 61, 1: 76, 2: 78, 3: 22, 4: 1, 5: 2 | no |
+| hub (`v—h_v`; `uw ↦ h_u—h_w`) | `2n` | 0: 12, 1: 222, 2: 18 | no |
+| cross hub (`v—h_v`; `uw ↦ h_u—w, u—h_w`) | `2n` | 1: 18, 2: 25, 3: 105, 4: 64, 5: 39, 6: 1 | no |
+| 1-subdivision | `n + m` | 0: 124, 1: 74 (54 skipped) | no |
+| pendant double (`G` plus a pendant per vertex) | `2n` | 0: 12, 1: 222, 2: 18 | no |
+| `G°` (item 03) | `2m` | 0: 72, 1: 51, 2: 57 (72 skipped) | no |
+
+The obstacle, as far as we can state it: a cut of `T` counts edges
+additively, while `vs` counts, per vertex, an OR over its edges. With a
+hub `h_v` adjacent to `v` and to the gadgets of `v`'s neighbours, the
+gadget's contribution to a cut with `v` placed and `u` of its `d`
+neighbours unplaced is `min(u, 1 + d − u)` (hub placed: the `u` edges to
+unplaced neighbours; hub unplaced: the edge `v—h_v` and the `d − u` edges
+to placed ones), which is `1` for every `u ≥ 1` when `d ≤ 2` and is `2`
+at `(d, u) = (3, 2)`: exact on paths and cycles, where nothing is at
+stake, and wrong at the first vertex of degree 3 with two unplaced
+neighbours. The smallest pair separating the hub from a constant offset
+is `K₂` (`vs = 1`, `cw(hub) = cw(P₄) = 1`) against `K_{1,3}` (`vs = 1`,
+`cw(hub) = 2`: the hub of the centre has degree 4). We did not find a
+gadget whose internal vertices, placed by the optimiser, repair this, and
+we do not claim none exists: this is a stated obstacle with its smallest
+example, not an impossibility theorem. What a converse would be worth is
+said in §7.0.
+
+### 7.3 (b) Item 04's algorithms, with proofs, witnesses and code
+
+**Algorithm 7.3 (cobipartite vertex separation, `O*(2^{max(a, b)})`).**
+Input `H` with vertex set `A ∪ B`, both cliques, `|A| = a`, `|B| = b`.
+For each `X ∈ {A, B}` with `Y` the other side: compute by dynamic
+programming over the subsets `S ⊆ Y` in order of size `f(S) = max(|Y| −
+|S| + |N_X(S)|, min_{v ∈ S} f(S ∖ v))`, `f(∅) = 0`, recording the argmin;
+`chain_X = f(Y)`, and `τ` is read from `S = Y` downward (the argmin at `S`
+is the first vertex of the suffix `S`). Output `min_X max(|X| − 1,
+chain_X)` and the layout "`X` in any order, then `τ`".
+
+*Correctness.* Theorem 4.1: some optimal layout places one clique first,
+and the value of an `X`-first layout with `Y` in order `τ` is
+`max(|X| − 1, max_t (t + |N_X(Y^τ_{>t})|))`; `f(S)` is the minimum over
+orders of `S` as a suffix of the largest cut inside the suffix, by the
+usual prefix-set argument (the cut after placing `Y ∖ S` depends on `S`
+only). The witness is checked by evaluating its value independently.
+
+*Running time.* For each side, `2^{|Y|}` states, `O(|Y|)` argmin and
+`O(n)` for `N_X(S)` per state: `O(2^a + 2^b) · poly = O*(2^{max(a, b)})`.
+On balanced cobipartite graphs `O*(2^{n/2})`, base `1.415`; on the
+doubles of §3.4.1 `max(a, b) = |V(G)|`, so nothing is gained on the
+general problem, as §4.1 said.
+
+**Algorithm 7.4 (vertex separation over twin classes, `O*(2^u)`).**
+Input `G`; compute the twin classes `Q_1, …, Q_u` (`x ~ y` iff `N(x) ∖
+{y} = N(y) ∖ {x}`). Dynamic programming over subsets `S` of classes:
+`f(S) = min_{i ∈ S} max(f(S ∖ i), cost(∪(S ∖ i), Q_i))`, `f(∅) = 0`,
+where `cost(P, Q)` is the largest cut while `Q` is placed in any order
+after the prefix set `P`, with the argmin recorded. Output `f(all)` and
+the layout read from the argmins, each class consecutive.
+
+*Correctness.* Theorem 4.4 (the twin lemma): some optimal layout has
+every class consecutive; the members of a class are interchangeable by an
+automorphism, so the internal order of a block does not affect any cut;
+the DP minimises over the orders of the blocks. *Running time.* `2^u`
+states, `u` choices each, `O(n |Q_i|)` for a block cost with the unions
+precomputed: `O(2^u · u · n²)`.
+
+**Algorithm 7.5 (MOSP with equivalent customers, `O*(2^u)`).** Input a
+customer–pattern matrix `M`. Build the MOSP graph `G_M` (customers
+adjacent iff they share a pattern); run Algorithm 7.4; output `vs(G_M) +
+1` and the pattern order by the position of each pattern's *last*
+customer in the layout (ties by first customer, then index; patterns with
+no customer last).
+
+*Correctness.* `mosp(M) = pathwidth(G_M) + 1 = vs(G_M) + 1` is the Lean
+theorem of `MOSPGraph.lean` with Kinnersley's equality. Customers with
+equal pattern sets are true twins of `G_M` (adjacent when the set is
+nonempty, same neighbours; two customers with no pattern are isolated,
+false twins), so the classes of Algorithm 7.4 contain the classes of
+equal rows — the "equivalent nodes" of Yanasse & Senne (2010), with the
+layout-side justification of §4.5. *The pattern order realises the
+value*: let `σ` be a customer layout of value `k` and produce the
+patterns by `ℓ(p) = max` position of a customer of `p`. Just after a
+pattern with `ℓ(p) = t` is produced, an open customer `c` has a produced
+pattern `q` (`ℓ(q) ≤ t`, so `pos(c) ≤ t`) and an unproduced pattern `r`
+(`ℓ(r) ≥ t`); if `pos(c) < t`, `r` contains a customer at position
+`ℓ(r) ≥ t > pos(c)`, so `c` is placed with an unplaced neighbour at the
+cut after position `t − 1` and is counted in `vs_σ(t − 1) ≤ k`; at most
+one open customer has `pos(c) = t`. So at most `k + 1` stacks are open.
+Checked by simulation on every output (§7.6).
+
+**Algorithm 7.6 (starlike chordal pathwidth, `O(4^{α₀} r + n)` — Gustedt
+1993 Algorithm 6.3 with a witness).** Input the centre `C` (`α₀ = |C|`)
+and the peripheral maximal cliques `Q_i = c_i ∪ R_i`, `c_i ⊊ C`, `R_i`
+the private part, `β_i = |R_i| ≥ 1`, `i = 1..r`. Process the cliques in
+decreasing `β_i`. A state is a pair `(S⁻, S⁺)` of subsets of `C`: the
+unions of the central parts of the cliques placed on the left and on the
+right of the bag `C`. `Opt_0(∅, ∅) = 0`; placing clique `i` next to `C`
+on the left turns `(T⁻, T⁺)` into `(T⁻ ∪ c_i, T⁺)` at cost `max(Opt,
+|T⁻ ∪ c_i| + β_i)`, and symmetrically on the right (Gustedt's Lemma
+6.2). Output `pw = max(α₀, min_{S⁻, S⁺} Opt_r(S⁻, S⁺)) − 1`, the bags —
+on the left, in processing order, `R_i ∪ ⋃_{j ≤ i on the left} c_j`,
+then `C`, then the right bags in reverse processing order — and the
+layout that lists the vertices by first bag.
+
+*Correctness.* Gustedt's Lemma 3.2 (an optimal normalized decomposition
+exists: each maximal clique in exactly one bag), Lemma 3.4 (sorted: the
+private parts decrease towards the bag `C` on both sides) and Lemma 6.2
+(the recursion), all in the held paper and taken as proved there; the
+bags returned are a path decomposition (a central vertex of `c_i` lies in
+the bags from `i` to `C` on its side and nowhere else on that side; a
+private vertex in one bag; every edge inside a `Q_i` or inside `C`), and
+every bag's size is accounted for by the recursion, so its width is the
+DP value; the layout by first bag has `vs ≤` width by Kinnersley's
+construction (`DecompositionToLayout.lean`). The check compares the
+value, the layout's value and the decomposition with brute force on every
+starlike graph to 7 vertices and 200 random ones to 14 (§7.6).
+
+*Running time.* `4^{α₀}` states, `r` stages, `O(1)` bitmask work per
+transition and `O(n)` to read the cliques: `O(4^{α₀} r + n)`, Gustedt's
+Theorem 6.4. **Theorem 7.7 (= Corollary 4.5 as an algorithm).** On the
+NP-hard class of starlike chordal graphs with `α₀ ≤ √n` (Gustedt's
+Corollary 4.3 instances from 3-regular graphs lie in it, §4.5), Algorithm
+7.6 computes pathwidth with a witness in `2^{2√n} · O(n)` — unconditionally,
+and for the reason §4.5 gives (the hard core has `√n` vertices by
+construction). The twin lemma alone gives `O*(2^{α₀ + r})` on starlike
+graphs (every private part is a twin class), which is worse than Gustedt
+whenever `r > α₀`.
+
+### 7.4 The algorithms against the record
+
+| algorithm | class | time | witness | rests on |
+|---|---|---|---|---|
+| 7.2 | cutwidth, `Δ ≤ 3` | `O*(2^m)` implemented; `O(1.89^m)` with Kitsunai et al. | layout | Theorem 7.1 |
+| 7.3 | cobipartite `vs` (= `tw`) | `O*(2^{max(a, b)})` | layout | Theorem 4.1 |
+| 7.4 | `vs`, `u` twin classes | `O*(2^u)` | layout | Theorem 4.4 |
+| 7.5 | MOSP, `u` classes of `G_M` | `O*(2^u)` | pattern order | `MOSPGraph.lean`, 7.4 |
+| 7.6 | starlike chordal | `O(4^{α₀} r + n)` | path decomposition, layout | Gustedt 1993 Thm 6.4 |
+
+None of 7.3–7.6 is claimed new: 7.6 is Gustedt's algorithm implemented
+from the paper with a witness added; 7.3 and 7.4 are the DP forms of
+Theorems 4.1 and 4.4, for which we found no prior statement in the held
+papers and claim no priority; 7.5 is the "equivalent nodes" preprocessing
+of Yanasse & Senne (2010) with a proof and a witness. 7.2 and Theorem 7.1
+are, to our knowledge from the held papers, not stated there; the
+likeliest source is Makedon & Sudborough (1989, not held, now recorded in
+`literature/MISSING.md` with Chung & Seymour 1989 and Korach & Solel
+1993), and "we found no prior statement" is all that is said.
+
+### 7.5 (c) Further exact transformations at blow-up `≤ 2`
+
+The `Complex/` problems of Linhares & Yanasse (2002) Table 1 that are
+*equal* to `pathwidth + 1` at blow-up 1 (gate matrix layout, interval
+thickness, node search, narrowness, one-dimensional logic, MOSP) inherit
+every pathwidth algorithm as they stand; that is item 09's table. The two
+that are only *sandwiched* are split bandwidth (`pw ≤ sb ≤ pw + 1`; we
+have no exact transformation and found none) and edge search (`vs ≤ es ≤
+vs + 2`). For edge search there is a published exact transformation:
+`es(G) = vs(G₂)` with `G₂` the 2-expansion, every edge subdivided twice
+(Ellis, Sudborough & Turner 1994 Theorem 2.2, held; `paper1/equivalences.md`
+row 7, checked on 181 graphs), at blow-up `1 + 2m/n` — `≤ 4` on subcubic
+graphs, base `1.89^4 = 12.8` per vertex, worthless against `2`. The
+better route is through cutwidth: on the 153 subcubic atlas graphs with
+`n + 2m ≤ 20` (where `vs(G₂)` is computable by the subset DP), **`es(G) =
+cw(G)` on every one** (`edge_search_via_two_expansion`, §7.6), so with
+Theorem 7.1, `es(G) = vs(L(G))` at blow-up `m/n ≤ 3/2` there. We do not
+prove `es = cw` for `Δ ≤ 3`; it is the statement we expect in Makedon &
+Sudborough (1989), not held, and it enters no theorem here. **No further
+exact transformation at blow-up `≤ 2` between pathwidth and a problem
+lacking a base below 2 was found beyond Theorem 7.1** (cutwidth, `m/n ≤
+3/2` on subcubic graphs) and this conditional one for edge search on the
+same class; modified cutwidth stays at Lengauer's quadratic blow-up (§3.1
+row 5), bandwidth has no exact transformation on record (§3.1).
+
+### 7.6 The checks
+
+`python -m learning.subexp_algorithms` (every graph of the networkx atlas
+to 7 vertices, 1,252 graphs; `nice -n 19`; log
+`reports/scratch/subexp_pathwidth/07_algorithms/check_atlas7.log`,
+results `check.json`; 90.8 s). Reference values: cutwidth by
+`cutwidth_dp` (`paper1/complex_check.py`), vertex separation by
+`vs_subset_dp` (§3.5, checked there against the permutation minimum),
+MOSP by the pattern-subset DP `mosp_subset_dp` (§3.5); every witness is
+evaluated by `cutwidth_of_layout`, `vs_of_layout` or the stack simulation
+`open_stacks_of_order`, none of which shares code with the algorithm that
+produced it.
+
+| check | what is compared | instances | failures |
+|---|---|---|---|
+| Theorem 7.1 (i) | `cw(G) ≤ vs(L(G))`, `m ≤ 14`, no single-edge component | 1,110 | **0** |
+| Theorem 7.1 (ii) | `vs(L(G)) ≤ cw(G) + max(0, ⌊Δ/2⌋ − 1)`, `m ≤ 14` | 1,163 | **0** |
+| equality at `Δ ≤ 3` | `cw(G) = vs(L(G))`, no single-edge component | 204 (`Δ = 2`: 40, `Δ = 3`: 164) | **0** |
+| the excess by `Δ` | `vs(L) − cw` | `Δ = 4`: 0 on 120, 1 on 300; `Δ = 5`: 0 on 48, 1 on 336; `Δ = 6`: 0 on 4, 1 on 61, 2 on 37 | within `⌊Δ/2⌋ − 1` on all; attained at every `Δ` |
+| the single-edge exception | `cw(G) ≤ max(1, vs(L(G)))` on graphs with a single-edge component | 53 | **0** |
+| the map of (i) | the completion order with the tie rule has `cw ≤ vs` of the `L`-layout it came from | 1,110 | **0** |
+| the map of (ii) | the edge order by (earlier, later endpoint) of an optimal cutwidth layout has `vs ≤ cw + ⌊Δ/2⌋ − 1` | 1,110 | **0** |
+| Algorithm 7.2 | value against `cutwidth_dp`, witness evaluated | every subcubic atlas graph, 253 | **0** / **0** |
+| converse candidates | `cw(T(G)) − vs(G)` tabulated (§7.2) | 253 subcubic × 7 maps | none constant |
+| Algorithm 7.3 | value against `vs`, witness evaluated, every cobipartition | 149 graphs, 496 partitions; 200 random with `a + b ≤ 12` | **0** / **0**; **0** |
+| Algorithm 7.4 | value against `vs`, witness evaluated | every atlas graph, 1,252 (884 with `u < n`) | **0** / **0** |
+| Algorithm 7.5 | value against the pattern DP, pattern order simulated | 296 random matrices to `7 × 8` with duplicated rows | **0** / **0** |
+| Algorithm 7.6 | value against `vs`, layout evaluated, bags verified as a path decomposition of the stated width | every starlike graph to 7 vertices up to the obvious symmetries, 2,592; 200 random on 6–14 vertices with `α₀ ≤ 5` | **0** / **0** / **0**; **0** |
+| §7.5 | `es(G) = cw(G)` with `es = vs(G₂)` (EST Thm 2.2) | every subcubic atlas graph with `n + 2m ≤ 20`, 153 | **0** |
+
+`tests/test_subexp_algorithms.py` (10 tests, 0.4 s) runs the same checks
+to 5–6 vertices in the gate.
+
+### 7.7 What this does not claim
+
+- A base below 2 for cutwidth on cubic or on general subcubic graphs:
+  Algorithm 7.2's base per vertex is `1.89^{m/n}`, which is 2.598 on cubic
+  graphs, and Bentert et al.'s open problem stands. The regime `m <
+  1.0888 n` where it is below 2 is not claimed to be interesting.
+- A converse transformation (`vs` as a cutwidth): seven candidates fail,
+  the obstacle is stated with its smallest example, and no impossibility
+  is proved.
+- That Theorem 7.1 is new: it is the natural statement next to item 03's
+  expansion and is probably in Makedon & Sudborough (1989) or Monien &
+  Sudborough (1988), neither held.
+- That `es = cw` on subcubic graphs: checked on 153 graphs, attributed,
+  not proved, and in no theorem.
+- That Kitsunai et al.'s algorithm is implemented or that its `1.89`
+  carries a witness as stated in their paper: we cite their Theorem 1 for
+  the decision; the witnessed algorithm checked here is the `O*(2^m)` DP.
+- That Gustedt's Lemmas 3.2, 3.4 and 6.2 are re-proved here: they are
+  taken from the held paper; the implementation is checked exhaustively
+  to 7 vertices and on random instances to 14, which is a check, not a
+  proof.
+- Anything in Lean: Theorem 7.1, the tie rule, Theorems 4.1 and 4.4 are
+  item 08's statements, written here so that they can be taken as they
+  stand (the tie rule in particular is what a formal proof of (i) must
+  carry).
+- Anything about `2^{o(n)}`: every algorithm here is exponential in its
+  parameter; the item is about exact transformations and bases, not about
+  the counting theorem.
+
+### 7.8 Refuter findings
+
+One refuter subagent (the only one used, 1 of 4) read §7.1 blind to the
+rest of §7 with its own brute force: all 209 graphs to 6 vertices and
+1,025 of the 1,044 on 7 (`m ≤ 16`) for the inequalities; the map of (i)
+from every `L`-layout for `m ≤ 7` and from every optimal one up to a cap
+of 20,000 per graph above (2.8 M map checks, both labellings of the tie);
+the map of (ii) from every vertex layout (115,820); Algorithm 7.2 end to
+end on all 104 subcubic graphs to 6. **Verdict: no wrong statement**;
+both proofs sound sentence by sentence; the code implements the rules
+exactly (0 mismatches against its own implementation). Three editorial
+points, folded in: the tie rule is labelling-dependent but both choices
+satisfy the bound; the map of (i) is not claimed on graphs with a
+single-edge component, where it can fail (example now in the proof); the
+`cutwidth_subcubic` docstring for `Δ ≥ 4`. Its uncapped run over all
+optimal `L`-layouts at `m ≥ 8` was not finished and is not cited.
+`07_algorithms/refuter.md`.
+
+### 7.9 Regenerate
+
+    D=reports/scratch/subexp_pathwidth/07_algorithms
+    nice -n 19 python3 -m learning.subexp_algorithms --nmax 7 > $D/check_atlas7.log   # 91 s
+    python3 -m pytest tests/test_subexp_algorithms.py -q
+    python3 -c "from learning.subexp_algorithms import base_table; print(base_table())"
+    # the pdftotext extracts (git-ignored): see $D/README.md

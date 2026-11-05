@@ -8,7 +8,7 @@ would refute, and a map of the post-ETH hypothesis landscape for width
 parameters; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0014/gate.py`.
 
-Current: 6/12 SOLVED
+Current: 7/12 SOLVED
 
 ## Setup — 2026-11-04
 
@@ -619,3 +619,118 @@ hypothesis, and nothing here refutes a parameterised lower bound. Item 11
 records `[LMS18]`, Cygan et al. 2011/2022, Cygan–Kratsch–Nederlof 2013,
 Lampis 2025, Warners 1998 and Mulmuley–Vazirani–Vazirani 1987 in
 `literature/MISSING.md`.
+
+---
+
+## Iteration 7 — 2026-11-05 00:45
+
+Item 07, new exact algorithms by exact linear transformation,
+unconditional. Report: `reports/subexp_pathwidth.md` §7 (which direction
+carries the base §7.0; the line-graph theorem and Algorithm 7.2 with the
+base table §7.1; the converse explored §7.2; item 04's algorithms with
+proofs, witnesses and code §7.3; the table §7.4; edge search §7.5; checks
+§7.6; what this does not claim §7.7; refuter findings §7.8; regenerate
+§7.9). Code: `learning/subexp_algorithms.py`,
+`tests/test_subexp_algorithms.py` (10 tests). Scratch:
+`reports/scratch/subexp_pathwidth/07_algorithms/` (README with regenerate
+commands, `check_atlas7.log`, `check.json`, `refuter.md` with its scripts,
+`gate.log`; the `pdftotext` extracts git-ignored).
+
+### Completed
+
+- **The direction question answered first** (§7.0): a converse (`vs(G)`
+  as a cutwidth) would make *cutwidth* algorithms compute pathwidth, and
+  cutwidth has no base below 2 to give; the direction that carries
+  `1.89` to cutwidth is item 03's forward one. So (a) improves the forward
+  transformation and reports the base honestly.
+- **Theorem 7.1** (§7.1): `cw(G) ≤ vs(L(G))` for every graph with no
+  single-edge component, and `vs(L(G)) ≤ cw(G) + max(0, ⌊Δ/2⌋ − 1)` for
+  every graph; equality for `Δ ≤ 3`; the excess attained at every `Δ` by
+  `K_{1,Δ}`. `L(G)` has `m` vertices against the `2m` ports of `G°`
+  (`L(G) = G° / matching`), halving the exponent of the transfer. Both
+  layout maps explicit: (i) the vertices in order of completion with a
+  **tie rule** (when an edge `uw` completes both endpoints, add first the
+  one with a neighbour already complete, or whose partner has a neighbour
+  still incomplete; both fail only on a single-edge component); (ii) the
+  edges by (earlier endpoint, later endpoint). The first-draft map (ties
+  by degree) was wrong — the path `0—4—3—2` with the `L`-layout
+  `(3,4), (2,3), (0,4)` — and the single-edge exception (`cw(K₂) = 1`,
+  `L(K₂)` a vertex) was found by the check before the statement; the
+  rule came out of writing the proof of the intermediate cut.
+- **Algorithm 7.2** (cutwidth of a graph of maximum degree 3 with a
+  witness): single edges and isolated vertices set aside, one
+  vertex-separation run on `L(G')`, the map of (i). `O*(2^m)` as
+  implemented; `O(1.89^m)` with Kitsunai et al. (2016, held; undirected
+  pathwidth is their special case). **Base per vertex `1.89^{m/n}`: 2.598
+  on cubic graphs, not below 2**; below 2 only for `m < 1.0888 n`;
+  cutwidth on subcubic graphs is in `O*(min(2^n, 1.89^m))` and Bentert et
+  al.'s open problem stands. Said as such, with the table.
+- **The converse explored, not found** (§7.2): seven candidates
+  (identity, `L(G)`, hub, cross hub, 1-subdivision, pendant double, `G°`)
+  tabulated on all 253 subcubic atlas graphs; none has constant
+  `cw(T(G)) − vs(G)`. The obstacle stated with its smallest example: cuts
+  count edges additively, `vs` takes an OR per vertex; a hub gadget
+  contributes `min(u, 1 + d − u)`, exact for `d ≤ 2`, wrong at
+  `(d, u) = (3, 2)`; `K₂` against `K_{1,3}` separates the hub from any
+  constant offset. No impossibility claimed.
+- **Item 04's algorithms with proofs, witnesses and code** (§7.3):
+  Algorithm 7.3 cobipartite `vs` in `O*(2^{max(a, b)})` with a layout
+  (Theorem 4.1); Algorithm 7.4 `vs` in `O*(2^u)` over twin classes with a
+  layout (Theorem 4.4); Algorithm 7.5 MOSP with equivalent customers in
+  `O*(2^u)` with a pattern order, the order by last customer proved to
+  realise `vs + 1`; Algorithm 7.6 starlike chordal pathwidth in
+  `O(4^{α₀} r + n)` — Gustedt (1993, held) Algorithm 6.3 implemented from
+  the paper with a witness path decomposition and layout — hence Theorem
+  7.7, Corollary 4.5 as an algorithm: `2^{2√n} · O(n)` on the NP-hard
+  class with centre `≤ √n`. None claimed new.
+- **(c)** (§7.5): the only further exact transformation at blow-up `≤ 2`
+  found is edge search on subcubic graphs through `es = cw` — checked on
+  every subcubic atlas graph with `n + 2m ≤ 20` (153, by EST's
+  `es = vs(G₂)`), attributed to Makedon & Sudborough (not held), **not
+  proved and in no theorem**; the published route (`es = vs(G₂)`,
+  blow-up `1 + 2m/n`) is exact but worthless for the base. Split
+  bandwidth, modified cutwidth, bandwidth: nothing.
+- **Checks** (§7.6, `python -m learning.subexp_algorithms`, 90.8 s): both
+  inequalities, the equality, the exception, both maps, Algorithm 7.2 on
+  all 253 subcubic graphs, Algorithm 7.3 on 496 cobipartitions of the 149
+  cobipartite atlas graphs plus 200 random, Algorithm 7.4 on all 1,252
+  atlas graphs and 7.5 on 296 matrices with duplicated rows, Algorithm
+  7.6 on all 2,592 starlike graphs to 7 vertices plus 200 random to 14
+  (value, layout, decomposition), `es = cw` on 153: **zero failures
+  everywhere**. Every witness is evaluated by code that shares nothing
+  with the algorithm.
+- One refuter subagent (the only one used, 1 of 4) read §7.1 blind with
+  its own brute force (209 graphs to 6, 1,025 at 7; 2.8 M map checks of
+  (i) over every `L`-layout at `m ≤ 7` and every optimal one up to a cap
+  above; every vertex layout for (ii); Algorithm 7.2 end to end):
+  **verdict: no wrong statement**; three editorial points folded in
+  (§7.8). Its uncapped run was stopped unfinished by PID and is not
+  cited.
+- `literature/MISSING.md`: Makedon & Sudborough 1989, Chung & Seymour
+  1989, Korach & Solel 1993, Monien & Sudborough 1988, Yannakakis 1985
+  recorded (the owner's note in TASK.md). `.gitignore`: the extracts.
+- Gate: `python3 Ralph_Loops/loop0014/gate.py` **PASS**
+  (`07_algorithms/gate.log`): `lake build` ok (no Lean file changed),
+  0 `sorry`, no `axiom`, tests 1,978 passed / 2 skipped / 1 xfailed
+  (279 s), `pathwidth_solver` 123 passed (398 s), paper check clean. The
+  only change after the gate is a docstring sentence in
+  `cutwidth_subcubic` (the refuter's nit); the item's 10 tests re-run
+  green after it.
+
+### Blockers
+
+None. Not committed (the driver commits). `solutions/` untouched; no run
+on any instance; nothing downloaded; no Lean file changed.
+
+### Next
+
+Item 08 formalises Theorem 7.1 (both directions; the tie rule of (i) is
+what the formal proof must carry, and the single-edge exception is part
+of the statement), Theorem 4.1 and Theorem 4.4 against
+`VertexSeparation.lean`, with a cutwidth definition stated there; §7.1's
+proofs are written to be taken as they stand, and `refuter.md` lists what
+was checked per layout. Item 09 takes §7.4's table as the model of a row
+and should carry Algorithm 7.2's honest base (`1.89^{m/n}`) wherever a
+`Complex/` problem meets cutwidth; item 10 records that the cutwidth open
+problem of Bentert et al. is untouched. Item 11 adds Kitsunai et al.'s
+witness remark and the five `MISSING.md` entries to the note.

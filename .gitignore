@@ -74,3 +74,6 @@ reports/scratch/obstruction_search/13_pass1/certificates_1b/
 # loop0014 item 01: pdftotext extracts of held PDFs and of the untrusted ETH paper, regenerable (reports/scratch/subexp_pathwidth/01_audit/README.md)
 reports/scratch/subexp_pathwidth/01_audit/*.txt
 reports/scratch/subexp_pathwidth/03_reductions/*.txt
+
+# loop0014 item 07: pdftotext extracts of held PDFs, regenerable (07_algorithms/README.md)
+reports/scratch/subexp_pathwidth/07_algorithms/*.txt

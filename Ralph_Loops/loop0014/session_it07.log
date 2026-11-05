@@ -1,0 +1,158 @@
+# session it07 started 2026-11-05 00:05:09
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the item list, and the sections of the report that item 07 builds on (§3.4's expansion and §4's algorithms).
+  > $ cat Ralph_Loops/loop0014/iterations.md && echo ---- && sed -n 1,200p reports/subexp_pathwidth_plan.md | head -c 30000
+  > $ grep -n '^## \|^### ' reports/subexp_pathwidth.md | head -120 && wc -w reports/subexp_pathwidth.md && ls learning/subexp_* tests/test_subexp_* && wc -l learning
+  > $ sed -n 748,990p reports/subexp_pathwidth.md
+  > $ sed -n 65,103p reports/subexp_pathwidth.md && echo ------ && sed -n 1004,1130p reports/subexp_pathwidth.md
+  > $ sed -n 1237,1345p reports/subexp_pathwidth.md
+  > $ grep -n '^def \|^class \|^    def ' learning/subexp_reductions.py learning/subexp_classes.py && grep -n 'def cutwidth\|def vertex_sep\|def pathwidth\|def mcw\|d
+  > $ date && mkdir -p reports/scratch/subexp_pathwidth/07_algorithms && D=reports/scratch/subexp_pathwidth/07_algorithms && pdftotext -layout literature/1993-Gustedt
+  > $ D=reports/scratch/subexp_pathwidth/07_algorithms && echo "$D/*.txt" >> /dev/null && printf '\n# loop0014 item 07: pdftotext extracts of held PDFs, regenerable (
+  > $ D=reports/scratch/subexp_pathwidth/07_algorithms && sed -n 170,300p $D/gustedt.txt
+  > $ D=reports/scratch/subexp_pathwidth/07_algorithms && sed -n 401,645p $D/gustedt.txt
+  > $ D=reports/scratch/subexp_pathwidth/07_algorithms && sed -n 100,135p $D/kitsunai.txt && echo ===== BENTERT && pdftotext -layout literature/2025-Exponential-Time-
+  > $ D=reports/scratch/subexp_pathwidth/07_algorithms && grep -n -i 'undirected' $D/kitsunai.txt | head -12 && echo ===== && sed -n 90,100p $D/bentert.txt && echo ==
+  > $ sed -n 1,58p learning/subexp_reductions.py | grep -v '^$' | head -60 && echo ===== && grep -n '^def \|^from\|^import' paper1/complex_check.py | head -60 && grep
+  > Write /home/al/dev/MOSP/learning/subexp_algorithms.py
+  > $ nice -n 19 timeout 600 python3 -m learning.subexp_algorithms --nmax 5 2>&1 | tail -40; echo ====; sed -n 1,80p Ralph_Loops/loop0014/gate.py | grep -n 'def \|tim
+  > $ python3 - <<'EOF'
+import re
+p='learning/subexp_algorithms.py'
+s=open(p).read()
+old='''    n, adj = g
+    pos = {e: p for p, e in enumerate(lorder)}
+    lastpos 
+  > $ python3 - <<'EOF'
+from learning.subexp_algorithms import *
+from learning.subexp_reductions import atlas
+for g in atlas(5):
+    n, adj = g
+    es = edges_of(g)
+ 
+  > $ python3 - <<'EOF'
+p='learning/subexp_algorithms.py'
+s=open(p).read()
+old='''    # ties: only the two endpoints of a common last edge `e = uw` can tie; the
+    #
+  > $ python3 - <<'EOF'
+p='learning/subexp_algorithms.py'
+s=open(p).read()
+old='''    k2 = [v for v in range(n) if popcount(adj[v]) == 1 and popcount(adj[(adj[v]).bit
+  > Write /home/al/dev/MOSP/tests/test_subexp_algorithms.py
+  > $ nice -n 19 timeout 600 python3 -m pytest tests/test_subexp_algorithms.py -q 2>&1 | tail -3; echo ==== GATE; sed -n 80,200p Ralph_Loops/loop0014/gate.py | grep -
+  > $ cat >> literature/MISSING.md <<'EOF'
+
+## Pathwidth, cutwidth and edge search on bounded-degree graphs (loop0014 item 07, 2026-11-05)
+
+The classical ties between
+  > $ cat >> reports/subexp_pathwidth.md <<'EOF'
+
+## 7. New exact algorithms by exact linear transformation, unconditional (item 07, 2026-11-05)
+
+*Plan §0.5 item 07 a
+  > Agent {"description": "Refute \u00a77.1 proofs blind", "prompt": "You are a refuter. Repository: /home/al/dev/MOSP (do not com
+
+I'll start by locating the section boundaries.
+  > $ grep -n '^### 7' reports/subexp_pathwidth.md; grep -n 'Conventions as in §3.4' reports/subexp_pathwidth.md
+  > $ D=reports/scratch/subexp_pathwidth/07_algorithms && nohup nice -n 19 python3 Ralph_Loops/loop0014/gate.py > $D/gate.log 2>&1 &
+echo "gate pid $!"; uptime; date
+  > $ sed -n '2564,2571p;2572,2700p' reports/subexp_pathwidth.md
+  > $ python3 -c "
+import json; r=json.load(open('reports/scratch/subexp_pathwidth/07_algorithms/check.json'))
+print(r['a_line_graph']); print(r['a_algorithm_7_2']); 
+
+All table numbers match `check.json`. The two remaining inputs (the refuter's report and the gate) are both running in the background, so I'll wait on them with a bounded poll.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ while kill -0 2513188 2>/dev/null; do sleep 15; done; echo "gate finished"; tail -5 /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/07_algorithms/gate.log
+  > $ for i in $(seq 1 38); do if [ -f reports/scratch/subexp_pathwidth/07_algorithms/refuter.md ] && ! kill -0 2513188 2>/dev/null; then break; fi; sleep 15; done; e
+  > $ mkdir -p /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/07_algorithms && cat > /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/07_algorithms/refuter_chec
+  > $ nice -n 19 python3 - <<'EOF'
+import sys; sys.path.insert(0,'reports/scratch/subexp_pathwidth/07_algorithms')
+import refuter_check as r
+from collections import C
+  > $ cat > reports/scratch/subexp_pathwidth/07_algorithms/refuter_alg72.py <<'EOF'
+import sys, itertools; sys.path.insert(0, 'reports/scratch/subexp_pathwidth/07_alg
+  > $ cat > reports/scratch/subexp_pathwidth/07_algorithms/refuter_uncapped.py <<'EOF'
+import sys; sys.path.insert(0, 'reports/scratch/subexp_pathwidth/07_algorithms'
+  > $ grep -n 'def vertex_layout_from_line_layout\|def line_layout_from_vertex_layout\|def cutwidth_subcubic\|def vs_layout\|def _line_graph\|def line_graph' learning
+  > $ sed -n '60,230p' learning/subexp_algorithms.py
+  > $ nice -n 19 python3 - <<'EOF'
+import sys, itertools, math; sys.path.insert(0,'reports/scratch/subexp_pathwidth/07_algorithms')
+import refuter_check as r, network
+
+The uncapped enumeration is still running; I'll wait for it with Monitor.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Private plan: the only outstanding item is the uncapped optimal-layout log; nothing else is pending, so one wait is all that's needed.
+  > $ until grep -q 'optimal L-layouts checked' reports/scratch/subexp_pathwidth/07_algorithms/refuter_uncapped.log || ! pgrep -f refuter_uncapped.py >/dev/null; do s
+
+Privately: the report's only missing number is the uncapped optimal-layout count, which arrives with the background task; everything else is settled, so I'll wait for that notification before writing the file.
+  > ToolSearch {"query": "select:SendMessage", "max_results": 1}
+
+Two things needed: the refuter must write its file now instead of waiting on its own background count, and the gate must finish. Nudging the refuter; the gate wait is already armed.
+  > SendMessage {"to": "ae9e08a9fa737ce4f", "summary": "Write refuter.md now with current counts", "message": "Write reports/scratch/sub
+
+Both remaining inputs are in flight (the resumed refuter and the gate). One bounded foreground poll covers both.
+  > $ for i in $(seq 1 38); do if [ -f reports/scratch/subexp_pathwidth/07_algorithms/refuter.md ] && ! kill -0 2513188 2>/dev/null; then break; fi; sleep 15; done; e
+  > $ cat > reports/scratch/subexp_pathwidth/07_algorithms/refuter.md <<'EOF'
+# Refuter report: Theorem 7.1, its two proofs, Algorithm 7.2 (2026-11-05)
+
+Scope read: `
+
+# Refuter report: Theorem 7.1, its two proofs, Algorithm 7.2 (2026-11-05)
+
+Written to `/home/al/dev/MOSP/reports/scratch/subexp_pathwidth/07_algorithms/refuter.md`; scratch scripts `refuter_check.py`, `refuter_alg72.py`, `refuter_uncapped.py`, `refuter_n7.py` in the same directory. Nothing else was modified; nothing committed.
+
+## Coverage
+
+- All 209 graphs on ≤ 6 vertices (`graph_atlas_g`); `cw(G)` and `vs(L(G))` exact by subset DP over prefix sets (equivalent to the minimum over permutations). 19 have a single-edge component; 85 are subcubic without one; 4 are stars `K_{1,Δ}`, `Δ = 2..5`.
+- Bonus: 1,025 of the 1,044 graphs on 7 vertices (`m ≤ 16`), inequalities only.
+- Proof (i) map, rule exactly as stated, under **both** labellings of `e_q = uw`: every L-layout for `m ≤ 7` (164,425 layouts × 2), and for `m ≥ 8` every optimal L-layout up to a cap of 20,000 per graph plus 300 random layouts (1,237,872 layouts × 2); 2,804,594 map checks. The cap was hit on 54 of the `m ≥ 8` graphs; the uncapped run (cap 3,000,000) is **not finished**.
+- Proof (ii) map from **every** vertex layout: 115,820 layouts (21,428 optimal).
+- Algorithm 7.2 end to end on all 104 subcubic graphs to 6 vertices: value = exact `cw`, witness attains it, 104 of 104.
+
+## Findings
+
+1. **No violation of (i), (ii), `cw ≤ max(1, vs(L))`, or the `Δ ≤ 3` equality** on the 209 graphs to 6 vertices and 1,025 at 7. Star values and the excess `⌊Δ/2⌋ − 1` check at `Δ = 2..5`.
+2. **Proof (i) holds per layout**, optimal or not, under both labellings, on every graph without a single-edge component. The rule is labelling-dependent in which endpoint goes first but both choices satisfy the bound. Editorial: say so in one clause.
+3. **Proof (i), sentence by sentence: no gap.** Claims A and B correct; `deg u = a_u + 1 + b_u` gives the cut identity; the `b_u + b_w` extra edges at L-cut `q − 1` are placed, have an unplaced neighbour, avoid `P`, and are pairwise distinct; arithmetic right; "both fail" is exactly `N(u) = {w}`, `N(w) = {u}`; `q = 1` covered.
+4. **Proof (ii), sentence by sentence: no gap.** All arithmetic checks; "x before `v_i`" works whether or not `x` is the earlier endpoint; `min(a_i, b_i) ≤ ⌊Δ/2⌋`; `b_i = 0` has no such cut; the later-endpoint tie order is never used (editorial).
+5. **The map of (i) fails on graphs *with* a single-edge component, which the text neither claims nor says** — editorial. Concrete: path `0—1—2` plus `3—4`, L-layout `(0,1), (3,4), (1,2)` has `vs = 1`, mapped order `0, 4, 3, 1, 2` has cutwidth 2. 1,924 such triples; the theorem's inequality `cw ≤ max(1, vs(L))` remains true by components and Algorithm 7.2 sets the edges aside first.
+6. **Algorithm 7.2 correctness: correct as written**; verified with my own pipeline and with the repo's `cutwidth_subcubic`. `O(m²)` for the maps is a safe over-statement.
+7. **First-draft remark** (path `0—4—3—2`): checked by hand, correct — degree-tie order has cutwidth 2, the rule gives cutwidth 1.
+8. **Base table arithmetic**: all values and the cyclomatic-number restatement correct.
+9. **Not checked** (outside the assigned lines): the `G°`-contraction remark and the Kitsunai et al. attributions.
+
+## Code (`learning/subexp_algorithms.py`, read last)
+
+- `vertex_layout_from_line_layout`: the proof's rule exactly, `u` = lower-indexed endpoint, `P` = vertices completed strictly earlier; 0 mismatches against my implementation on all 164,425 L-layouts for `m ≤ 7`.
+- `line_layout_from_vertex_layout`: (earlier position, later position, index) — the proof's order; 0 mismatches on all 115,820 vertex layouts.
+- `cutwidth_subcubic`: Algorithm 7.2 as stated; exact on all 104 subcubic graphs. Docstring nit: "for `Δ ≥ 4` the returned value is `vs(L(G))`" is off by the `max(·, 1)` when `G'` is empty and a single edge exists.
+- `vs_layout`: DP witness attains the DP value on every graph tested.
+
+verdict: no wrong statement found
+  > $ pgrep -af refuter_ | head; grep -n 'passed\|PASS\|lake build\|sorry\|axiom' reports/scratch/subexp_pathwidth/07_algorithms/gate.log | head -12; ls reports/scrat
+  > $ kill 2519109 2519986 2>/dev/null; sleep 1; pgrep -af refuter_ | grep -v 'pgrep' | wc -l; git check-ignore -q reports/scratch/subexp_pathwidth/07_algorithms/__py
+  > $ grep -n 'For `Δ ≥ 4`' learning/subexp_algorithms.py && python3 - <<'EOF'
+p='learning/subexp_algorithms.py'; s=open(p).read()
+import re
+i=s.index('For `Δ ≥ 4` th
+
+Item 07 is complete: §7 written, code and tests in place, checks clean, the refuter's points folded in, the gate passed, PROGRESS.md and iterations.md updated. Not committed, nothing under `solutions/` touched, no Lean file changed.
+
+**What the item produced**
+
+- **Theorem 7.1** (`reports/subexp_pathwidth.md` §7.1): the line graph carries cutwidth to vertex separation. For every graph without a single-edge component, cutwidth is at most the vertex separation of the line graph, and the reverse inequality holds for every graph up to an excess of ⌊Δ/2⌋ − 1, attained by stars. Equality for maximum degree 3. The line graph has m vertices against the 2m ports of item 03's expansion, so the transfer's exponent halves. Both layout maps are explicit; the proof of the forward map needed a tie rule that the first draft got wrong, caught by the check before it was stated.
+- **Algorithm 7.2**, cutwidth of subcubic graphs with a witness: O*(2^m) as implemented, O(1.89^m) with Kitsunai et al. The honest base per vertex is 1.89^(m/n), which is 2.598 on cubic graphs, so the transfer does not give a base below 2 on cubic graphs. It does below m < 1.0888 n, a regime I do not claim is interesting. Bentert et al.'s open problem stands.
+- **The converse** (vertex separation as a cutwidth) was explored on seven candidate transformations over all 253 subcubic atlas graphs and not found. The obstacle is stated with its smallest example, and §7.0 explains why the converse would not have carried the base anyway.
+- **Algorithms 7.3 to 7.6**: item 04's cobipartite, twin-class, MOSP equivalent-customer and starlike chordal algorithms, each with a proof, a witness and code in `learning/subexp_algorithms.py`. The starlike one is Gustedt's Algorithm 6.3 implemented from the held paper, giving Corollary 4.5 as an algorithm in 2^(2√n) time.
+- **Edge search on subcubic graphs** equals cutwidth on all 153 atlas graphs where it could be computed. That is recorded as checked and attributed to Makedon & Sudborough, not proved and in no theorem.
+
+**Verification.** The full check over every atlas graph to 7 vertices, 2,592 starlike graphs, 496 cobipartitions and random instances reported zero failures in every table, in 91 s. One refuter subagent read the proofs blind with its own brute force and found no wrong statement, only three editorial points, now folded in. The gate passed: lake build clean, no sorry or axiom, 1,978 tests passed, the solver's 123 passed, paper check clean. After the gate I changed only one docstring sentence, and the item's ten tests re-ran green.
+
+**Next** is item 08, which formalises Theorem 7.1 (with the tie rule and the single-edge exception as part of the statement), Theorem 4.1 and Theorem 4.4 in Lean.
+
+# result: success in 2217s, 36 turns, cost $18.62

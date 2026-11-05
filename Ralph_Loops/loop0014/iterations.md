@@ -122,7 +122,7 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   least independent set, with the encoding's correctness proved. Brute
   force to 7 vertices for every encoding. Write §6.
 
-- [ ] **07 New exact algorithms by exact linear transformation, unconditional.**
+- [x] **07 New exact algorithms by exact linear transformation, unconditional.**
   (a) The converse of item 03's expansion: vertex separation of a graph of
   maximum degree 3 as the cutwidth of a linear-size graph (or a direct
   argument), so that the published `O(1.89ⁿ)` pathwidth algorithm
