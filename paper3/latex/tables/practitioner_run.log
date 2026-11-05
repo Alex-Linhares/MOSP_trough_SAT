@@ -1,0 +1,121 @@
+n=  20 cadical   finished 20/20  median    0.0001s  max    0.0002s   [     0s elapsed]
+n=  20 enum      finished 20/20  median    0.0002s  max    0.0006s   [     0s elapsed]
+n=  20 ganak     finished 20/20  median    0.0015s  max    0.0047s   [     0s elapsed]
+n=  20 approxmc  finished 20/20  median    0.0016s  max    0.0073s   [     0s elapsed]
+n=  30 cadical   finished 20/20  median    0.0002s  max    0.0002s   [     1s elapsed]
+n=  30 enum      finished 20/20  median    0.0002s  max    0.0012s   [     1s elapsed]
+n=  30 ganak     finished 20/20  median    0.0014s  max    0.0295s   [     1s elapsed]
+n=  30 approxmc  finished 20/20  median    0.0031s  max    0.0074s   [     1s elapsed]
+n=  40 cadical   finished 20/20  median    0.0002s  max    0.0003s   [     1s elapsed]
+n=  40 ganak     finished 20/20  median    0.0018s  max    0.0466s   [     1s elapsed]
+n=  40 approxmc  finished 20/20  median    0.0058s  max    0.0117s   [     1s elapsed]
+n=  50 cadical   finished 20/20  median    0.0002s  max    0.0004s   [    11s elapsed]
+n=  50 ganak     finished 20/20  median    0.0041s  max    9.4777s   [    11s elapsed]
+n=  50 approxmc  finished 20/20  median    0.0044s  max    0.0148s   [    11s elapsed]
+n=  60 cadical   finished 20/20  median    0.0003s  max    0.0007s   [    20s elapsed]
+n=  60 ganak     finished 20/20  median    0.0288s  max    9.6028s   [    20s elapsed]
+n=  60 approxmc  finished 20/20  median    0.0099s  max    0.0151s   [    20s elapsed]
+n=  80 cadical   finished 20/20  median    0.0006s  max    0.0016s   [    32s elapsed]
+n=  80 ganak     finished 20/20  median    0.0518s  max   11.7645s   [    32s elapsed]
+n=  80 approxmc  finished 20/20  median    0.0133s  max    0.0245s   [    32s elapsed]
+n= 100 cadical   finished 20/20  median    0.0025s  max    0.0038s   [    52s elapsed]
+n= 100 ganak     finished 20/20  median    8.3417s  max   10.9655s   [    52s elapsed]
+n= 100 approxmc  finished 20/20  median    0.0219s  max    0.1987s   [    52s elapsed]
+n= 150 cadical   finished 20/20  median    0.0169s  max    0.0443s   [    76s elapsed]
+n= 150 ganak     finished 20/20  median    6.1633s  max   16.1063s   [    76s elapsed]
+n= 150 approxmc  finished 20/20  median    0.0595s  max    1.0137s   [    76s elapsed]
+n= 200 cadical   finished 20/20  median    0.0578s  max    0.3906s   [   115s elapsed]
+n= 200 ganak     finished 20/20  median    2.3728s  max   29.0486s   [   115s elapsed]
+n= 200 approxmc  finished 20/20  median    0.5104s  max   25.2114s   [   115s elapsed]
+n= 250 cadical   finished 20/20  median    1.4683s  max    3.5699s   [   247s elapsed]
+n= 250 ganak     finished 20/20  median   17.6218s  max   45.7205s   [   247s elapsed]
+n= 250 approxmc  finished 18/20  median    3.5890s  max   48.0845s   [   247s elapsed]
+n= 300 cadical   finished 20/20  median    3.7238s  max   20.5055s   [   573s elapsed]
+n= 300 ganak     finished 10/20  median   49.1660s  max   56.0060s   [   573s elapsed]
+n= 300 approxmc  finished 11/20  median   50.6056s  max   59.6727s   [   573s elapsed]
+n= 400 cadical   finished 10/20  median    2.2717s  max    6.0372s   [  1029s elapsed]
+n= 400 ganak     finished  0/20  median       nans  max       nans   [  1029s elapsed]
+n= 400 approxmc  finished  0/20  median       nans  max       nans   [  1029s elapsed]
+n= 500 cadical   finished  8/20  median   13.3866s  max   27.6837s   [  1172s elapsed]
+written /home/al/dev/MOSP/paper3/latex/tables/practitioner_raw.csv /home/al/dev/MOSP/paper3/latex/tables/practitioner_meta.json (1172 s wall)
+written /home/al/dev/MOSP/paper3/latex/tables/practitioner.tex
+date 2026-11-05 04:40:53; {'python': '3.12.13', 'python-sat': '1.9.dev15', 'cadical': '1.9.5 (python-sat name cadical195)', 'pyganak': '2.8.0', 'pyapproxmc': '4.4.0', 'cpu': 'AMD Ryzen 9 9950X 16-Core Processor', 'kernel': '7.0.0-42-generic', 'nproc': 32, 'load_at_start': [0.3076171875, 0.47607421875, 0.72265625]}
+timeout 60.0 s; wall 1172 s; stopped: {'ganak': 400, 'approxmc': 400, 'cadical': 500}
+CaDiCaL median at n=20: t20 = 0.000128 s; common factor t20/2^20 = 1.220e-10
+ganak = enumeration on 40 instances (n <= 30); approxmc within 1.8x of ganak on 178/206
+n=  20  cadical 20/20 med 0.0001 max 0.0002  enum 20/20 med 0.0002 max 0.0006  ganak 20/20 med 0.0015 max 0.0047  approxmc 20/20 med 0.0016 max 0.0073  2^n*s 0.000128  2^rho*s 1.85e-05  2^(rho-n) 0.145
+n=  30  cadical 20/20 med 0.0002 max 0.0002  enum 20/20 med 0.0002 max 0.0012  ganak 20/20 med 0.0014 max 0.0295  approxmc 20/20 med 0.0031 max 0.0074  2^n*s 0.131  2^rho*s 0.0254  2^(rho-n) 0.194
+n=  40  cadical 20/20 med 0.0002 max 0.0003  ganak 20/20 med 0.0018 max 0.0466  approxmc 20/20 med 0.0058 max 0.0117  2^n*s 134  2^rho*s 53.2  2^(rho-n) 0.396
+n=  50  cadical 20/20 med 0.0002 max 0.0004  ganak 20/20 med 0.0041 max 9.4777  approxmc 20/20 med 0.0044 max 0.0148  2^n*s 1.37e+05  2^rho*s 1.51e+05  2^(rho-n) 1.1
+n=  60  cadical 20/20 med 0.0003 max 0.0007  ganak 20/20 med 0.0288 max 9.6028  approxmc 20/20 med 0.0099 max 0.0151  2^n*s 1.41e+08  2^rho*s 5.4e+08  2^(rho-n) 3.84
+n=  80  cadical 20/20 med 0.0006 max 0.0016  ganak 20/20 med 0.0518 max 11.7645  approxmc 20/20 med 0.0133 max 0.0245  2^n*s 1.47e+14  2^rho*s 1.18e+16  2^(rho-n) 79.8
+n= 100  cadical 20/20 med 0.0025 max 0.0038  ganak 20/20 med 8.3417 max 10.9655  approxmc 20/20 med 0.0219 max 0.1987  2^n*s 1.55e+20  2^rho*s 4.36e+23  2^(rho-n) 2.82e+03
+n= 150  cadical 20/20 med 0.0169 max 0.0443  ganak 20/20 med 6.1633 max 16.1063  approxmc 20/20 med 0.0595 max 1.0137  2^n*s 1.74e+35  2^rho*s 1.78e+43  2^(rho-n) 1.02e+08
+n= 200  cadical 20/20 med 0.0578 max 0.3906  ganak 20/20 med 2.3728 max 29.0486  approxmc 20/20 med 0.5104 max 25.2114  2^n*s 1.96e+50  2^rho*s 3.44e+63  2^(rho-n) 1.75e+13
+n= 250  cadical 20/20 med 1.4683 max 3.5699  ganak 20/20 med 17.6218 max 45.7205  approxmc 18/20 med 3.6414 max >60.0000  2^n*s 2.21e+65  2^rho*s 1.94e+84  2^(rho-n) 8.8e+18
+n= 300  cadical 20/20 med 3.7238 max 20.5055  ganak 10/20 med >60.0000 max >60.0000  approxmc 11/20 med 58.9096 max >60.0000  2^n*s 2.49e+80  2^rho*s 2.47e+105  2^(rho-n) 9.95e+24
+n= 400  cadical 10/20 med >60.0000 max >60.0000  ganak  0/20 med >60.0000 max >60.0000  approxmc  0/20 med >60.0000 max >60.0000  2^n*s 3.15e+110  2^rho*s 2.51e+148  2^(rho-n) 7.95e+37
+n= 500  cadical  8/20 med >60.0000 max >60.0000  2^n*s 3.99e+140  2^rho*s 1.6e+192  2^(rho-n) 4.01e+51
+2^(rho(n)-n) at n = 50, 100, 500: 1.098, 2.82e+03, 4.01e+51
+n=60: measured CaDiCaL median 0.0003 s against 2^n guarantee 1.41e+08 s (11.6 decades) and 2^rho guarantee 5.4e+08 s (12.2 decades)
+n=100: measured CaDiCaL median 0.0025 s against 2^n guarantee 1.55e+20 s (22.8 decades) and 2^rho guarantee 4.36e+23 s (26.2 decades)
+n=200: measured CaDiCaL median 0.0578 s against 2^n guarantee 1.96e+50 s (51.5 decades) and 2^rho guarantee 3.44e+63 s (64.8 decades)
+n=500: measured CaDiCaL median 60.0000 s against 2^n guarantee 3.99e+140 s (138.8 decades) and 2^rho guarantee 1.6e+192 s (190.4 decades)
+ALL CHECKS PASSED
+written /home/al/dev/MOSP/paper3/latex/tables/practitioner.tex
+Traceback (most recent call last):
+  File "/home/al/dev/MOSP/paper3/scripts/practitioner.py", line 435, in <module>
+    def main():
+                
+  File "/home/al/dev/MOSP/paper3/scripts/practitioner.py", line 430, in main
+    return 1
+^^^^^^^^^^^^^
+  File "/home/al/dev/MOSP/paper3/scripts/practitioner.py", line 369, in write_figure
+    xs, meds, mxs = np.array(xs), np.array(meds), np.array(mxs)
+^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/figure.py", line 3647, in tight_layout
+    engine.execute(self)
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/layout_engine.py", line 188, in execute
+    kwargs = get_tight_layout_figure(
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/_tight_layout.py", line 266, in get_tight_layout_figure
+    kwargs = _auto_adjust_subplotpars(fig, renderer,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/_tight_layout.py", line 82, in _auto_adjust_subplotpars
+    bb += [martist._get_tightbbox_for_layout_only(ax, renderer)]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/artist.py", line 1404, in _get_tightbbox_for_layout_only
+    return obj.get_tightbbox(*args, **{**kwargs, "for_layout_only": True})
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/axes/_base.py", line 4587, in get_tightbbox
+    bbox = a.get_tightbbox(renderer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/artist.py", line 366, in get_tightbbox
+    bbox = self.get_window_extent(renderer)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/text.py", line 969, in get_window_extent
+    bbox, info, descent = self._get_layout(self._renderer)
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/text.py", line 382, in _get_layout
+    w, h, d = _get_text_metrics_with_cache(
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/text.py", line 69, in _get_text_metrics_with_cache
+    return _get_text_metrics_with_cache_impl(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/text.py", line 77, in _get_text_metrics_with_cache_impl
+    return renderer_ref().get_text_width_height_descent(text, fontprop, ismath)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/backends/backend_agg.py", line 215, in get_text_width_height_descent
+    self.mathtext_parser.parse(s, self.dpi, prop)
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/mathtext.py", line 86, in parse
+    return self._parse_cached(s, dpi, prop, antialiased, load_glyph_flags)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/mathtext.py", line 100, in _parse_cached
+    box = self._parser.parse(s, fontset, fontsize, dpi)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/al/anaconda3/lib/python3.12/site-packages/matplotlib/_mathtext.py", line 2160, in parse
+    raise ValueError("\n" + ParseException.explain(err, 0)) from None
+ValueError: 
+\rho(n) \ge n
+        ^
+ParseFatalException: Unknown symbol: \ge, found '\'  (at char 8), (line:1, col:9)

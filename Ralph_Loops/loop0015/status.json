@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-05 04:24:10",
+  "updated": "2026-11-05 05:14:51",
   "phase": "tests",
-  "started": "2026-11-05 04:02:17",
-  "item": "05 What follows, in general terms: the hypotheses, and what a derived lower bound loses."
+  "started": "2026-11-05 04:35:24",
+  "item": "06 For the practitioner: SAT solvers and model counters against the verified bound and `2^"
 }

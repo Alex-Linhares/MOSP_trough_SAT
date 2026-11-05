@@ -150,3 +150,93 @@
   year      = {2016},
   note      = {Entry copied from the manuscript's reference list, extract lines 3810--3811; no DOI checked}
 }
+
+% ---------------------------------------------------------------------------
+% Item 06 (Section 7): the tools and the instance distribution of the
+% practitioner's measurement. Written from the tools' own metadata (pip show,
+% the package names in paper3/latex/tables/practitioner_meta.json) and from
+% memory for the venues; NO DOI was checked (item 06 may download nothing but
+% pip packages). Item 08 or the owner may check each against Crossref
+% (ETH_AMBIGUOUS.MD entry 06c).
+% ---------------------------------------------------------------------------
+
+% CaDiCaL, the CDCL solver used (version 1.9.5 through python-sat's "cadical195").
+@inproceedings{Biere2024CaDiCaL,
+  author    = {Armin Biere and Tobias Faller and Katalin Fazekas and Mathias Fleury and Nils Froleyks and Florian Pollitt},
+  title     = {{CaDiCaL} 2.0},
+  booktitle = {Computer Aided Verification (CAV 2024)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {14681},
+  pages     = {133--152},
+  publisher = {Springer},
+  year      = {2024},
+  note      = {Venue from memory; no DOI checked. The version run is 1.9.5, the one python-sat 1.9.dev15 bundles as \texttt{cadical195}}
+}
+
+% python-sat, the binding through which CaDiCaL is called.
+@inproceedings{Ignatiev2018PySAT,
+  author    = {Alexey Ignatiev and Antonio Morgado and Joao Marques-Silva},
+  title     = {{PySAT}: A {Python} Toolkit for Prototyping with {SAT} Oracles},
+  booktitle = {Theory and Applications of Satisfiability Testing (SAT 2018)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {10929},
+  pages     = {428--437},
+  publisher = {Springer},
+  year      = {2018},
+  note      = {Venue from memory; no DOI checked. Package python-sat 1.9.dev15, \url{https://github.com/pysathq/pysat}}
+}
+
+% Ganak, the exact model counter (pyganak 2.8.0, which runs Arjun preprocessing then Ganak).
+@inproceedings{Sharma2019Ganak,
+  author    = {Shubham Sharma and Subhajit Roy and Mate Soos and Kuldeep S. Meel},
+  title     = {{GANAK}: A Scalable Probabilistic Exact Model Counter},
+  booktitle = {Proceedings of the 28th International Joint Conference on Artificial Intelligence (IJCAI 2019)},
+  pages     = {1169--1176},
+  year      = {2019},
+  note      = {Venue from memory; no DOI checked. Package pyganak 2.8.0 (Mate Soos), \url{https://github.com/meelgroup/ganak}}
+}
+
+% ApproxMC, the approximate model counter (pyapproxmc 4.4.0).
+@inproceedings{Chakraborty2013ApproxMC,
+  author    = {Supratik Chakraborty and Kuldeep S. Meel and Moshe Y. Vardi},
+  title     = {A Scalable Approximate Model Counter},
+  booktitle = {Principles and Practice of Constraint Programming (CP 2013)},
+  series    = {Lecture Notes in Computer Science},
+  volume    = {8124},
+  pages     = {200--216},
+  publisher = {Springer},
+  year      = {2013},
+  note      = {Venue from memory; no DOI checked. Package pyapproxmc 4.4.0 (Mate Soos), \url{https://github.com/meelgroup/approxmc}}
+}
+
+@inproceedings{Soos2019BIRD,
+  author    = {Mate Soos and Kuldeep S. Meel},
+  title     = {{BIRD}: Engineering an Efficient {CNF-XOR} {SAT} Solver and Its Applications to Approximate Model Counting},
+  booktitle = {Proceedings of the 33rd AAAI Conference on Artificial Intelligence (AAAI 2019)},
+  pages     = {1592--1599},
+  year      = {2019},
+  note      = {Venue from memory; no DOI checked. The ApproxMC version run descends from this one}
+}
+
+% The clause ratio 4.26: the empirical threshold of random 3-SAT.
+@article{Selman1996Hard,
+  author  = {Bart Selman and David G. Mitchell and Hector J. Levesque},
+  title   = {Generating Hard Satisfiability Problems},
+  journal = {Artificial Intelligence},
+  volume  = {81},
+  number  = {1--2},
+  pages   = {17--29},
+  year    = {1996},
+  note    = {Venue from memory; no DOI checked}
+}
+
+@article{Mertens2006Threshold,
+  author  = {Stephan Mertens and Marc M{\'e}zard and Riccardo Zecchina},
+  title   = {Threshold Values of Random {K-SAT} from the Cavity Method},
+  journal = {Random Structures \& Algorithms},
+  volume  = {28},
+  number  = {3},
+  pages   = {340--373},
+  year    = {2006},
+  note    = {Venue from memory; no DOI checked. Puts the 3-SAT threshold at $4.2667$}
+}

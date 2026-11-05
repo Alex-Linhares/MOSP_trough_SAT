@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 5/12 SOLVED
+Current: 6/12 SOLVED
 
 ## Setup — 2026-11-05
 
@@ -433,3 +433,78 @@ Current: 5/12 SOLVED
   (exit 0; `lake build` ok, 0 sorry; pytest 1,978 passed, 2 skipped,
   1 xfailed in 4:37; pathwidth_solver 123 passed in 6:35; paper 1 builds
   at 78 pages, paper 3 at 33; title verbatim; `solutions/` untouched).
+
+
+---
+
+## Iteration 6 — 2026-11-05 04:35 (item 06, for the practitioner) `[x]`
+
+### Completed
+- **Tools found and installed**: no `sharpSAT`/`ganak`/`d4`/`approxmc`
+  binary on the host; `python-sat 1.9.dev15` (CaDiCaL 1.9.5 as
+  `cadical195`) present; `pyapproxmc 4.4.0` was *already* importable
+  (the brief said not installed; 06b); `pyganak 2.8.0` (Ganak with Arjun
+  preprocessing, Mate Soos) is on PyPI and was installed for the item —
+  an exact counter, so enumeration is used only as the check at
+  `n ≤ 30`. ApproxMC needs the projection set passed explicitly
+  (`count(list(range(1, n+1)))`; with the default it returns 1).
+- **The measurement** (`paper3/scripts/practitioner.py --regenerate`,
+  1,172 s wall, 04:40–05:00, load 0.3 at start): random 3-CNF at
+  `m = round(4.26 n)`, 13 sizes 20–500, 20 seeds each, each call in its
+  own `python3 -I` under `nice -n 19`, 8 at a time, 60 s per call,
+  censored above; a tool finishing fewer than 10 of 20 stops escalating.
+  CaDiCaL: median < 1 ms to n = 80, 2.5 ms at 100, 58 ms at 200, 1.5 s
+  at 250, 3.7 s at 300 (max 20.5 s), 10/20 within 60 s at 400, 8/20 at
+  500 (every finished one satisfiable). Ganak: all 20 to n = 250
+  (median 17.6 s there), 10/20 at 300, 0 at 400; a flat median of
+  8.3 / 6.2 s at n = 100 / 150 that looks like a preprocessing budget
+  in the binding (06d, reported as measured). ApproxMC: all 20 to 200
+  (median 0.51 s), 18 at 250, 11 at 300, 0 at 400. Checks: Ganak =
+  enumeration on all 40 instances at n ≤ 30; CaDiCaL's bit = `[count >
+  0]` everywhere; ApproxMC within 1.8× of Ganak on 178/206 (it promises
+  80%); the clone read with `open()` only has no `#eval`, no `def
+  main`, no `IO` action in 3,977 family files and the comparator theorem
+  is `∃ (machine : …)` at line 195 — so "no implementation exists to
+  run" has a regenerate command. `ALL CHECKS PASSED`.
+- **The guarantees beside them**: `2^n` and `2^ρ(n)` at constant 1 with
+  one common factor `t20 / 2^20` (`t20 = 1.28e−4` s), so `2^n` passes
+  through the n = 20 measurement and `2^ρ(n)` crosses it at n = 50
+  (06a; the brief's per-curve scaling would hide the crossing). The
+  scaled guarantees reach 1 s at n = 33 and 35; at n = 60 CaDiCaL's
+  median is 11.6 and 12.2 decades below them, at n = 200 51.5 and 64.8,
+  at n = 500 (censored) 138.8 and 190.4. `2^(ρ(n) − n)` = 1.10, 2.8 ×
+  10³, 4.0 × 10⁵¹ at n = 50, 100, 500.
+- Written: `paper3/scripts/practitioner.py` (`--regenerate`, default
+  rebuild from CSV, `--check`, `--task` for the child); the raw CSV and
+  `practitioner_meta.json` (versions, CPU, load, date, where each tool
+  stopped) under `latex/tables/`; `latex/tables/practitioner.tex`
+  (Table 7.1); `latex/figures/practitioner.{pdf,png}` (Figure 7.1, two
+  panels: the measured seconds with the guarantees leaving the panel,
+  and the same on the guarantees' scale; dataviz palette);
+  `paper3/latex/sec7_practitioner.tex` (5 subsections, pages 31–35: why
+  guarantees against measurements, what was run, what came out with the
+  checks, the two guarantees beside them, "what this does not claim" in
+  six points); seven `refs.bib` entries for the tools and the threshold
+  (from memory, no DOI, flagged — 06c); `paper3/README.md` Section 7
+  regenerate paragraph; `ETH_AMBIGUOUS.MD` entries 06a–06d. `make -C
+  paper3/latex check` passes, 38 pages, no overfull box in the section
+  (`\repofile` cannot sit in a caption: `\texttt` there).
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; the only
+  compute is on the script's own random 3-CNF; nothing of the clone
+  executed; no subagent used.
+
+### Blockers
+- None.
+
+### Next
+- Item 07 (the companion Lean) is independent of this section.
+- Item 08 (related work) may add DOIs to the seven tool/threshold
+  `refs.bib` entries (06c) and to item 05's seven (05c).
+- Item 09/10: Section 6's last paragraph ("what a transferred algorithm
+  inherits") and Section 7.1 say the same thing from two sides; 05d
+  offered to move the former to Section 7, left in place here.
+- Item 11: `pip uninstall pyganak` is the owner's call (06b).
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 05:24
+  (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed;
+  pathwidth_solver 123 passed in 6:32; paper 1 builds at 78 pages, paper
+  3 at 38; title verbatim; `solutions/` untouched).

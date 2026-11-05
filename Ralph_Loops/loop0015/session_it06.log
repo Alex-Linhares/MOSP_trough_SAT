@@ -1,0 +1,186 @@
+# session it06 started 2026-11-05 04:35:24
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the paper3 layout, the existing sections this item connects to, and what SAT tooling the host has.
+  > $ ls paper3 paper3/latex paper3/scripts paper3/latex/figures paper3/latex/tables && cat paper3/latex/main.tex && cat paper3/latex/Makefile && cat paper3/.gitignor
+  > $ cat paper3/latex/sec7_practitioner.tex && echo ==== && cat paper3/scripts/runtime_scale.py && echo ==== && sed -n 1,80p paper3/ETH_AMBIGUOUS.MD && echo ==== && 
+  > $ tail -60 paper3/ETH_AMBIGUOUS.MD && echo ==== && grep -n "How to regenerate" -A 60 paper3/README.md | sed -n 1,90p
+  > $ sed -n 137,175p paper3/README.md; echo ====; python3 -c "import pysat, sys; print('pysat', pysat.__version__)"; python3 -c "import pyapproxmc" 2>&1 | tail -1; p
+  > $ cd /tmp && python3 -c "import pyapproxmc; print('pyapproxmc', getattr(pyapproxmc,'__version__','?'))" 2>&1 | tail -2; for p in pyapproxmc pyganak ganak pysharps
+
+pyganak 2.8.0 is on PyPI and pyapproxmc is already installed. I'll install pyganak, check both bindings work on a tiny formula, and pick up the pysat solver versions.
+  > $ cd /tmp && pip show pyapproxmc 2>/dev/null | head -3; pip install pyganak 2>&1 | tail -3; python3 - <<'EOF'
+import pyganak, inspect
+print("pyganak", getattr(pyg
+  > $ cd /tmp && python3 - <<'EOF'
+import time, random, pyganak, pyapproxmc
+from pysat.solvers import Solver
+random.seed(1)
+n=30; m=round(4.26*n)
+cls=[]
+for _ in rang
+  > $ cd /tmp && timeout 300 python3 - <<'EOF'
+import time, random, pyganak, pyapproxmc
+from pysat.solvers import Solver
+random.seed(1)
+n=30; m=round(4.26*n)
+cls=[]
+f
+  > $ uptime && grep -n "subsection{What this does not claim" -A 25 paper3/latex/sec2_statement.tex | head -50 && echo ==== && grep -n "^@\|^% " paper3/latex/refs.bib
+  > Skill {"skill": "dataviz"}
+  > $ cd /tmp/claude-1000/bundled-skills/2.1.318/3e07279a4b6f84ca7553a236fb9a3620/dataviz && sed -n 1,80p references/palette.md | grep -iE "categorical|#[0-9a-f]{6}" 
+
+Tools are confirmed (CaDiCaL 1.9.5 via python-sat, Ganak 2.8.0 installed, ApproxMC 4.4.0 with a projection set needed). I'm now writing the measurement script, then I'll run it in the foreground.
+  > $ mkdir -p paper3/latex/figures paper3/latex/tables && cat > paper3/scripts/practitioner.py <<'EOF'
+#!/usr/bin/env python3
+"""For the practitioner: a SAT solver a
+  > $ python3 - <<'EOF'
+import re,pathlib
+p=pathlib.Path("paper3/scripts/practitioner.py"); s=p.read_text()
+s=s.replace('''    cls = clauses_of(n, seed)
+    t0 = time
+  > $ cd /tmp && nice -n 19 python3 -I /home/al/dev/MOSP/paper3/scripts/practitioner.py --regenerate > /home/al/dev/MOSP/paper3/latex/tables/practitioner_run.log 2>&1
+  > $ pip show pyganak pyapproxmc python-sat 2>/dev/null | grep -E "^(Name|Version|Summary|Home-page|Author|License|Project-URL)"; echo ====; grep -n -iE "practical|i
+  > $ grep -n -iE "SAT solver|CDCL|model count(er|ing)|sharpSAT|#SAT" reports/scratch/eth_audit/paper.txt | head -20; echo ====; sed -n 148,156p reports/scratch/eth_a
+  > $ cd ~/dev/untrusted/openai-math && sed -n 194,217p lean/ComparatorChallenges/SubexponentialSAT.lean; echo ====; grep -rlE "^\s*#eval|IO\.|def main" lean/OAI/Algo
+  > $ cd ~/dev/untrusted/openai-math && grep -nE "^\s*#eval|IO\.|def main" lean/OAI/Algorithms/SubexponentialSAT/SubexpQuarticSelectorAdapter.lean lean/OAI/Algorithms
+  > $ cat >> paper3/latex/refs.bib <<'EOF'
+
+% ---------------------------------------------------------------------------
+% Item 06 (Section 7): the tools and the ins
+  > $ cat paper3/latex/tables/practitioner_run.log | tail -8; grep -n "sec:practitioner\|Section~\\\\ref{sec:practitioner}" paper3/latex/sec*.tex | head; grep -n "sub
+  > $ cat > paper3/latex/sec7_practitioner.tex <<'EOF'
+% For the practitioner -- drafted by loop0015 item 06 (2026-11-05).
+% Every number of this section is produced 
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/latex/sec7_practitioner.tex"); s=p.read_text()
+s=s.replace('''The verified statement is existential in t
+  > $ cat >> paper3/ETH_AMBIGUOUS.MD <<'EOF'
+
+### 06a — how the two guarantee curves are scaled beside the measurements (item 06, 2026-11-05)
+- **Ambiguous**: the bri
+
+The run is at n = 250 (Ganak probably hitting its budget there). I'll wait on the log with a bounded monitor rather than polling by hand.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "tail -n0 -f /home/al/dev/MOSP/paper3/latex/tables/practitioner_run.log | grep --line-buffered -E \"^n=|writ
+
+The measurement is still running; I'll fill the section's numbers as soon as the CSV lands.
+  > $ sleep 240; tail -4 /home/al/dev/MOSP/paper3/latex/tables/practitioner_run.log
+
+The monitor is armed on the run log and will notify me as each size finishes; the remaining work (filling the section's numbers, README, PROGRESS) all depends on the CSV, so I'm waiting on that event.
+
+# result: success in 546s, 28 turns, cost $4.55
+
+Still running (n = 250 done; all three tools finished most instances). Waiting for the next sizes.
+  > Monitor {"command": "until grep -q \"written\" /home/al/dev/MOSP/paper3/latex/tables/practitioner_run.log; do sleep 5; done; tai
+
+Nothing further can proceed until the CSV is written; waiting on the completion monitor.
+
+# result: success in 8s, 2 turns, cost $4.67
+
+Sizes through 300 are done; at 300 the counters finish exactly half, so they escalate once more to 400 before stopping. A few more minutes.
+
+# result: success in 5s, 1 turns, cost $6.55
+  > $ tail -3 /home/al/dev/MOSP/paper3/latex/tables/practitioner_run.log; ps -o pid,etime,ni,cmd -u al | grep -c "practitioner.py --task"
+
+The n = 400 batch is in flight (the counters are mostly hitting their 60 s budget there, which is the expensive part). The completion monitor is still armed; I'll fill the numbers in when it fires.
+
+# result: success in 12s, 2 turns, cost $6.66
+  > $ tail -4 /home/al/dev/MOSP/paper3/latex/tables/practitioner_run.log; ps -o pid,etime,cmd -u al | grep "practitioner.py --task" | grep -v grep | awk '{print $1, $
+  > Monitor {"command": "until grep -q \"written\" /home/al/dev/MOSP/paper3/latex/tables/practitioner_run.log; do sleep 5; done; tai
+
+The run is on its last two batches (ApproxMC at 400, then CaDiCaL at 500); the completion monitor is re-armed and I'll fill in the numbers when the CSV lands.
+
+# result: success in 8s, 3 turns, cost $6.83
+  > $ tail -8 paper3/latex/tables/practitioner_run.log && echo ==== && python3 -I paper3/scripts/practitioner.py 2>&1 | tail -40
+
+Measurement done (CSV written); the figure failed only on a mathtext symbol. Fixing and rebuilding.
+  > $ sed -i 's/\\\\rho(n) \\\\ge n/\\\\rho(n) \\\\geq n/' paper3/scripts/practitioner.py && grep -n "geq n" paper3/scripts/practitioner.py | head -2 && python3 -I pa
+  > $ cat paper3/latex/tables/practitioner.tex && python3 -I -c "
+import math
+def rho(n):
+    y=math.log(n+16); return n*math.log(y)**2/math.sqrt(y)
+t20=0.000128; sc=
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/scripts/practitioner.py"); s=p.read_text()
+s=s.replace('''    if x >= 1:
+        return f"{x:.2f}"
+    r
+  > Read /home/al/dev/MOSP/paper3/latex/figures/practitioner.png
+  > $ python3 - <<'EOF'
+import pathlib, re
+p=pathlib.Path("paper3/scripts/practitioner.py"); s=p.read_text()
+start=s.index("def write_figure(")
+end=s.index("def repor
+  > Read /home/al/dev/MOSP/paper3/latex/figures/practitioner.png
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/scripts/practitioner.py"); s=p.read_text()
+s=s.replace('''    axr.yaxis.set_major_locator(LogLocator(bas
+  > Read /home/al/dev/MOSP/paper3/latex/figures/practitioner.png
+
+The figure reads well now. Building the paper, then the README paragraph.
+  > $ make -C paper3/latex check 2>&1 | tail -3 && grep -n "Overfull\|Underfull" paper3/latex/main.log | head; grep -n "sec7_practitioner" paper3/latex/main.log | hea
+  > $ grep -n "^!" -A 6 paper3/latex/main.log | head -30
+  > $ sed -i 's|Regenerate: \\texttt{python3 -I paper3/scripts/practitioner.py}.}|Regenerate: \\texttt{python3 -I paper3/scripts/practitioner.py}.}|; s|(Section~\\ref
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/latex/sec7_practitioner.tex"); s=p.read_text()
+s=s.replace("195, \\texttt{$\\exists$ (machine : Computat
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/latex/sec7_practitioner.tex"); s=p.read_text()
+s=s.replace("195, \\texttt{$\\exists$ (machine :} \\path{
+  > $ grep -n "Overfull" paper3/latex/main.log | awk -F: '$1>960'; grep -c "no undefined" <(make -C paper3/latex check 2>&1); pdftotext paper3/latex/main.pdf /tmp/p3.
+
+The paper builds clean with no overfull box in Section 7. I'm rendering its pages to eyeball the layout and, in parallel, writing the README paragraph.
+  > $ rm -rf /tmp/p3pages && mkdir -p /tmp/p3pages && pdftoppm -f 31 -l 36 -r 55 -png paper3/latex/main.pdf /tmp/p3pages/p && ls /tmp/p3pages && pdftotext -f 31 -l 36
+  > Read /tmp/p3pages/p-33.png
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/README.md"); s=p.read_text()
+anchor="\n## The replay\n"
+para='''- **Section 7, for the practitioner** (i
+  > $ pgrep -af "gate.py" | head -3; cat /tmp/gate06.log 2>/dev/null | tail -3
+  > $ pgrep -f "python3 Ralph_Loops/loop0015/gate.py" | head; echo ---; tail -c 600 /tmp/gate06.log 2>/dev/null
+
+The gate is running. Writing the PROGRESS section and marking the item meanwhile.
+  > $ python3 - <<'EOF'
+import pathlib, re
+it=pathlib.Path("Ralph_Loops/loop0015/iterations.md"); s=it.read_text()
+old="- [ ] **06 For the practitioner"
+assert old in
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /tmp/gate06.log; do sleep 5; done; tail -n 6 /tmp/gate06.log", "description": "
+  > $ python3 -I paper3/scripts/practitioner.py --check | tail -2; echo ---; grep -n -iE "graph|pathwidth|treewidth|MOSP|width param" paper3/latex/sec7_practitioner.t
+
+Everything for the item is in place and `--check` passes; the only remaining step is the gate result, which the monitor will deliver.
+
+# result: success in 222s, 24 turns, cost $11.05
+  > $ pgrep -f "Ralph_Loops/loop0015/gate.py" | head -3; ls -la /tmp/gate06.log; tail -c 500 /tmp/gate06.log; echo; pgrep -af "pytest|lake build" | grep -v pgrep | cu
+
+The gate is in its pytest stage (it buffers its output until the end). Re-arming the watch.
+  > Monitor {"command": "until grep -q \"GATE EXIT\" /tmp/gate06.log; do sleep 5; done; tail -n 8 /tmp/gate06.log", "description": "
+
+Waiting on the gate; nothing else in the item depends on anything but its result.
+
+# result: success in 11s, 3 turns, cost $13.52
+  > $ grep -E "lake|sorry|passed|GATE|solutions|title" /tmp/gate06.log | head -12 && python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("Ralph_Loops/loop0015/PROGRESS.md
+
+Item 06 is done and the gate passed. Six items remain open, so no `LOOP_COMPLETE` line.
+
+**What was done**
+
+- **Measurement** on random 3-CNF at the 4.26 threshold, 13 sizes from 20 to 500 variables, 20 seeds each, 60 s per call, eight calls at a time under `nice -n 19`. CaDiCaL 1.9.5 (via python-sat) for the decision bit, Ganak 2.8.0 (installed from PyPI as pyganak) for the exact count, ApproxMC 4.4.0 (already present, needs an explicit projection set) for the approximate count, blocking-clause enumeration as the check at n ≤ 30. The run took 1,172 s. Ganak equals enumeration on all 40 small instances, CaDiCaL's bit matches the count everywhere, ApproxMC is within its 1.8× tolerance on 178 of 206.
+- **The comparison**: both guarantees at constant 1 with one common factor so that `2^n` passes through the n = 20 measurement and `2^ρ(n)` crosses it at n = 50. CaDiCaL's median sits 11.6 and 12.2 decades below the two guarantees at n = 60, and 51.5 and 64.8 decades at n = 200. The script also checks, read-only, that the solution's 3,977 files contain no `#eval`, `def main` or IO action, so the sentence "no implementation of the verified machine exists to run" has a regenerate command.
+- **Written**: `paper3/scripts/practitioner.py` (`--regenerate`, rebuild, `--check`), the raw CSV and metadata JSON, Table 7.1, the two-panel Figure 7.1, `sec7_practitioner.tex` (five subsections ending in "what this does not claim"), seven `refs.bib` entries, the README regenerate paragraph, `ETH_AMBIGUOUS.MD` entries 06a to 06d, the PROGRESS section, and the item marked `[x]`.
+
+**Flagged for the owner** in `ETH_AMBIGUOUS.MD`: the common-factor scaling instead of the brief's per-curve scaling (06a), pyganak installed on the host (06b), the seven tool references written without DOIs (06c), and a flat Ganak median at n = 100 to 150 that looks like a preprocessing budget inside the binding, reported as measured (06d).
+
+**Gate**: PASS at 05:24 (lake build ok, 1,978 + 123 tests passed, both papers build, title verbatim, `solutions/` untouched). Paper 3 is now 38 pages. Nothing committed, per the instructions.
+
+# result: success in 17s, 2 turns, cost $13.70

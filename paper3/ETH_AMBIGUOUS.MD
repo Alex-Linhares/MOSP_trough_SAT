@@ -477,3 +477,68 @@ an answer).
   refuter may align.
 - **Owner may change**: cut either paragraph, or move the second to
   Section 7 (the practitioner).
+
+### 06a — how the two guarantee curves are scaled beside the measurements (item 06, 2026-11-05)
+- **Ambiguous**: the brief says to tabulate `2^ρ(n)` and `2^n` "both at
+  constant 1, both as guarantees, scaled to the `n = 20` measurement so
+  the shapes compare". Scaling *each* curve to the `n = 20` point makes
+  them touch there and puts `2^ρ(n)` above `2^n` for every `n > 20`
+  (because `ρ(20) − 20 = −2.79` is the minimum of `ρ(n) − n`), which
+  hides the crossing at `n = 50` the statement actually has.
+- **Chosen**: one common factor `t20 / 2^20` for both curves, where `t20`
+  is CaDiCaL's median at `n = 20`: `2^n` passes through the `n = 20`
+  measurement and `2^ρ(n)` crosses it at `n = 50`, so the ratio of the
+  two drawn curves is the ratio of the guarantees themselves,
+  `2^(ρ(n) − n)`. Section 7.4 says so and gives the per-curve alternative
+  in one sentence.
+- **Owner may change**: scale each curve to its own `n = 20` point as the
+  brief literally says (one line in `practitioner.py`'s `write_table`
+  and `write_figure`).
+
+### 06b — pyapproxmc was already installed; pyganak installed from PyPI (item 06, 2026-11-05)
+- **Ambiguous**: the brief says `pyapproxmc` "is not installed" and to try
+  `pip install pyapproxmc`; on 2026-11-05 04:40 `pyapproxmc 4.4.0` was
+  already importable (installed by someone or something between the
+  brief's check and this session). The brief allows "a pip-installable
+  exact counter … if one exists": `pyganak 2.8.0` (Ganak with Arjun
+  preprocessing, Mate Soos) is on PyPI and was installed into the host's
+  Anaconda Python for this item. `d4 0.1.10` on PyPI was not examined
+  (its name may not be the d4 counter).
+- **Chosen**: Ganak as the exact counter, ApproxMC as the approximate one,
+  blocking-clause enumeration at `n ≤ 30` as the independent check of
+  both (not as the counter). Versions recorded in
+  `paper3/latex/tables/practitioner_meta.json` and in Section 7.2.
+- **Owner may change**: uninstall `pyganak` after the paper (`pip
+  uninstall pyganak`); or add a compiled `sharpSAT`/`d4` for a second
+  exact counter (none is on the host).
+
+### 06c — seven `refs.bib` entries for the tools and the threshold are from memory, no DOI (item 06, 2026-11-05)
+- **Ambiguous**: Section 7 cites CaDiCaL (Biere et al., CAV 2024),
+  PySAT (Ignatiev, Morgado & Marques-Silva, SAT 2018), Ganak (Sharma,
+  Roy, Soos & Meel, IJCAI 2019), ApproxMC (Chakraborty, Meel & Vardi, CP
+  2013; Soos & Meel, AAAI 2019), the 4.26 threshold (Selman, Mitchell &
+  Levesque, AIJ 1996) and the cavity-method value 4.2667 (Mertens, Mézard
+  & Zecchina, RSA 2006). Item 06 may download nothing but pip packages,
+  so none of these was fetched or checked against Crossref; the package
+  metadata (`pip show`) gives only the maintainers and the repository
+  URLs.
+- **Chosen**: the seven entries written with venue, volume and pages from
+  memory, each with `note = {Venue from memory; no DOI checked}` and the
+  package name and URL where there is one, under a header saying so.
+- **Owner may change**: have item 08 check them against Crossref and add
+  DOIs, or cut the venue details to the package URLs.
+
+### 06d — the counters are reported at defaults, including a plateau that looks like a preprocessing budget (item 06, 2026-11-05)
+- **Ambiguous**: Ganak's median through the pyganak binding is flat at
+  about 6–8 s at `n = 100` and `n = 150` and lower at `n = 200` (2.4 s),
+  while its maximum keeps rising; the shape is consistent with a fixed
+  time budget inside Arjun's preprocessing rather than with counting
+  difficulty, and the binding exposes no option to tune it. Tuning it,
+  or calling the `ganak` binary directly, would be a different
+  measurement.
+- **Chosen**: reported as measured, at defaults, with the plateau named
+  in Section 7.3 and the possible cause stated as a conjecture about the
+  binding, not a finding; the point of the section (the measurement is
+  orders below `2^n`) does not depend on it.
+- **Owner may change**: rerun with the `ganak` binary and its options, or
+  drop the exact counter's seconds above `n = 80` from the table.

@@ -1,0 +1,49 @@
+{
+ "date": "2026-11-05 04:40:53",
+ "ratio": 4.26,
+ "seeds": 20,
+ "workers": 8,
+ "timeout_s": 60.0,
+ "sizes": [
+  20,
+  30,
+  40,
+  50,
+  60,
+  80,
+  100,
+  150,
+  200,
+  250,
+  300,
+  400,
+  500
+ ],
+ "enum_max_n": 30,
+ "versions": {
+  "python": "3.12.13",
+  "python-sat": "1.9.dev15",
+  "cadical": "1.9.5 (python-sat name cadical195)",
+  "pyganak": "2.8.0",
+  "pyapproxmc": "4.4.0",
+  "cpu": "AMD Ryzen 9 9950X 16-Core Processor",
+  "kernel": "7.0.0-42-generic",
+  "nproc": 32,
+  "load_at_start": [
+   0.3076171875,
+   0.47607421875,
+   0.72265625
+  ]
+ },
+ "stopped_at": {
+  "ganak": 400,
+  "approxmc": 400,
+  "cadical": 500
+ },
+ "wall_s": 1172.155455428001,
+ "load_at_end": [
+  4.791015625,
+  6.27783203125,
+  5.0576171875
+ ]
+}
