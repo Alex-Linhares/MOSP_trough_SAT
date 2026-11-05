@@ -16,7 +16,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
 "what this does not claim", and records every choice it had to make in
 `paper3/ETH_AMBIGUOUS.MD`.
 
-- [ ] **01 The replay: the SubexponentialSAT closure built in the bwrap sandbox, the axioms recorded, nanoda attempted.** `[cap 8 h]`
+- [x] **01 The replay: the SubexponentialSAT closure built in the bwrap sandbox, the axioms recorded, nanoda attempted.** `[cap 8 h]`
   **The build is already running — do not start another.** The
   coordinator launched it on 2026-11-05 at 01:03 from
   `/home/al/dev/untrusted/replay/` (a fresh copy of the clone at
@@ -121,6 +121,21 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   the natural logarithm" with page and line. Ends with "what this does
   not claim" (no running time of any machine; no statement about the
   proof).
+
+  **Owner's instruction (2026-11-05): the ratio ρ(n)/n is the paper's
+  central figure — "it makes it so much more clear".** The coordinator has
+  produced it: `paper3/scripts/rho_over_n.py` renders
+  `latex/figures/rho_over_n.pdf` (the whole range, `log₁₀ n` from 1 to
+  3000: the verified ratio peaking at 2.17 near `n ≈ 10^{23.5}`, above 1
+  from `n = 50`, back below 1 only at `n ≈ e^{5504} ≈ 10^{2390}`, with the
+  manuscript's two unverified exponents beneath) and
+  `latex/figures/rho_over_n_practical.pdf` (`n = 10 … 10⁶` with the values
+  at `n = 50, 125, 10³, 10⁴, 10⁶`), plus `latex/tables/rho_over_n.csv`.
+  Use both in the statement section — the whole-range figure first, as
+  Figure 1 of the paper — with captions that say what is verified and
+  what is not, keep the script as the regenerate command, and improve the
+  figures only if a check finds a number wrong (then fix the script, not
+  the picture).
 
 - [ ] **03 What the manuscript claims beyond the verified statement.**
   From `paper.txt` (page = form feeds before the line + 1; cite page and
