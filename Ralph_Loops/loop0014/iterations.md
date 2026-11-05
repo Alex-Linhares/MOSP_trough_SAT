@@ -98,7 +98,7 @@ The report is `reports/subexp_pathwidth.md`; scratch under
   `reports/scratch/subexp_pathwidth/05_chain/`. Write §5 ending in a
   verdict for plan §0.6's chain-count kill.
 
-- [ ] **06 Algorithms from the counting theorem for problems on graphs of linear pathwidth: the crossover, as algorithms with proofs.**
+- [x] **06 Algorithms from the counting theorem for problems on graphs of linear pathwidth: the crossover, as algorithms with proofs.**
   For every problem with a published `c^{pw} · poly` or `c^{tw} · poly`
   algorithm given a decomposition (independent set `2`, `q`-colouring `q`,
   dominating set `3`, Cut & Count's connectivity problems, SAT by primal

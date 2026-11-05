@@ -8,7 +8,7 @@ would refute, and a map of the post-ETH hypothesis landscape for width
 parameters; items in `iterations.md`; rules in `TASK.md`. Gate:
 `python3 Ralph_Loops/loop0014/gate.py`.
 
-Current: 5/12 SOLVED
+Current: 6/12 SOLVED
 
 ## Setup — 2026-11-04
 
@@ -501,3 +501,121 @@ item 10 should record beside Bonnet's `√n` remark that permutation
 problems in general (Hamiltonicity, bandwidth, cutwidth, OLA, pathwidth)
 are outside the counting theorem's corollaries for the reason §5.4
 gives: a permutation witness is `n log₂ n` bits.
+
+---
+
+## Iteration 6 — 2026-11-04 23:03
+
+Item 06, algorithms from the counting theorem for problems on graphs of
+linear pathwidth: the crossover. Report: `reports/subexp_pathwidth.md` §6
+(the two forms of the bound and what "void" means §6.0; the catalogue
+§6.1; the algorithms with proofs §6.2; the crossover proposition and table
+§6.3; Lean §6.4; checks §6.5; what this does not claim §6.6; refuter
+findings §6.7; regenerate §6.8). Code: `learning/subexp_crossover.py`,
+`tests/test_subexp_crossover.py` (10 tests). Lean:
+`lean/MOSPFormalization/SubexpPathwidth/Crossover.lean` (24 declarations,
+imported by `MOSPFormalization.lean`). Scratch:
+`reports/scratch/subexp_pathwidth/06_crossover/` (README with regenerate
+commands, `check_atlas7.log`, `check.json`, `axiom_check.lean/.log`,
+`refuter.md`, `gate.log`).
+
+### Completed
+
+- **The correction first** (§6.0): "the SETH-tight lower bound it
+  previously carried, now void" is right about the derivation and wrong
+  about the statement. SETH ⇒ ETH, so under the counting theorem the
+  `[LMS18]` and Cut & Count lower bounds have a false premise; but their
+  *statements* ("no `(c − ε)^{pw} · poly`") are not refuted by anything
+  here — a `2^{o(n)}` algorithm is not `(c − ε)^{pw} · poly` on graphs of
+  small pathwidth, and `min(c^{pw}, 2^{o(n)})` is not either — and the ETH
+  paper's own §1.1.3 (lines 231–236) says they follow from the
+  unrestricted-CNF-SAT hypothesis, which the theorem does not touch. Every
+  row says so.
+- **The catalogue** (§6.1, 11 rows): independent sets (count; maximum via
+  threshold), `q`-colourings, dominating set (direct at width `Δ + 1`;
+  Tseitin at `n + 2m`), Max-Cut, odd cycle transversal (decision only),
+  partition into triangles (listed, not encoded), Hamiltonian cycle (parity,
+  unconditional on the hypothesis; decision via weights, paper form only),
+  the other Cut & Count problems (recipe, not encoded), SAT by primal
+  pathwidth (the formula itself). One variable per vertex fits every graph;
+  constraints that read edges fit at `m = O(n)`; the ordering problems are
+  absent, as item 05 said they must be (Lemma 5.6).
+- **Algorithms with proofs** (§6.2): counting independent sets (Theorem
+  6.1, Lean); maximum independent set / vertex cover by a binary adder tree
+  and comparator, Tseitin-encoded, width 3, `≤ 10 n` auxiliaries on paper
+  and `≤ 6.98 n` measured to `n = 200`, count-preserving (Lemmas 6.2–6.3;
+  Warners 1998, not held); `q`-colourings (Lemma 6.4, Lean); dominating set;
+  Max-Cut; odd cycle transversal; **Cut & Count with the dynamic program
+  replaced by the count**: the Hamiltonian-cycle formula's model count is
+  `Σ_{2-factors X} 2^{cc(X) − 1}` (Lemmas 6.5–6.6), so the parity of the
+  number of Hamiltonian cycles of a graph with `m = O(n)` edges is computed
+  in `2^{o(n)} · poly` under `SubexpCount 3`; the *decision* needs the
+  isolation lemma's weights in `Q[y]/(y^ℓ)`, which rests on the paper's
+  Section 3.1 remark ("any commutative `Q`-algebra"), is blocked in the
+  tensor form by `ℓ ≤ Cs`, and is not in the verified statement — marked
+  conditional, not claimed as a theorem of the paper.
+- **The crossover** (§6.3): Proposition 6.7 — `2^{E(n)} ≤ c^{pw}` iff
+  `pw ≥ E(n)/log₂ c`, and that threshold is `o(n)`, so on every class of
+  linear pathwidth the counting bound's exponential factor is eventually
+  below every `c^{pw}` (Lean: `rpow_le_of_crossover`,
+  `crossoverThreshold_eventually_lt`, `counting_beats_dp_eventually`).
+  The table at constant 1 for `c = 2, 3, 4`, `n = 10²…10⁶`, in both forms:
+  the paper (fixed-density) threshold falls from `0.47 n` to `0.27 n` for
+  `c = 2`; **the verified `ρ(n)/n` is above 1 from `n = 50` to
+  `n ≈ e^{5,504}`** (peak `2.17` near `10^{23.7}`), so the verified form's
+  crossover at `c = 2` lies beyond every `n` in the table; and **the table
+  is in the variable count**, so at constant 1 only the colouring counts
+  (`N = q n`) cross inside it — the threshold (`≈ 8n`), Max-Cut (`≈ 13n`)
+  and Hamiltonian cycle (`≈ 33n`) do not at any `n ≤ 10⁶`. Far side named
+  with proved or recorded bounds: `G(n, c/n)` by `β*(c)` (0.0087 … 0.337 at
+  `c = 3 … 10`, `FirstMomentAsymptotics.lean`), bounded-degree expanders,
+  the Chu & Stuckey classes (`pw/n` 0.19–0.82 at 125; at `n = 125` the
+  constant-1 paper thresholds are 0.455, 0.287, 0.228).
+- **Lean** (§6.4): `indepCNF`, `indepCNF_width`, `indepCNF_eval_iff`,
+  `count_indepCNF`, `indepCount_subexp` (`SubexpCount 2 →` one machine
+  writes the number of independent sets of every `G` within
+  `C (L + 1)^d 2^{A ρ(n)}`, `A ρ(n) = o(n)`); `coloringCNF` on
+  `Fin (n * q)`, `coloringCNF_width`, `coloringCNF_eval_iff`,
+  `count_coloringCNF`, `runtimeScale_mul_isLittleO`, `coloringCount_subexp`
+  (counts and decides `q`-colourability under `SubexpCount (max q 2)`);
+  the three crossover theorems. `lake build` clean; no `sorry`, no
+  `axiom`; 24 declarations on `[propext, Classical.choice, Quot.sound]` or
+  fewer. No machine-composition `Prop` was needed: both algorithm theorems
+  are stated on the CNF input.
+- **Checks** (§6.5, `python -m learning.subexp_crossover`, 119 s): on all
+  1,252 atlas graphs to 7 vertices, **129,761 evaluations, zero failures**
+  — every count against enumeration, every decision against the exact
+  value, every width, the size constants, the parity and the two-factor
+  sum, the weighted decision's soundness (complete on 435 of 443). Every
+  statement was checked before it was written.
+- One refuter subagent (the only one used, 1 of 4), own enumerators to 6
+  vertices, zero disagreements with any count: **two wrong sentences and
+  two gaps, no wrong theorem** — the odd-cycle count formula (missing
+  `2^{|D|}`), the `ρ(n)/n` crossing (not "until `e^{5,600}`"), the
+  variable-count gap in the table, the fixed-density label; plus
+  editorial points. All folded in (§6.7).
+- Gate: `python3 Ralph_Loops/loop0014/gate.py` **PASS** twice — once started before the
+  colouring theorems were merged (`gate_pass1.log`: 1,968 passed, 123 solver tests) and
+  once on the final files (`gate.log`): `lake build` ok, 0 `sorry`, no `axiom`, tests
+  1,968 passed / 2 skipped / 1 xfailed (625 s),
+  `pathwidth_solver` 123 passed (463 s, under a one-minute load of
+  up to 40 from the owner's other work), paper check clean.
+
+### Blockers
+
+None. Not committed (the driver commits). `solutions/` untouched; no run
+on any instance; nothing downloaded; no pathwidth computed.
+
+### Next
+
+Item 07 (the exact linear transformations, unconditional) has its
+construction from §3.4.3 and its algorithms from §4; nothing here feeds it
+except the remark that the threshold circuit of §6.2.2 is the tool for any
+cardinality side-constraint. Item 09 (the complex after ETH) should take
+§6.1's SAT row as the model of a row and §6.0's correction as the template
+for every "void" column. Item 10 should carry §6.0 verbatim: the SETH
+derivations are void, the statements stand on the unrestricted-CNF-SAT
+hypothesis, and nothing here refutes a parameterised lower bound. Item 11
+records `[LMS18]`, Cygan et al. 2011/2022, Cygan–Kratsch–Nederlof 2013,
+Lampis 2025, Warners 1998 and Mulmuley–Vazirani–Vazirani 1987 in
+`literature/MISSING.md`.

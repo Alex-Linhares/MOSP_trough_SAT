@@ -1,0 +1,32 @@
+'MOSPFormalization.SubexpPathwidth.edgeClause' depends on axioms: [propext, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.indepCNF' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.indepCount' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.edgeClause_card_le' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.indepCNF_width' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.edgeClause_eval' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.indepCNF_eval_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.count_indepCNF' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.indepCount_subexp' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.crossoverThreshold' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.rpow_le_of_crossover' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.crossoverThreshold_eventually_lt' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.SubexpPathwidth.counting_beats_dp_eventually' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.SubexpPathwidth.colVar' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.aloClause' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.coloringCNF' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.coloringCNF_width' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.coloringCNF_eval_iff' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.modelColoring' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.coloringCount' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.count_coloringCNF' depends on axioms: [propext, Classical.choice, Quot.sound]
+'MOSPFormalization.SubexpPathwidth.runtimeScale_mul_isLittleO' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.SubexpPathwidth.isSubexpExponent_runtimeScale_mul' depends on axioms: [propext,
+ Classical.choice,
+ Quot.sound]
+'MOSPFormalization.SubexpPathwidth.coloringCount_subexp' depends on axioms: [propext, Classical.choice, Quot.sound]

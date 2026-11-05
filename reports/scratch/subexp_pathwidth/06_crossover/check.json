@@ -1,0 +1,264 @@
+{
+ "nmax": 7,
+ "graphs": 1252,
+ "failures": [],
+ "checks": {
+  "indep_count": 1252,
+  "indep_width": 1252,
+  "indep_size": 1252,
+  "indep_atleast_count": 10979,
+  "indep_atleast_sat": 10979,
+  "indep_atleast_width": 10979,
+  "coloring_count": 2712,
+  "coloring_width": 2712,
+  "coloring_size": 2712,
+  "domset_count": 1252,
+  "domset_width": 1252,
+  "domset_tseitin_count": 1252,
+  "domset_tseitin_width": 1252,
+  "domset_atmost_sat": 9727,
+  "maxcut_sat": 14846,
+  "maxcut_count": 14846,
+  "maxcut_width": 14846,
+  "oct_sat": 9727,
+  "oct_width": 9727,
+  "ham_parity": 1249,
+  "ham_count_2factors": 1209,
+  "ham_weighted_sound": 1249,
+  "ham_width": 1249,
+  "ham_size": 1249
+ },
+ "ham_weighted_complete": {
+  "decided_yes": 435,
+  "with_cycle": 443
+ },
+ "size_constants": {
+  "indep": {
+   "max_vars_over_n_plus_m": 1.0,
+   "max_clauses_over_n_plus_m": 0.75
+  },
+  "indep_atleast": {
+   "max_vars_over_n_plus_m": 6.6,
+   "max_clauses_over_n_plus_m": 18.6
+  },
+  "coloring3": {
+   "max_vars_over_n_plus_m": 3.0,
+   "max_clauses_over_n_plus_m": 4.0
+  },
+  "domset_tseitin": {
+   "max_vars_over_n_plus_m": 1.75,
+   "max_clauses_over_n_plus_m": 4.75
+  },
+  "maxcut": {
+   "max_vars_over_n_plus_m": 5.892857142857143,
+   "max_clauses_over_n_plus_m": 19.642857142857142
+  },
+  "ham": {
+   "max_vars_over_n_plus_m": 16.476190476190474,
+   "max_clauses_over_n_plus_m": 54.095238095238095
+  }
+ },
+ "threshold_aux": {
+  "max_aux_per_input": 6.984496124031008,
+  "rows": {
+   "1": {
+    "aux": 2,
+    "clauses": 5,
+    "width": 3
+   },
+   "2": {
+    "aux": 5,
+    "clauses": 15,
+    "width": 3
+   },
+   "4": {
+    "aux": 15,
+    "clauses": 49,
+    "width": 3
+   },
+   "8": {
+    "aux": 39,
+    "clauses": 131,
+    "width": 3
+   },
+   "16": {
+    "aux": 91,
+    "clauses": 309,
+    "width": 3
+   },
+   "32": {
+    "aux": 199,
+    "clauses": 679,
+    "width": 3
+   },
+   "64": {
+    "aux": 419,
+    "clauses": 1433,
+    "width": 3
+   },
+   "128": {
+    "aux": 863,
+    "clauses": 2955,
+    "width": 3
+   },
+   "200": {
+    "aux": 1378,
+    "clauses": 4720,
+    "width": 3
+   }
+  }
+ },
+ "crossover_table": [
+  {
+   "c": 2,
+   "n": 100,
+   "paper_exponent": 46.599060178465606,
+   "paper_pw_star": 46.599060178465606,
+   "paper_ratio": 0.46599060178465607,
+   "verified_exponent": 111.46171867744576,
+   "verified_pw_star": 111.46171867744576,
+   "verified_ratio": 1.1146171867744576
+  },
+  {
+   "c": 2,
+   "n": 1000,
+   "paper_exponent": 380.4797331016252,
+   "paper_pw_star": 380.4797331016252,
+   "paper_ratio": 0.3804797331016252,
+   "verified_exponent": 1422.879502071127,
+   "verified_pw_star": 1422.879502071127,
+   "verified_ratio": 1.4228795020711271
+  },
+  {
+   "c": 2,
+   "n": 10000,
+   "paper_exponent": 3295.0511449113037,
+   "paper_pw_star": 3295.0511449113037,
+   "paper_ratio": 0.32950511449113035,
+   "verified_exponent": 16245.241463250792,
+   "verified_pw_star": 16245.241463250792,
+   "verified_ratio": 1.6245241463250792
+  },
+  {
+   "c": 2,
+   "n": 100000,
+   "paper_exponent": 29471.833397440747,
+   "paper_pw_star": 29471.833397440747,
+   "paper_ratio": 0.29471833397440744,
+   "verified_exponent": 175963.75675426715,
+   "verified_pw_star": 175963.75675426715,
+   "verified_ratio": 1.7596375675426714
+  },
+  {
+   "c": 2,
+   "n": 1000000,
+   "paper_exponent": 269039.7993802069,
+   "paper_pw_star": 269039.7993802069,
+   "paper_ratio": 0.2690397993802069,
+   "verified_exponent": 1854971.6451585942,
+   "verified_pw_star": 1854971.6451585942,
+   "verified_ratio": 1.8549716451585943
+  },
+  {
+   "c": 3,
+   "n": 100,
+   "paper_exponent": 46.599060178465606,
+   "paper_pw_star": 29.40073355506082,
+   "paper_ratio": 0.2940073355506082,
+   "verified_exponent": 111.46171867744576,
+   "verified_pw_star": 70.32451469781198,
+   "verified_ratio": 0.7032451469781198
+  },
+  {
+   "c": 3,
+   "n": 1000,
+   "paper_exponent": 380.4797331016252,
+   "paper_pw_star": 240.0559842447423,
+   "paper_ratio": 0.24005598424474228,
+   "verified_exponent": 1422.879502071127,
+   "verified_pw_star": 897.7370136036143,
+   "verified_ratio": 0.8977370136036142
+  },
+  {
+   "c": 3,
+   "n": 10000,
+   "paper_exponent": 3295.0511449113037,
+   "paper_pw_star": 2078.9458068642375,
+   "paper_ratio": 0.20789458068642375,
+   "verified_exponent": 16245.241463250792,
+   "verified_pw_star": 10249.606193117645,
+   "verified_ratio": 1.0249606193117644
+  },
+  {
+   "c": 3,
+   "n": 100000,
+   "paper_exponent": 29471.833397440747,
+   "paper_pw_star": 18594.656582746342,
+   "paper_ratio": 0.1859465658274634,
+   "verified_exponent": 175963.75675426715,
+   "verified_pw_star": 111020.76968647765,
+   "verified_ratio": 1.1102076968647765
+  },
+  {
+   "c": 3,
+   "n": 1000000,
+   "paper_exponent": 269039.7993802069,
+   "paper_pw_star": 169745.2143238683,
+   "paper_ratio": 0.1697452143238683,
+   "verified_exponent": 1854971.6451585942,
+   "verified_pw_star": 1170356.802961953,
+   "verified_ratio": 1.1703568029619529
+  },
+  {
+   "c": 4,
+   "n": 100,
+   "paper_exponent": 46.599060178465606,
+   "paper_pw_star": 23.299530089232803,
+   "paper_ratio": 0.23299530089232803,
+   "verified_exponent": 111.46171867744576,
+   "verified_pw_star": 55.73085933872288,
+   "verified_ratio": 0.5573085933872288
+  },
+  {
+   "c": 4,
+   "n": 1000,
+   "paper_exponent": 380.4797331016252,
+   "paper_pw_star": 190.2398665508126,
+   "paper_ratio": 0.1902398665508126,
+   "verified_exponent": 1422.879502071127,
+   "verified_pw_star": 711.4397510355635,
+   "verified_ratio": 0.7114397510355636
+  },
+  {
+   "c": 4,
+   "n": 10000,
+   "paper_exponent": 3295.0511449113037,
+   "paper_pw_star": 1647.5255724556519,
+   "paper_ratio": 0.16475255724556517,
+   "verified_exponent": 16245.241463250792,
+   "verified_pw_star": 8122.620731625396,
+   "verified_ratio": 0.8122620731625396
+  },
+  {
+   "c": 4,
+   "n": 100000,
+   "paper_exponent": 29471.833397440747,
+   "paper_pw_star": 14735.916698720373,
+   "paper_ratio": 0.14735916698720372,
+   "verified_exponent": 175963.75675426715,
+   "verified_pw_star": 87981.87837713357,
+   "verified_ratio": 0.8798187837713357
+  },
+  {
+   "c": 4,
+   "n": 1000000,
+   "paper_exponent": 269039.7993802069,
+   "paper_pw_star": 134519.89969010346,
+   "paper_ratio": 0.13451989969010344,
+   "verified_exponent": 1854971.6451585942,
+   "verified_pw_star": 927485.8225792971,
+   "verified_ratio": 0.9274858225792971
+  }
+ ],
+ "seconds": 119.34552097320557
+}

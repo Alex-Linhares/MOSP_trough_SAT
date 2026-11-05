@@ -2013,3 +2013,513 @@ vertices in the gate.
     nice -n 19 python3 -m learning.subexp_chain --nmax 7 > $D/check_atlas7.log
     python3 -m pytest tests/test_subexp_chain.py -q
     python3 -c "from learning.subexp_chain import exact_count_table; [print(r) for r in exact_count_table()]"
+
+## 6. Algorithms from the counting theorem for problems on graphs of linear pathwidth: the crossover (item 06, 2026-11-04)
+
+The item asks, for every problem with a published `c^{pw} · poly` or
+`c^{tw} · poly` dynamic program given a decomposition, whether the problem
+has a bounded-width CNF with `O(n)` variables in the sense of §1.3 — one
+variable per vertex (or per edge), auxiliaries that are functions of those,
+total incidence linear — and, for each that does, **the algorithm** (encode,
+run the counting machine, read the count), **its running time** in the paper
+form and in the verified form, and **the crossover**: the pathwidth above
+which the counting bound is below the dynamic program's `c^{pw}`. The
+problems are taken from Lokshtanov, Marx & Saurabh (SODA 2011; *ACM TALG*
+14(2), 2018, the `[LMS18]` the ETH paper cites), Cygan, Nederlof,
+Pilipczuk, Pilipczuk, van Rooij & Wojtaszczyk (FOCS 2011; *ACM TALG* 18(2),
+2022, Cut & Count) and Lampis (*The primal pathwidth SETH*, SODA 2025).
+**None of the three is held**; the list of problems and the bases are
+quoted from their abstracts and from the ETH paper's own §1.1.3 (lines
+225–236 of `01_audit/eth.txt`), and item 11 records them in
+`literature/MISSING.md`. Everything stated as an algorithm here was checked
+by brute force on every graph of the atlas to 7 vertices before it was
+stated (§6.5); the independent-set algorithm and the crossover inequality
+are in Lean (§6.4).
+
+Code: `learning/subexp_crossover.py` (10 tests in
+`tests/test_subexp_crossover.py`). Lean:
+`lean/MOSPFormalization/SubexpPathwidth/Crossover.lean`. Scratch:
+`reports/scratch/subexp_pathwidth/06_crossover/`.
+
+### 6.0 Two forms of the bound, and what "now void" means
+
+**The two forms.** For a `k`-CNF on `N` variables with `M` clauses the
+counting theorem gives (§1.3.2, §1.3.4):
+
+- *paper form*: `(N + M)^{O_k(1)} · 2^{O_k(N log log N / √log N)}`, and
+  `2^{O_{k,D}(N / √log N)}` when `M ≤ D N` (Theorem 1.1, lines 56–62);
+- *verified form*: `C (L + 1)^d · 2^{A · ρ(N)}`,
+  `ρ(N) = N (log log(N + 16))² / √log(N + 16)`, `L` the formula's bit
+  length (`SubexpCount k`, §2.2; constants `C, A, d` exist and are not
+  given).
+
+Both are `2^{o(N)}`; with `N = a n + b` in the number of vertices, both are
+`2^{o(n)}` (`runtimeScale_isLittleO`). A problem "fits" when it has such an
+encoding; the encodings below all have `N ≤ 8 n` on every graph, or
+`N = O(n + m)`, in which case they fit on graphs with `m = O(n)` edges
+(bounded degree, `G(n, c/n)`, the Chu & Stuckey ridge).
+
+**The correction, first.** The item says "beside each: the SETH-tight lower
+bound it previously carried, now void". That is right about the *derivation*
+and wrong about the *statement*, and the report says so in every row:
+
+1. The lower bounds of `[LMS18]` and of Cut & Count are theorems of the form
+   *SETH ⇒ no `(c − ε)^{pw} · poly` algorithm*. If the counting theorem
+   stands, SETH is false (SETH ⇒ ETH), so these theorems have a false
+   premise and derive nothing. **As SETH consequences they are void.**
+2. The statements themselves — "no `(c − ε)^{pw} n^{O(1)}` algorithm" — are
+   **not refuted** by anything in this section. The algorithms here run in
+   `2^{o(n)} · poly`, which is below `(c − ε)^{pw}` only where `pw` is
+   linear; on graphs of small pathwidth they are slower than the dynamic
+   program, and the combined algorithm `min(c^{pw}, 2^{o(n)})` is not of
+   the form `(c − ε)^{pw} · poly` either. A refutation would need an
+   algorithm with that time bound on *every* graph; none is on record and
+   none is given here.
+3. The ETH paper says exactly this of `[LMS18]` (lines 231–236): "the
+   treewidth dependence of Independent Set and Dominating Set also follow
+   from the hypothesis that unrestricted CNF-SAT admits no
+   `2^{(1−δ)n} poly(n, m)`-time algorithm for any constant `δ > 0`
+   [Bri14, RV13, LMS18]. Theorem 1.1 gives a running-time guarantee for
+   each fixed clause width `k`, while this hypothesis allows the width to
+   grow with `n`." So every row's lower bound **survives as a consequence
+   of the unrestricted-CNF-SAT hypothesis** wherever its reduction is from
+   CNF-SAT of unbounded width — which, as we read the abstracts, is how
+   `[LMS18]` and Cut & Count's lower bounds are proved (they build a path
+   decomposition of width about the number of variables of an arbitrary
+   CNF).
+
+What the crossover *does* say is the positive statement: on every class of
+linear pathwidth, for every base `c > 1`, the counting algorithm's
+exponential factor is eventually below the dynamic program's
+(`counting_beats_dp_eventually`, §6.3). It is a statement about algorithms,
+not about hypotheses.
+
+### 6.1 The catalogue
+
+`n` vertices, `m` edges, `Δ` the maximum degree. "Count-preserving" means the
+model count of the formula *is* the number of the combinatorial objects (the
+auxiliaries are functions of the primary variables), so the counting machine
+returns the count and not only the decision. "Fits" names the condition
+under which the variable count is `O(n)`. The last column is the SETH-tight
+bound the problem carried, with its status as §6.0 states it (void as a
+SETH consequence; not refuted; surviving under the unrestricted-CNF-SAT
+hypothesis where the reduction is from unbounded width).
+
+| problem | DP base `c` (given a path decomposition) | encoding (§6.2) | variables `N` | width | count-preserving | fits | lower bound it carried |
+|---|---|---|---|---|---|---|---|
+| counting independent sets | `2` (folklore; `[LMS18]`) | `¬x_u ∨ ¬x_w` per edge | `n` | 2 | yes | every graph | `(2 − ε)^{pw}` for Independent Set, `[LMS18]` |
+| maximum independent set / minimum vertex cover (`α ≥ t`) | `2` | the same + adder-tree threshold `Σ x ≥ t` | `≤ 8 n` (measured `≤ 6.98 n` auxiliaries) | 3 | yes (`#{S : |S| ≥ t}`) | every graph | the same |
+| counting proper `q`-colourings; `q`-colourability | `q` | one variable per (vertex, colour); exactly one; `≠` across edges | `q n` | `max(q, 2)` | yes | every graph, fixed `q` | `(q − ε)^{pw}`, `[LMS18]` |
+| dominating set (count; `γ ≤ t`) | `3` (`[LMS18]`'s `3^{pw}` DP) | `x_v ∨ ⋁_{u ∈ N(v)} x_u` | `n`, width `Δ + 1`; or `n + 2m` at width 3 by Tseitin | `Δ + 1` / 3 | yes | bounded degree (direct, `k ≥ Δ + 1`); `m = O(n)` (Tseitin) | `(3 − ε)^{pw}`, `[LMS18]` |
+| Max-Cut (`≥ t`; count of sides with cut `≥ t`) | `2` | side bit per vertex, XOR per edge, threshold | `n + O(m)` (measured `≤ 5.9 (n + m)`) | 3 | yes | `m = O(n)` | `(2 − ε)^{pw}`, `[LMS18]` |
+| odd cycle transversal (`≤ t`) | `3` | deletion bit and side bit per vertex; two width-4 clauses per edge; threshold | `2n + O(n)` | 4 | **no** (decision only: the count is `Σ_D 2^{|D|} 2^{cc(G − D)}`) | every graph | `(3 − ε)^{pw}`, `[LMS18]` |
+| partition into triangles | `2` | one variable per triangle, exactly one per vertex | `#triangles + O(n)` | 3 | — | bounded degree only; **not encoded or checked here** | `(2 − ε)^{pw}`, `[LMS18]` |
+| Hamiltonian cycle: the parity `#HC mod 2` | Cut & Count `4^{pw}`; `(2 + √2)^{pw}` by Cygan, Kratsch & Nederlof (2013, not held) | edge bit per edge, side bit per vertex, exactly two chosen edges at each vertex, equal sides across chosen edges, `v_0` on side 0 | `m + n + O(m)` (measured `≤ 16.5 (n + m)`) | 3 | yes: `count = Σ_{2-factors X} 2^{cc(X) − 1}` | `m = O(n)` | `(2 + √2 − ε)^{pw}` (Cygan–Kratsch–Nederlof), as above |
+| Hamiltonian cycle: the decision | as above | the same with the isolation lemma's weights, as a weighted count | as above, values in `Q[y]/(y^ℓ)`, `ℓ = 2mn + 1` | 3 | — | `m = O(n)`, **paper form only, by the Section 3.1 remark** (§6.2.7); randomized | as above |
+| Steiner tree, feedback vertex set, connected vertex cover, connected dominating set (Cut & Count) | `3, 3, 3, 4` | the same recipe: a local part with an `O(n + m)`-variable encoding and a side bit per vertex | `O(n + m)` | 3 | — | `m = O(n)`, paper form, randomized; **listed, not encoded or checked here** | `(3 − ε)^{pw}`, `(3 − ε)^{pw}`, `(3 − ε)^{pw}`, `(4 − ε)^{pw}` (Cygan et al. 2011) |
+| SAT parameterised by primal pathwidth | `2` (the standard DP) | the formula itself | its `n` variables | its width | yes | every `k`-CNF, fixed `k` | Lampis's pw-SETH, "no `(2 − ε)^{pw}` for SAT", SODA 2025 (not held; stated, as we read the abstract, for unbounded width) |
+
+Three remarks on the table.
+
+- **Every row with one variable per vertex fits on every graph; every row
+  whose constraints read edges fits at `m = O(n)`.** Dominating set at
+  width `Δ + 1` is the one row where the *width* is the obstacle in the
+  verified form (`SubexpCount k` needs `k ≥ Δ + 1`); its Tseitin form moves
+  the cost to the variable count, `n + 2m`, which is the general pattern
+  of §1.3.5: a wide constraint costs its width in incidence and nothing
+  more.
+- **The ordering problems are absent**, as item 05 said they must be
+  (§5.4, Lemma 5.6): a permutation witness is `n log₂ n` bits and no row
+  here has one. The SAT row is the degenerate case — the problem *is* a
+  CNF — and is the cleanest instance of the crossover (§6.3).
+- **Counting is free where the encoding is count-preserving.** Corollary
+  1.3 states independent sets and colourings; the threshold, dominating-set
+  and Max-Cut rows are the same statement with an auxiliary circuit whose
+  gate values are determined, which the paper's Corollary 1.2 proof uses for
+  the same purpose (lines 86–91).
+
+### 6.2 The algorithms, with proofs
+
+Throughout, `F` is a CNF on `N` variables of width `≤ k`; **the algorithm**
+is: build `F` from `G` (polynomial time), run the counting machine of
+`SubexpCount k` on `encodeCNF F`, read the count tape (or the answer bit);
+**the time** is `C (L + 1)^d · 2^{A ρ(N)}` in the verified form with
+`L = formulaBitLength F = O((N + M) · N)` in the collection's unary literal code (polynomial, which is all that matters), and
+`(N + M)^{O(1)} 2^{O(N log log N / √log N)}` in the paper form,
+`2^{O(N / √log N)}` when `M = O(N)`. With `N ≤ a n + b` every one of these is
+`2^{o(n)} · poly`. What is specific to each problem is the encoding and its
+correctness, which is what is proved.
+
+**6.2.1 Counting independent sets** (`indepCNF`, Lean). `F` has one variable
+per vertex and the clause `¬x_u ∨ ¬x_w` per edge: `N = n`, `M = m`, width 2.
+*Lemma 6.1* (`indepCNF_eval_iff`, `count_indepCNF`): an assignment satisfies
+`F` iff `{v : x_v = 1}` is independent, so `#F` is the number of independent
+sets. *Proof.* A clause `¬x_u ∨ ¬x_w` fails exactly when `x_u = x_w = 1`
+with `uw ∈ E`. ∎ *Theorem 6.1* (`indepCount_subexp`): under `SubexpCount 2`
+one primitive machine writes the number of independent sets of every graph
+on its count tape within `C (L + 1)^d 2^{A ρ(n)}` steps, `L` the bit length
+of `encodeCNF (indepCNF G)`; `A ρ(n) = o(n)`. This is Corollary 1.3's first
+sentence as a consequence of the comparator statement.
+
+**6.2.2 Maximum independent set, minimum vertex cover** (`indep_atleast_cnf`).
+Add to `F` the constraint `Σ_v x_v ≥ t` compiled as a circuit: a **binary
+adder tree** summing the `n` input bits (ripple-carry adders with full
+adders built from two XORs, two ANDs and an OR), then a comparator against
+the constant `t`, every gate Tseitin-encoded (`z ↔ a ⊕ b` in four clauses
+of width 3, `z ↔ a ∧ b` and `z ↔ a ∨ b` in three), the output asserted by a
+unit clause. *Lemma 6.2 (size).* The tree has at most `n − 1` additions; the
+additions at level `j` number at most `n / 2^{j+1}` and add numbers of
+`j + 1` bits at `≤ 5` auxiliaries per bit, so the auxiliaries total at most
+`5 n Σ_{j ≥ 0} (j + 1) / 2^{j+1} = 10 n`, plus `2 ⌈log₂ n⌉ + 1` for the
+comparator and the constant; measured, `≤ 6.98 n` for every `n ≤ 200` and
+every `t ∈ {1, ⌈n/2⌉, n}` (`threshold_aux_ratio`). Width 3 throughout.
+*Lemma 6.3 (correctness, count-preserving).* Every auxiliary is defined by
+an equivalence with its inputs, so each assignment to `x` extends in exactly
+one way to the auxiliaries; the adder tree's output is the binary value of
+`Σ x_v` (ripple-carry adders add; induction over the tree), and the
+comparator's output bit is `[Σ x_v ≥ t]` (from the least significant bit,
+`ge_i = (b_i ∧ ge_{i−1})` where `t_i = 1` and `(b_i ∨ ge_{i−1})` where
+`t_i = 0`, `ge_{−1} = 1`). Hence `#F = #{S independent : |S| ≥ t}`, and `F`
+is satisfiable iff `α(G) ≥ t`. ∎ **The algorithm**: binary search on `t`
+(`⌈log₂ n⌉` counting calls), a witness by the standard self-reduction (`n`
+calls); vertex cover is the complement. Checked: every `(G, t)` with `G` in
+the atlas to 7 vertices and `0 ≤ t ≤ n + 1`, 10,979 formulas, count and
+satisfiability both right (§6.5). This is Warners's linear-size encoding of
+linear constraints (Warners 1998, *IPL* 68(2), not held) in the form the
+ETH paper uses for its own thresholds (lines 86–91: "a Boolean circuit with
+at most two inputs per gate and size `O(n)` tests whether an assignment
+satisfies at least `b` sampled clauses").
+
+**6.2.3 Counting proper `q`-colourings** (`coloring_cnf`; Lean `coloringCNF`, `count_coloringCNF`, `coloringCount_subexp`). Variables
+`x_{v,c}`, `v ∈ V`, `c ∈ [q]`: `N = q n`; for each `v` one clause
+`⋁_c x_{v,c}` (width `q`) and `C(q, 2)` clauses `¬x_{v,c} ∨ ¬x_{v,c'}`; for
+each edge `uw` and colour `c`, `¬x_{u,c} ∨ ¬x_{w,c}`. *Lemma 6.4.* The models
+are in bijection with the proper `q`-colourings (`v ↦` the unique `c` with
+`x_{v,c} = 1`). ∎ This is Corollary 1.3's second sentence; the time is
+`2^{o(q n)} = 2^{o(n)}` at fixed `q` (`runtimeScale_mul_isLittleO`), and the
+answer bit decides `q`-colourability (`coloringCount_subexp`). Checked for `q = 2, 3` on the whole
+atlas and `q = 4` to 6 vertices (2,712 counts).
+
+**6.2.4 Dominating set** (`domset_cnf`, `domset_atmost_cnf`). Direct form:
+the clause `x_v ∨ ⋁_{u ∈ N(v)} x_u` per vertex, `N = n`, width `Δ + 1`,
+models = dominating sets. Tseitin form: the same OR as a chain of binary
+ORs with `deg(v)` auxiliaries per vertex, `N = n + 2m`, width 3,
+count-preserving (each OR auxiliary is determined). Minimum dominating set:
+`Σ x_v ≤ t` by Lemma 6.2 applied to the negated bits. The direct form fits
+the verified statement at `k ≥ Δ + 1`, i.e. on graphs of bounded degree;
+the Tseitin form fits at `m = O(n)`. Checked: 1,252 counts in each form and
+9,727 decisions `γ ≤ t`.
+
+**6.2.5 Max-Cut** (`maxcut_cnf`). A side bit per vertex, an XOR auxiliary
+`y_e ↔ x_u ⊕ x_w` per edge, `Σ_e y_e ≥ t` by Lemma 6.2: `N = n + O(m)`,
+width 3, `#F = #{sides : cut ≥ t}`, satisfiable iff `maxcut(G) ≥ t`. Fits at
+`m = O(n)`; binary search on `t`. (In the paper form the same can be read
+off the weighted count `Σ_x Π_e (1 + (y − 1)[x_u ≠ x_w])` in `Q[y]/(y^{m+1})`,
+the cut polynomial; the factor count is `m`, so R2 asks `m = O(n)` as well.)
+Checked: 14,846 counts and decisions.
+
+**6.2.6 Odd cycle transversal** (`oct_cnf`), decision only. A deletion bit
+`d_v` and a side bit `c_v` per vertex; per edge `uw` the clauses
+`d_u ∨ d_w ∨ c_u ∨ c_w` and `d_u ∨ d_w ∨ ¬c_u ∨ ¬c_w` (width 4; "not both
+deleted ⇒ different sides"); `Σ d_v ≤ t`. Satisfiable iff some set of at
+most `t` vertices leaves a bipartite graph. Not count-preserving: a model is
+a pair (deletion set, 2-colouring of the rest) with the side bits of the deleted vertices free, `Σ_D 2^{|D|} 2^{cc(G − D)}` in all (the refuter's correction; the first draft omitted the `2^{|D|}`).
+`N = 2n + O(n)`; fits on every graph (the edge clauses have no
+auxiliaries). Checked: 9,727 decisions.
+
+**6.2.7 Hamiltonian cycle, by Cut & Count** (`hamcycle_cutcount_cnf`). The
+Cut & Count method (Cygan et al. 2011) replaces connectivity by a *count*:
+pairs (solution candidate `X`, consistent cut of `X`) number `2^{cc(X)}`,
+so modulo a power of two only the connected candidates survive; the
+isolation lemma makes the count odd when a solution exists. The counting
+theorem replaces the `c^{pw}` dynamic program that evaluates the count. For
+Hamiltonian cycles: a bit `e` per edge, a bit `s_v` per vertex; at every
+vertex exactly two incident edge bits are set (two thresholds, Lemma 6.2,
+`O(deg)` auxiliaries each); for every edge `e = uw`, `e → (s_u ↔ s_v)` (two
+clauses of width 3); `s_{v_0} = 0`. `N = m + n + O(m)`, width 3.
+*Lemma 6.5.* The models are the pairs `(X, σ)` with `X` a 2-regular spanning
+subgraph (a 2-factor) and `σ` a side assignment constant on each component
+of `X` with `v_0` on side 0, so `#F = Σ_X 2^{cc(X) − 1}`. *Lemma 6.6.* For
+`n ≥ 3`, a 2-factor with one component is a Hamiltonian cycle and
+conversely; hence `#F ≡ #HC (mod 2)`. ∎ **Unconditional consequence
+(verified form, deterministic)**: *the parity of the number of Hamiltonian
+cycles of a graph with `m = O(n)` edges is computed in `2^{o(n)} · poly`
+under `SubexpCount 3`.* Checked: parity on all 1,249 atlas graphs with
+`n ≥ 3`, and the exact value `Σ_X 2^{cc(X) − 1}` against two-factor
+enumeration on the 1,209 with `m ≤ 15`.
+
+*The decision needs weights.* With independent uniform edge weights
+`w_e ∈ [1, 2m]`, the minimum-weight Hamiltonian cycle is unique with
+probability `≥ 1/2` (the isolation lemma: Mulmuley, Vazirani & Vazirani
+1987; Cygan et al. 2011, Lemma 2.1, not held), and then in
+`Z(y) = Σ_X 2^{cc(X) − 1} y^{w(X)} ∈ Q[y]/(y^ℓ)`, `ℓ = 2mn + 1`, the
+coefficient of `y^{w_min}` is odd; any odd coefficient is a certificate that
+a Hamiltonian cycle exists (the even contributions come from `cc ≥ 2`).
+`Z` is the sum of products of §1.3.1 with one further factor
+`(1 − e) + e · y^{w_e}` per edge, degree 1 in its variable, values in the
+commutative `Q`-algebra `Q[y]/(y^ℓ)`. **Where this stands with respect to
+the paper**: the counting routine of Section 3 "also works with coefficients
+in any commutative `Q`-algebra `A`" (line 1162), and `ℓ` is polynomial, so
+the Section 3–5 route (the `ρ(N)` exponent) carries algebra-valued factors
+by the paper's own remark; but Theorem 2.2 is *stated* for counts of common
+zeros over `F_2`, and Theorem D.1 (the tensor form, the sharper exponent)
+takes entries in `(Z/2^{P_0})[V]/(V^ℓ)` **with `ℓ ≤ C s`**, which
+`ℓ = 2mn + 1` violates at `m = O(n)` (`s = O(n)`), and replacing the
+integer weights by free gated variables (a weight `2^w` as `w` free
+variables) costs `Σ_e w_e = Θ(m²)` variables, and a threshold `Σ_e w_e x_e ≤ W` on the weight through binary adders costs `Θ(m log m)` gates — both over the `O(n)` budget. So the Hamiltonian-cycle
+*decision* in `2^{o(n)}` on sparse graphs rests on the Section 3.1 remark
+and is not a theorem the paper states; it is marked so in the table, and
+the verified `SubexpCount k` (integer counts only) does not give it.
+Checked: the weighted decision with one random weight vector per graph is
+sound on all 1,249 graphs and decides "yes" on 435 of the 443 graphs with a
+cycle (the isolation lemma promises `≥ 1/2`).
+
+**6.2.8 The other Cut & Count problems.** Steiner tree, feedback vertex set,
+connected vertex cover and connected dominating set have the same shape —
+a local part (a vertex or edge selection with degree or cover constraints;
+for feedback vertex set the marker trick, which adds a threshold on
+`|E(X)| − |X|`) and a side bit per vertex with the consistency clauses — so
+each has an `O(n + m)`-variable width-3 encoding whose count is
+`Σ_X 2^{cc(X) − 1}` over the candidates, and the same remark about weights
+applies. We state this as the recipe and **encode and check none of them**;
+each would need its own lemma 6.5.
+
+**6.2.9 SAT by primal pathwidth.** For a `k`-CNF the formula is its own
+encoding: `N = n`, and the counting theorem's `2^{o(n)}` stands beside the
+`2^{pw} · poly` dynamic program over a path decomposition of the primal
+graph (Lampis's `pw`). This row needs no proof and no check.
+
+### 6.3 The crossover proposition
+
+**Proposition 6.7** (`rpow_le_of_crossover`, `crossoverThreshold_eventually_lt`,
+`counting_beats_dp_eventually`). Let `E(n)` be the counting bound's exponent
+(`A ρ(n)` in the verified form; `O(n / √log n)` or
+`O(n log log n / √log n)` in the paper form) and `c > 1` the dynamic
+program's base. Then
+
+    2^{E(n)} ≤ c^{pw}    ⟺    pw ≥ pw*(n) := E(n) / log₂ c,
+
+and `pw*(n) = o(n)`: for every `β > 0` and every `A`, `pw*(n) < β n` for
+all large `n`. Hence **on every class of linear pathwidth
+(`pw(G) ≥ β n`), for every base `c > 1`, the counting bound's exponential
+factor is at most the dynamic program's for all large `n`** — the
+polynomial factors and the constants `A`, `C`, `d` aside, which are
+outside the statement here as they are in the paper. *Proof.* Take
+logarithms base 2; `ρ = o(n)` is `runtimeScale_isLittleO`. ∎
+
+**The table** (`crossover_table`; constants 1 in both exponents — the true
+`A` is unknown, and so is the paper form's `O_k`):
+
+| `c` | `n` | paper (fixed density `M = O(N)`): `pw* = n / (log₂ c · √ln n)` | `pw*/n` | verified: `pw* = ρ(n) / log₂ c` | `pw*/n` |
+|---|---|---|---|---|---|
+| 2 | 10² | 47 | 0.466 | 111 | 1.115 |
+| 2 | 10³ | 380 | 0.380 | 1,423 | 1.423 |
+| 2 | 10⁴ | 3,295 | 0.330 | 16,245 | 1.625 |
+| 2 | 10⁵ | 29,472 | 0.295 | 175,964 | 1.760 |
+| 2 | 10⁶ | 269,040 | 0.269 | 1,854,972 | 1.855 |
+| 3 | 10² | 29 | 0.294 | 70 | 0.703 |
+| 3 | 10³ | 240 | 0.240 | 898 | 0.898 |
+| 3 | 10⁴ | 2,079 | 0.208 | 10,250 | 1.025 |
+| 3 | 10⁵ | 18,595 | 0.186 | 111,021 | 1.110 |
+| 3 | 10⁶ | 169,745 | 0.170 | 1,170,357 | 1.170 |
+| 4 | 10² | 23 | 0.233 | 56 | 0.557 |
+| 4 | 10³ | 190 | 0.190 | 711 | 0.711 |
+| 4 | 10⁴ | 1,648 | 0.165 | 8,123 | 0.812 |
+| 4 | 10⁵ | 14,736 | 0.147 | 87,982 | 0.880 |
+| 4 | 10⁶ | 134,520 | 0.135 | 927,486 | 0.927 |
+
+Three things the table shows that the proposition does not. **The verified
+exponent is `o(n)` only in the limit**: with constant 1, `ρ(n) / n =
+(ln y)² / √y` with `y = ln(n + 16)` is below 1 for `n ≤ 49`, *above 1 from `n = 50` to `y ≈ 5,504`, i.e. `n ≈ e^{5,504}`*, with its
+maximum `16/e² ≈ 2.17` near `n ≈ 10^{23.7}` (the refuter's correction of a first
+draft that said "until `e^{5,600}`"), and it rises through the table (1.1 → 1.9 for
+`c = 2`); for
+`c = 2` the verified crossover lies beyond every `n` in the table, and for
+`c = 4` it is at `pw ≈ 0.93 n` at `n = 10⁶`. **The paper form's crossover is
+at a constant fraction that falls slowly**: `pw*/n = 1 / (log₂ c · √ln n)`,
+from 0.47 at `n = 100` to 0.27 at `n = 10⁶` for `c = 2`, and a factor
+`log₂ c` lower for larger bases. So "beats the DP once `pw > n / (log₂ c
+√log n)`" is the paper form with constant 1, exactly as the item phrases
+it, and the verified form says the same thing only asymptotically. The paper
+column is Theorem 1.1's *fixed-density* bound; on dense graphs (`indepCNF` with
+`m = Θ(n²)`) the applicable paper bound carries the extra `log log n`.
+
+**The table is in the variable count, which equals the vertex count only for
+the independent-set count** (the refuter's gap). The exponent is in `N`, and
+the other encodings have `N = a n` with the constants of §6.5 — `a = q` for
+`q`-colouring, `≈ 8` for the threshold, `≈ 13` for Max-Cut at `m = n`, `≈ 33`
+for Hamiltonian cycle at `m = n` — so with the same constant-1 convention the
+threshold ratio becomes `a / (log₂ c · √ln(a n))`:
+
+| encoding, `N = a n` | DP base `c` | `pw*/n` at `n = 10²` | at `10⁴` | at `10⁶` |
+|---|---|---|---|---|
+| counting proper 3-colourings | 3 | 0.79 | 0.59 | 0.49 |
+| counting proper 4-colourings | 4 | 0.82 | 0.61 | 0.51 |
+| maximum independent set (`a ≈ 8`) | 2 | 3.09 | 2.38 | 2.01 |
+| Max-Cut at `m = n` (`a ≈ 13`) | 2 | 4.85 | 3.79 | 3.21 |
+| Hamiltonian cycle at `m = n` (`a ≈ 33`, base `2 + √2`) | 3.41 | 6.54 | 5.23 | 4.48 |
+
+Only the colouring counts have a crossover inside the table at constant 1;
+the threshold, Max-Cut and Hamiltonian-cycle encodings have none at any
+`n ≤ 10⁶`. This is the convention, not a measurement: the true constants are
+unknown in both columns, and Proposition 6.7 is unchanged (every `a n` is
+still `o(n)` in the exponent).
+
+**The classes on the far side** (linear pathwidth, `m = O(n)` so every row
+of §6.1 fits in its fixed-density form):
+
+- **`G(n, c/n)`**: `pw ≥ β*(c) n` with high probability, with
+  `β*(c) = 0.0087, 0.061, 0.171, 0.263, 0.337` at `c = 3, 4, 6, 8, 10`,
+  proved (`FirstMomentAsymptotics.lean`, Theorem A of
+  `reports/random_graph_first_moment.md`; the exact values are where the
+  first-moment rate vanishes, `reports/separator_moment.md` §0). For
+  `c = 10` the far side (`β = 0.337`) is above the paper-form threshold of
+  the independent-set count (`a = 1`) for `c_{DP} = 2` from `n ≈ 10⁴` on and for `c_{DP} ≥ 3` from `n = 100`;
+  for `c = 3` (`β = 0.0087`) it is not reached in the table at any base.
+- **Bounded-degree expanders**: `pw ≥ tw ≥ Ω(n)` (every balanced separator
+  is `Ω(n)`, and a graph of treewidth `k` has one of size `k + 1`; standard,
+  Robertson & Seymour, not held; `tw ≤ pw` is `Sandwich.lean`). The
+  constant depends on the expansion and is not computed here.
+- **The Chu & Stuckey ridge**: the MOSP graphs of the 125-customer classes
+  have `pw/n` (`= (optimum − 1)/n`) from 0.19 at density 2 to 0.82 at
+  density 10 (`CLAUDE.md`, the scale-test paragraph), with `m/n ≈ 3` at
+  density 2. At `n = 125` the paper-form thresholds with constant 1 are
+  `pw*/n = 0.455, 0.287, 0.228` for `c = 2, 3, 4`: the density-2 ridge
+  (0.18–0.29) sits below the `c = 2` line and at the `c = 3–4` lines, the
+  dense classes above all three. Nothing follows for any run: the constants
+  are unknown and `n = 125` is not asymptotic.
+
+### 6.4 Lean
+
+`lean/MOSPFormalization/SubexpPathwidth/Crossover.lean`, imported by
+`MOSPFormalization.lean`; `lake build` clean; no `sorry`, no `axiom`; every
+declaration on `[propext, Classical.choice, Quot.sound]` or fewer
+(`06_crossover/axiom_check.log`, 24 declarations).
+
+| name | statement |
+|---|---|
+| `edgeClause u w`, `indepCNF G` | the clause `¬x_u ∨ ¬x_w`; Corollary 1.3's formula as a `SAT.CNF (Fin n)` |
+| `indepCount G` | the number of independent sets (Mathlib's `IsIndepSet`) |
+| `indepCNF_width` | `WidthAtMost 2 (indepCNF G)` |
+| `indepCNF_eval_iff` | `(indepCNF G).eval a = true ↔ G.IsIndepSet {v ∣ a v = true}` |
+| `count_indepCNF` | `SAT.count (indepCNF G) = indepCount G` |
+| `indepCount_subexp` | `SubexpCount 2 →` a primitive machine, constants `C, A > 0`, `d > 0`, with `A ρ(n)` a subexponential exponent, such that on `encodeCNF (indepCNF G)` it halts with `countWord (indepCount G)` on its count tape and `decide (0 < indepCount G)` as its answer within `C (L + 1)^d 2^{A ρ(n)}` steps, for every `G` on `n` vertices |
+| `colVar v c`, `aloClause v`, `coloringCNF G q` | `x_{v,c}` as `finProdFinEquiv (v, c) : Fin (n * q)`; `⋁_c x_{v,c}`; Corollary 1.3's colouring formula |
+| `coloringCount G q` | the number of proper colourings `Fin n → Fin q` |
+| `coloringCNF_width` | `WidthAtMost (max q 2) (coloringCNF G q)` |
+| `coloringCNF_eval_iff` | a model has exactly one colour at each vertex and no equal colours across an edge |
+| `count_coloringCNF` | `SAT.count (coloringCNF G q) = coloringCount G q` |
+| `runtimeScale_mul_isLittleO`, `isSubexpExponent_runtimeScale_mul` | `ρ(n q) = o(n)` at fixed `q` |
+| `coloringCount_subexp` | `SubexpCount (max q 2) →` a machine counts the proper `q`-colourings of every `G` and decides `q`-colourability within `C (L + 1)^d 2^{A ρ(n q)}` steps |
+| `crossoverThreshold A c n` | `A ρ(n) / log₂ c` |
+| `rpow_le_of_crossover` | `1 < c → crossoverThreshold A c n ≤ pw → 2^{A ρ(n)} ≤ c^{pw}` (real powers) |
+| `crossoverThreshold_eventually_lt` | `1 < c → 0 < β → ∀ᶠ n, crossoverThreshold A c n < β n` |
+| `counting_beats_dp_eventually` | `1 < c → 0 < β → ∀ᶠ n, ∀ G : SimpleGraph (Fin n), β n ≤ pathwidth G → 2^{A ρ(n)} ≤ c^{pathwidth G}` |
+
+`indepCount_subexp` is proved by unpacking `SubexpCount 2` at `indepCNF G`
+(width by `indepCNF_width`), projecting the located trace to the plain step
+(`Trace.config_of_locatedStep`) and rewriting the count by
+`count_indepCNF`; the time bound is `runtimeBound_eq`. The machine
+composition fact of §2.1 is not needed because the theorem is stated on
+the CNF input; that `G ↦ indepCNF G` is polynomial-time is prose. The
+crossover theorems use `pathwidth` only through `β n ≤ pathwidth G`; they
+are inequalities about the exponents, which is what the proposition is.
+
+### 6.5 The checks
+
+`python -m learning.subexp_crossover` (119 s, `06_crossover/check_atlas7.log`,
+`check.json`): on every graph of the atlas to 7 vertices (1,252), **129,761
+evaluations, zero failures** —
+
+| encoding | checked against | evaluations |
+|---|---|---|
+| `indep_cnf` | subset enumeration; width 2; `N = n`, `M = m` | 1,252 × 3 |
+| `indep_atleast_cnf`, every `0 ≤ t ≤ n + 1` | `#{S : |S| ≥ t}`; `sat ↔ α ≥ t`; width 3 | 10,979 × 3 |
+| `coloring_cnf`, `q = 2, 3` (4 to 6 vertices) | `q^n` enumeration; width; closed-form sizes | 2,712 × 3 |
+| `domset_cnf`, direct and Tseitin | subset enumeration; width `Δ + 1` / 3 and `N ≤ n + 2m + 1` | 1,252 × 4 |
+| `domset_atmost_cnf`, every `t` | `sat ↔ γ ≤ t` | 9,727 |
+| `maxcut_cnf`, every `0 ≤ t ≤ m + 1` | `#{sides : cut ≥ t}`; `sat ↔ maxcut ≥ t`; width 3 | 14,846 × 3 |
+| `oct_cnf`, every `t` | `sat ↔ oct ≤ t` (bipartiteness after deletion); width 4 | 9,727 × 2 |
+| `hamcycle_cutcount_cnf` | `#F ≡ #HC (mod 2)` (cycles by permutations); width 3; `N ≤ 20 (n + m) + 1` | 1,249 × 3 |
+| the same, `m ≤ 15` | `#F = Σ_X 2^{cc(X) − 1}` by two-factor enumeration | 1,209 |
+| weighted decision, one random weight vector | sound (yes ⇒ a cycle exists); complete on 435 of 443 | 1,249 |
+
+plus the threshold circuit's auxiliaries per input to `n = 200` (`≤ 6.98`,
+width 3), the size constants (variables over `n + m`: 1.0, 6.6, 3.0, 1.75,
+5.9, 16.5 for the six measured encodings) and the crossover table.
+`tests/test_subexp_crossover.py`: 10 tests, including `C₅` by hand (11
+independent sets, 30 proper 3-colourings, one Hamiltonian cycle) and `K₄`
+(three).
+
+One refuter subagent (the only one used, 1 of 4) read the Lean file and
+the encodings blind to this section with its own brute force to 6
+vertices; its report is `06_crossover/refuter.md` and its findings are
+folded in below (§6.7).
+
+### 6.6 What this does not claim
+
+- That `SubexpCount k` holds for any `k`; every algorithm here is
+  `SubexpCount k → …` (Lean) or "under the counting theorem" (prose), and
+  the paper-form times quote the paper.
+- That any SETH-tight lower bound is *refuted*: §6.0. "Void" means the
+  SETH derivation is void; the statements stand open and follow from the
+  unrestricted-CNF-SAT hypothesis by the paper's own §1.1.3.
+- That the crossover says anything at a specific `n`: the constants `A`
+  (verified) and the paper's `O_k`, `O_{k,D}` are unknown; the table is at
+  constant 1 and is an illustration of the shapes.
+- That the Hamiltonian-cycle *decision* (and the other Cut & Count
+  problems) is a theorem of the paper: it rests on the Section 3.1 remark
+  about `Q`-algebra-valued factors (§6.2.7) and is randomized; the tensor
+  form's `ℓ ≤ Cs` does not accommodate the isolation weights. The parity
+  is unconditional on the hypothesis.
+- That the three source papers were read: none is held; the problems, the
+  bases and the lower bounds are quoted from abstracts and from the ETH
+  paper's §1.1.3, and item 11 records them as missing. Partition into
+  triangles and the four Cut & Count problems other than Hamiltonian cycle
+  are listed and neither encoded nor checked.
+- That the Lean file formalises maximum independent set: it formalises
+  the *counts* of independent sets and of proper `q`-colourings (Corollary
+  1.3's statements) and the crossover inequality; the threshold circuit of
+  §6.2.2 is proved on paper and checked by brute force; the dynamic program
+  is not modelled (the crossover compares exponents, not machines).
+- That the crossover table measures anything: both columns are at constant
+  1, in the variable count, and the fixed-density paper bound.
+- That the machine composition fact of §2.1 holds; it is not used, because
+  `indepCount_subexp` is stated on the CNF input.
+- Any pathwidth was computed: nothing here runs on an instance; the far-side
+  classes are named by proved or recorded bounds.
+
+### 6.7 Refuter findings
+
+One refuter subagent (1 of 4) read `Crossover.lean` (before the colouring
+theorems were added) and `subexp_crossover.py` blind to this section, with
+its own enumerators to 6 vertices (209 graphs; 88,744 fixed-input extension
+checks of the threshold circuit; 615 weighted Cut & Count trials): zero
+disagreements with any count, decision or parity. It found **two wrong
+sentences and two gaps, no wrong theorem and no wrong verdict**, all folded
+in above: (1) the odd-cycle-transversal count is `Σ_D 2^{|D|} 2^{cc(G − D)}`,
+not `Σ_D 2^{cc(G − D)}` (`P₃` at `t = 1`: 18 models against 10 claimed; the
+decision was right); (2) `ρ(n)/n` at constant 1 is below 1 for `n ≤ 49`, peaks
+at `16/e² ≈ 2.17` near `n ≈ 10^{23.7}` and crosses 1 at `n ≈ e^{5,504}`, not
+"above 1 until `e^{5,600}`"; (3) the crossover table is in the variable
+count, so at constant 1 the threshold, Max-Cut and Hamiltonian-cycle
+encodings have no crossover at any `n ≤ 10⁶` (the paragraph and table now in
+§6.3); (4) the paper column is the fixed-density bound. It confirmed that
+`indepCount_subexp` says what its docstring says (`#check` on the built
+`olean`, `n` the vertex count), that the framing of §6.0 is right with the
+qualification that the lower bounds' *premise* is gone while their
+conclusions stand on the unrestricted-CNF-SAT hypothesis, and that the
+Hamiltonian-cycle decision rests on one remark of the paper and is uncovered
+by Lean (as §6.2.7 and §6.6 say). Its editorial points (the stale README
+numbers, a docstring naming a constant that does not exist, `L = Θ(mn)`
+from the unary code) are applied. Report: `06_crossover/refuter.md`.
+
+### 6.8 Regenerate
+
+    cd ~/dev/MOSP
+    D=reports/scratch/subexp_pathwidth/06_crossover
+    nice -n 19 python3 -m learning.subexp_crossover --nmax 7 --out $D > $D/check_atlas7.log
+    python3 -m learning.subexp_crossover --table
+    python3 -m pytest tests/test_subexp_crossover.py -q
+    cd lean && lake build && lake env lean ../$D/axiom_check.lean | tee ../$D/axiom_check.log
+    python3 Ralph_Loops/loop0014/gate.py

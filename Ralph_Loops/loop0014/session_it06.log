@@ -1,0 +1,210 @@
+# session it06 started 2026-11-04 22:56:57
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the plan, the report so far, and the Lean frame from item 02, then plan the work for item 06.
+  > $ cat reports/subexp_pathwidth_plan.md | head -400 && wc -w reports/subexp_pathwidth_plan.md reports/subexp_pathwidth.md
+  > $ cat Ralph_Loops/loop0014/iterations.md && echo ---- && ls reports/scratch/subexp_pathwidth/ reports/scratch/subexp_pathwidth/01_audit/ && echo ---- && ls lean/M
+  > $ grep -n '^## \|^### ' reports/subexp_pathwidth.md | head -120
+  > $ sed -n 168,400p reports/subexp_pathwidth.md
+  > $ sed -n 399,668p reports/subexp_pathwidth.md
+  > $ cat lean/MOSPFormalization/SubexpPathwidth/Frame.lean
+
+I'm reading the frame and the paper's corollaries next, plus the held literature for the DP list, all in one batch.
+  > $ grep -n 'structure CNF\|def count\|WidthAtMost\|def encodeCNF\|formulaBitLength\|inductive\|structure Clause\|def Literal\|abbrev\|^def \|^noncomputable def \|^
+  > $ sed -n 43,112p lean/MOSPFormalization/SubexpPathwidth/PrimitiveMachine.lean
+  > $ sed -n 30,135p reports/scratch/subexp_pathwidth/01_audit/eth.txt
+  > $ E=reports/scratch/subexp_pathwidth/01_audit/eth.txt; grep -n 'Appendix C\|^ *C\.[12]\.\|Q-algebra\|commutative\|\[V\]/(V\|generating\|Max-Cut\|MaxCut\|weighted'
+  > $ E=reports/scratch/subexp_pathwidth/01_audit/eth.txt; sed -n 2905,2910p $E; sed -n 2968,2999p $E; echo ====THM2.2; sed -n 1120,1140p $E; echo ====LIT; ls literat
+  > $ sed -n 1,60p lean/MOSPFormalization/IndependenceBound.lean | grep -n 'IsIndepSet\|indepNum\|import\|theorem\|def ' ; echo ====; tail -30 lean/MOSPFormalization.
+  > $ sed -n 1,70p learning/subexp_classes.py; echo ====TEST; sed -n 1,40p tests/test_subexp_classes.py; echo ====LAMPIS; python3 -I -c "
+import json
+d=json.load(open
+  > $ grep -rn 'def IsIndepSet\|def indepNum\|structure Coloring\|abbrev Coloring\|def Colorable' lean/.lake/packages/mathlib/Mathlib/Combinatorics/SimpleGraph/Clique
+  > $ E=reports/scratch/subexp_pathwidth/01_audit/eth.txt; sed -n 196,262p $E; echo ====CM; sed -n 325,360p learning/subexp_chain.py; echo ====TOOLS; python3 -c "impo
+  > $ date && sed -n 60,110p learning/subexp_reductions.py && sed -n 277,290p learning/subexp_reductions.py && grep -n '^def graph\|^def vertex_separation\|^def vs_of
+  > Write /home/al/dev/MOSP/learning/subexp_crossover.py
+  > $ mkdir -p reports/scratch/subexp_pathwidth/06_crossover && time nice -n 19 python3 -m learning.subexp_crossover --nmax 5 --out /tmp/sx06 2>&1 | tail -40
+
+Two bugs: the model counter misses variables above the highest one mentioned (edgeless graphs), and the Hamiltonian size bound was written in `m` only. Fixing both.
+  > Edit /home/al/dev/MOSP/learning/subexp_crossover.py
+  > Edit /home/al/dev/MOSP/learning/subexp_crossover.py
+  > $ time nice -n 19 python3 -m learning.subexp_crossover --nmax 5 --out /tmp/sx06 2>&1 | grep -v '^|' | tail -12
+  > $ D=reports/scratch/subexp_pathwidth/06_crossover && (nohup nice -n 19 python3 -m learning.subexp_crossover --nmax 7 --out $D > $D/check_atlas7.log 2>&1 & echo $!
+
+Writing the Lean file now: the independent-set formula, its width, its count, the `SubexpCount 2` consequence, and the crossover inequality with its eventual form.
+  > Write /home/al/dev/MOSP/lean/MOSPFormalization/SubexpPathwidth/Crossover.lean
+  > $ echo 'import MOSPFormalization.SubexpPathwidth.Crossover' >> lean/MOSPFormalization.lean && tail -3 lean/MOSPFormalization.lean && tail -2 reports/scratch/subex
+  > Edit /home/al/dev/MOSP/lean/MOSPFormalization/SubexpPathwidth/Crossover.lean
+  > $ lake build MOSPFormalization.SubexpPathwidth.Crossover 2>&1 | grep -v 'warning\|Hint\|Omit\|linter\|^$\|\[apply\]\|Note:' | head -70
+  > Edit /home/al/dev/MOSP/lean/MOSPFormalization/SubexpPathwidth/Crossover.lean
+  > $ lake build MOSPFormalization.SubexpPathwidth.Crossover 2>&1 | grep -v 'warning\|Hint\|Omit\|linter\|^$\|\[apply\]\|Note:\|trace:' | head -70
+
+The Lean file builds. Next I'm collecting the build warnings to clean up and the result of the full brute-force run, in one call.
+  > $ lake build MOSPFormalization.SubexpPathwidth.Crossover 2>&1 | grep -A3 'warning' | grep -v 'Note\|^--$' | head -40; echo ====PY; cd /home/al/dev/MOSP && grep -v
+  > Edit /home/al/dev/MOSP/lean/MOSPFormalization/SubexpPathwidth/Crossover.lean
+  > $ cd /home/al/dev/MOSP/lean && lake build MOSPFormalization.SubexpPathwidth.Crossover 2>&1 | grep -c warning; cat > ../reports/scratch/subexp_pathwidth/06_crossov
+  > $ lake build 2>&1 | tail -2 && lake env lean ../reports/scratch/subexp_pathwidth/06_crossover/axiom_check.lean 2>&1 | tee ../reports/scratch/subexp_pathwidth/06_c
+
+Axiom audit clean: thirteen declarations, all on the three standard axioms. Now in parallel: the test module, the scratch README, and one refuter agent on the Lean file and the encodings.
+  > Write /home/al/dev/MOSP/tests/test_subexp_crossover.py
+  > Write /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/06_crossover/README.md
+  > Agent {"description": "Refute item 06's statements", "prompt": "You are a refuter. Repository: /home/al/dev/MOSP (do not commi
+
+I'll start by reading the Lean file and its dependencies.
+  > Read /home/al/dev/MOSP/lean/MOSPFormalization/SubexpPathwidth/Crossover.lean
+  > $ cd /home/al/dev/MOSP && time nice -n 19 python3 -m pytest tests/test_subexp_crossover.py -q 2>&1 | tail -5
+  > $ wc -l MOSPFormalization/SubexpPathwidth/Frame.lean MOSPFormalization/SubexpPathwidth/PrimitiveMachine.lean 2>/dev/null; ls MOSPFormalization/SubexpPathwidth/; c
+  > $ cat MOSPFormalization/SubexpPathwidth/PrimitiveMachine.lean; echo ======; grep -n "SubexpPathwidth" MOSPFormalization.lean
+  > $ cd /home/al/dev/MOSP && wc -l learning/subexp_crossover.py && cat learning/subexp_crossover.py
+
+Tests pass. Before writing §6, one more encoding the catalogue needs checked (odd cycle transversal, decision only), then the full re-run and a few numbers for the report; all in one go.
+  > $ python3 - <<'EOF'
+import re
+p='learning/subexp_crossover.py'
+s=open(p).read()
+s=s.replace('''def hamcycle_cutcount_cnf(g):''','''def oct_cnf(g, t: int):
+    """
+  > $ cd /home/al/dev/MOSP && ls -la reports/scratch/subexp_pathwidth/06_crossover/ && cat reports/scratch/subexp_pathwidth/06_crossover/check_atlas7.log; echo =====;
+  > $ cd /home/al/dev/MOSP && date; ps aux | grep -i "subexp_crossover" | grep -v grep; echo ===README; cat reports/scratch/subexp_pathwidth/06_crossover/README.md; e
+  > $ cd /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit && sed -n 215,240p eth.txt; echo ======; grep -n -i "Q-algebra\|commutative\|Corollary 1.3\|Theor
+  > $ cd /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/01_audit && sed -n 50,70p eth.txt; echo ====COR; sed -n 95,122p eth.txt; echo ====187; sed -n 185,195p eth
+  > $ cd /home/al/dev/MOSP && grep -n "^## \|^### " reports/subexp_pathwidth.md | head -40; grep -n "§6\|crossover\|Crossover" reports/subexp_pathwidth.md | head -20;
+  > $ cd /home/al/dev/MOSP && sed -n 1410,1430p reports/subexp_pathwidth.md; echo ====; grep -n "n / √\|n/√\|√log n\|√ln\|constant 1" reports/subexp_pathwidth.md | he
+
+The full check is clean again with the odd-cycle-transversal row added (129,761 evaluations, zero failures). Now writing §6 of the report.
+  > $ mkdir -p /tmp/refute && cat > /tmp/refute/bf.py <<'EOF'
+"""Refuter's own brute force to 6 vertices (networkx atlas, itertools).
+Imports only the encoders from l
+  > $ cd /home/al/dev/MOSP && cat > /tmp/refute/arith.py <<'EOF'
+import math
+def rho(n): return n*math.log(math.log(n+16))**2/math.sqrt(math.log(n+16))
+def paper(n): 
+  > $ cd /home/al/dev/MOSP && head -40 reports/scratch/subexp_pathwidth/06_crossover/check_atlas7.log; echo ====; sed -n 103,135p reports/subexp_pathwidth.md; echo ==
+  > $ cd /home/al/dev/MOSP && grep -n "oct" learning/subexp_crossover.py | head -30; echo ====; grep -n "def oct\|def .*oct" -A 25 learning/subexp_crossover.py | head
+  > $ cd /home/al/dev/MOSP && sed -n 28,48p learning/subexp_crossover.py; sed -n 628,645p learning/subexp_crossover.py; cat > /tmp/refute/oct.py <<'EOF'
+import iterto
+  > $ cd /home/al/dev/MOSP && sed -i 's/        tot+=1/        ment={abs(l) for c in cl for l in c}; cnt*=2**(nv-len(ment)); tot+=1/' /tmp/refute/oct.py && nice -n 19
+  > $ cd /home/al/dev/MOSP && cat > /tmp/refute/oct2.py <<'EOF'
+import itertools, sys
+import networkx as nx
+sys.path.insert(0, "/home/al/dev/MOSP")
+from learning.sube
+  > $ cat >> reports/subexp_pathwidth.md <<'EOF'
+
+## 6. Algorithms from the counting theorem for problems on graphs of linear pathwidth: the crossover (item 06, 2026-
+  > $ nice -n 19 python3 Ralph_Loops/loop0014/gate.py > reports/scratch/subexp_pathwidth/06_crossover/gate.log 2>&1; echo "exit $?" >> reports/scratch/subexp_pathwidt
+  > $ cat reports/scratch/subexp_pathwidth/06_crossover/gate.log | head -20; uptime
+  > $ ls .lake/build/lib/lean/MOSPFormalization/SubexpPathwidth/ 2>/dev/null; cat > /tmp/refute/scratch.lean <<'EOF'
+import MOSPFormalization.SubexpPathwidth.Crossove
+  > Write /tmp/sx06/Coloring.lean
+  > $ head -5 reports/scratch/subexp_pathwidth/06_crossover/gate.log; cd lean && timeout 600 lake env lean /tmp/sx06/Coloring.lean 2>&1 | grep -v 'warning\|Hint\|Omit
+  > $ cd /tmp/sx06 && python3 - <<'EOF'
+p='/tmp/sx06/Coloring.lean'
+s=open(p).read()
+s=s.replace("import Mathlib.Combinatorics.SimpleGraph.Coloring\n","")
+s=s.replace
+
+The colouring draft is two small fixes from compiling; the gate is still running. Patching and recompiling.
+  > $ cd /tmp/sx06 && python3 - <<'EOF'
+p='/tmp/sx06/Coloring.lean'
+s=open(p).read()
+s=s.replace("    · exact e1.mpr (e2.mpr hc)","    · exact e1.mp (e2.mpr hc)")
+s=s
+  > $ cd /tmp/sx06 && python3 - <<'EOF'
+p='/tmp/sx06/Coloring.lean'
+s=open(p).read()
+s=s.replace("      · exact (by simpa [colVar] using hc).symm","      · have hc' :
+  > Write /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/06_crossover/refuter.md
+
+The colouring draft compiles. I'll add its `SubexpCount` consequence and the `o(n)` lemma for `ρ(nq)`, compile the draft again, and check whether the gate has left its build stage.
+
+Report written to `/home/al/dev/MOSP/reports/scratch/subexp_pathwidth/06_crossover/refuter.md`. Summary of what it contains:
+
+**WRONG**
+1. `oct_cnf` docstring (`learning/subexp_crossover.py` lines 37–39, 280): the count is `Σ_D 2^{|D|}·2^{cc(G−D)}`, not `Σ_D 2^{cc(G−D)}` — the deleted vertices' side bits are free. Verified by exhaustive enumeration over every variable (P₃ at t=1: 18 models vs 10 claimed). Decision is correct, so nothing downstream breaks.
+2. The brief's claim "ρ(n)/n > 1 for all n below about e^{4000}": it is below 1 for n ≤ 49 (1.0027 at n=50), peaks at 16/e² = 2.165 near n ≈ 10^{23.7}, and crosses 1 again at ln(n+16) ≈ 5504, i.e. n ≈ e^{5504}. The consequence (verified-form c=2 crossover beyond every table n) holds.
+
+**GAP**
+3. The crossover table uses `n` = vertex count, but the exponent is in the *variable* count, which is `n` only for #IS. With the table's own constant-1 convention, maximum independent set (≈8n variables), Max-Cut (≈13n at m=n) and Hamiltonian cycle (≈33n) have **no crossover at any n in the table** (pw*/n = 3.1, 4.8, ≈6 at n=10²; 2.0, 3.2, ≈4 at 10⁶); 3-/4-colouring go from 0.29/0.23 to 0.79/0.82.
+4. "Paper form n/√ln n" is Theorem 1.1's *fixed-density* bound; for `indepCNF` on dense graphs the applicable one carries an extra log log n.
+5. The Hamiltonian-cycle *decision* needs the weighted count in Q[y]/(y^ℓ), which `SubexpCount` does not provide and plain counting cannot simulate within budget (a weighted adder is Θ(m log m) gates); it rests on one sentence of eth.txt §3.1 plus Prop. 3.4, unverified here and uncovered by Lean. The parity result and the isolation-lemma arithmetic are right.
+
+**OK** (with evidence)
+- `indepCount_subexp` says exactly what its docstring says (`#check` on the built olean; n is the vertex count; axioms standard; not vacuous/circular). `IsSubexpExponent` is the right notion; `counting_beats_dp_eventually` is trivial and holds for any real ≥ βn (I proved the variant in a scratch file) — editorial suggestions: state the combined time bound with the A of `indepCount_subexp`, note the DP is not modelled, note L = Θ(mn) from unary `encodeNat`.
+- My own brute force to 6 vertices (209 graphs, own enumerators): 0 failures on #IS, the threshold formula (88,744 fixed-input extension checks, exactly-one-extension form), 3-colouring, Max-Cut (to 5), and Cut & Count (auxiliaries are functions, every model is a 2-factor with consistent sides, total = Σ 2^{cc−1}, parity = own HC count, cc=1 ⇔ HC; weighted decision sound in 615 trials, odd coefficient at every unique minimum).
+- Paper proofs (b)(i)–(iv) correct; dominating set's direct form needs `SubexpCount (Δ+1)` so bounded degree only; (iii)/(iv) are 2^{o(n)} only at m = O(n).
+- Framing (d) is right, with a required qualification: eth.txt line 187 says the theorem refutes SETH outright, so the SETH-conditional bounds' *premise* is gone; their conclusions are not contradicted and now rest only on the unrestricted-CNF-SAT hypothesis (or Lampis's pw-SETH); the DP+counting combination gives min(2^{pw}, 2^{o(n)}), never (2−ε)^{pw}.
+
+**EDITORIAL**: README (110,307 evaluations, 27 s, no oct) is stale against the new log (129,761, 119 s, oct checks); check.json predates the oct addition; `THRESHOLD_AUX_PER_INPUT` named in the docstring does not exist.
+  > $ cd /tmp/sx06 && python3 - <<'EOF'
+p='/tmp/sx06/Coloring.lean'
+s=open(p).read()
+s=s.replace("end MOSPFormalization.SubexpPathwidth", '''/-! ### The algorithm: co
+  > $ cd /tmp/sx06 && python3 - <<'EOF'
+p='/tmp/sx06/Coloring.lean'
+s=open(p).read()
+s=s.replace("""      filter_upwards with n
+      simp only [Nat.cast_mul, Real.no
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+src=open('/tmp/sx06/Coloring.lean').read()
+# body: everything after the opens up to the final 'end'
+start=src.index("/
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import math, re
+def rep(s, old, new, count=1):
+    assert s.count(old) == count, (old[:60], s.count(old))
+    return s
+  > $ cd /home/al/dev/MOSP && grep -cF 'Σ_D 2^{|D|}' reports/subexp_pathwidth.md learning/subexp_crossover.py; grep -cF 'counting proper 3-colourings' reports/subexp_
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0014/iterations.md'
+s=open(p).read()
+old="- [ ] **06 Algorithms from the counting theorem"
+assert s.count(old)==1
+s=s.repla
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > Monitor {"command": "until grep -q '^exit' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/06_crossover/gate.log 2>/dev/null;
+
+While the gate finishes, I'll re-read the edited crossover paragraph to make sure the inserted table sits where it should.
+  > $ awk '/^### 6.3/,/^### 6.4/' reports/subexp_pathwidth.md | sed -n 40,95p
+  > $ python3 - <<'EOF'
+p='reports/subexp_pathwidth.md'; s=open(p).read()
+assert s.count("Two things the table shows that the proposition does not.")==1
+s=s.replace("
+
+Everything for the item is written: the module and its 129,761-evaluation check, the Lean file (24 declarations, builds, axiom audit clean), §6 with the refuter's corrections folded in, PROGRESS.md and the item mark. The only open piece is the gate, whose first pass is still running under the monitor; once it reports I'll start the final pass on the finished files and record its result in PROGRESS.md.
+
+# result: success in 1711s, 56 turns, cost $17.28
+  > $ grep -E 'PASS|FAIL|passed|failed|exit|sorry|axiom|lake' reports/scratch/subexp_pathwidth/06_crossover/gate.log | tail -12; date
+
+First pass passed, but it began before the colouring theorems were merged. Running the final pass on the finished files.
+  > $ D=reports/scratch/subexp_pathwidth/06_crossover && mv $D/gate.log $D/gate_pass1.log && (nice -n 19 python3 Ralph_Loops/loop0014/gate.py > $D/gate.log 2>&1; echo
+  > Monitor {"command": "until grep -q '^exit' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/06_crossover/gate.log 2>/dev/null;
+
+The final gate pass is running on the finished files; its result will be recorded in PROGRESS.md as soon as the monitor reports it. Nothing else remains for the item.
+
+# result: success in 21s, 4 turns, cost $21.08
+  > $ cat reports/scratch/subexp_pathwidth/06_crossover/gate.log | tail -5; date; uptime
+
+The gate is still running (its log is block-buffered; the machine load was 40 during this pass). Re-arming the watch.
+  > Monitor {"command": "until grep -q '^exit' /home/al/dev/MOSP/reports/scratch/subexp_pathwidth/06_crossover/gate.log 2>/dev/null;
+
+Still waiting on the final gate pass; nothing else is pending for the item.
+
+# result: success in 11s, 3 turns, cost $24.80
+  > $ grep -E 'lake build|sorry|passed|GATE|exit|undefined' reports/scratch/subexp_pathwidth/06_crossover/gate.log | tail -8 && python3 - <<'EOF'
+p='Ralph_Loops/loop0
+
+Item 06 is done; the final gate passes on the finished files and PROGRESS.md records it. Not committed, as instructed. Not every item is checked, so no `LOOP_COMPLETE` line.
+
+**What the item produced**
+
+- **The correction that frames every row.** The item's "SETH-tight bound, now void" is right about the derivation and wrong about the statement. SETH implies ETH, so under the counting theorem those lower bounds have a false premise. Their statements are not refuted by anything here. A `2^{o(n)}` algorithm is not a `(c − ε)^{pw} · poly` algorithm on graphs of small pathwidth, and the ETH paper's own §1.1.3 says the bounds follow from the unrestricted-CNF-SAT hypothesis, which the theorem leaves alone.
+- **Catalogue and algorithms** (report §6.1–6.2): independent sets, maximum independent set through a binary adder tree (width 3, at most 7 auxiliaries per input measured to 200 inputs), `q`-colourings, dominating set, Max-Cut, odd cycle transversal, SAT by primal pathwidth, and Cut & Count with the dynamic program replaced by the count. The Hamiltonian-cycle formula's model count is the sum over 2-factors of `2^{cc − 1}`, so its parity is computed in `2^{o(n)}` on sparse graphs under the hypothesis. The decision needs isolation-lemma weights, which rest on one remark of the paper, so it is marked conditional rather than claimed.
+- **The crossover** (§6.3): proved as an inequality on exponents, with the table at constant 1. Two honest caveats the table forced: the verified exponent `ρ(n)/n` is above 1 from `n = 50` to about `e^{5,504}`, so its crossover at base 2 is beyond every `n` tabulated; and the table is in the variable count, so at constant 1 only the colouring counts cross inside it.
+- **Lean** `SubexpPathwidth/Crossover.lean`: 24 declarations, no `sorry`, no `axiom`, all on the three standard axioms. `indepCount_subexp` and `coloringCount_subexp` are the two algorithms as `SubexpCount k →` theorems with the encodings' correctness proved; three theorems carry the crossover.
+- **Checks**: every encoding on all 1,252 atlas graphs to 7 vertices, 129,761 evaluations, zero failures. One refuter agent with its own enumerators found two wrong sentences and two gaps, no wrong theorem; all are folded into §6.7.
+
+**Not claimed**: that the hypothesis holds, that any parameterised lower bound is refuted, that the three source papers were read (none is held; recorded for item 11), or that the constant-1 table measures anything.
+
+# result: success in 23s, 2 turns, cost $28.52

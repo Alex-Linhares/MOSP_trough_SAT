@@ -1,0 +1,52 @@
+atlas to 7 vertices: 1252 graphs
+  200/1252 graphs, 0 failures, 5.6 s
+  400/1252 graphs, 0 failures, 31.9 s
+  600/1252 graphs, 0 failures, 53.8 s
+  800/1252 graphs, 0 failures, 74.3 s
+  1000/1252 graphs, 0 failures, 93.7 s
+  1200/1252 graphs, 0 failures, 113.9 s
+checks: 129761 evaluations, 0 failures, 119.3 s
+  indep_count: 1252
+  indep_width: 1252
+  indep_size: 1252
+  indep_atleast_count: 10979
+  indep_atleast_sat: 10979
+  indep_atleast_width: 10979
+  coloring_count: 2712
+  coloring_width: 2712
+  coloring_size: 2712
+  domset_count: 1252
+  domset_width: 1252
+  domset_tseitin_count: 1252
+  domset_tseitin_width: 1252
+  domset_atmost_sat: 9727
+  maxcut_sat: 14846
+  maxcut_count: 14846
+  maxcut_width: 14846
+  oct_sat: 9727
+  oct_width: 9727
+  ham_parity: 1249
+  ham_count_2factors: 1209
+  ham_weighted_sound: 1249
+  ham_width: 1249
+  ham_size: 1249
+Cut & Count weighted decision: yes on 435 of 443 graphs with a cycle (sound on all: 1249 checked)
+size constants: {"indep": {"max_vars_over_n_plus_m": 1.0, "max_clauses_over_n_plus_m": 0.75}, "indep_atleast": {"max_vars_over_n_plus_m": 6.6, "max_clauses_over_n_plus_m": 18.6}, "coloring3": {"max_vars_over_n_plus_m": 3.0, "max_clauses_over_n_plus_m": 4.0}, "domset_tseitin": {"max_vars_over_n_plus_m": 1.75, "max_clauses_over_n_plus_m": 4.75}, "maxcut": {"max_vars_over_n_plus_m": 5.892857142857143, "max_clauses_over_n_plus_m": 19.642857142857142}, "ham": {"max_vars_over_n_plus_m": 16.476190476190474, "max_clauses_over_n_plus_m": 54.095238095238095}}
+threshold auxiliaries per input, n ≤ 200: ≤ 6.98
+| c | n | paper: pw* = n/(log₂c √ln n) | pw*/n | verified: pw* = ρ(n)/log₂c | pw*/n |
+|---|---|---|---|---|---|
+| 2 | 10^2 | 47 | 0.466 | 111 | 1.115 |
+| 2 | 10^3 | 380 | 0.380 | 1,423 | 1.423 |
+| 2 | 10^4 | 3,295 | 0.330 | 16,245 | 1.625 |
+| 2 | 10^5 | 29,472 | 0.295 | 175,964 | 1.760 |
+| 2 | 10^6 | 269,040 | 0.269 | 1,854,972 | 1.855 |
+| 3 | 10^2 | 29 | 0.294 | 70 | 0.703 |
+| 3 | 10^3 | 240 | 0.240 | 898 | 0.898 |
+| 3 | 10^4 | 2,079 | 0.208 | 10,250 | 1.025 |
+| 3 | 10^5 | 18,595 | 0.186 | 111,021 | 1.110 |
+| 3 | 10^6 | 169,745 | 0.170 | 1,170,357 | 1.170 |
+| 4 | 10^2 | 23 | 0.233 | 56 | 0.557 |
+| 4 | 10^3 | 190 | 0.190 | 711 | 0.711 |
+| 4 | 10^4 | 1,648 | 0.165 | 8,123 | 0.812 |
+| 4 | 10^5 | 14,736 | 0.147 | 87,982 | 0.880 |
+| 4 | 10^6 | 134,520 | 0.135 | 927,486 | 0.927 |
