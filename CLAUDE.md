@@ -1595,28 +1595,64 @@ of the climb, and the `10¹¹` nodes at 125 are the lattice's size, not an
 inefficiency. Nothing re-solved; `solutions/` untouched; about 11
 core-hours; data under `reports/scratch/checkpoint/`.
 
-**Paper 3, title fixed by the owner (2026-11-05, no deviations):**
+**Paper 3, written (loop0015, 2026-11-05; title fixed by the owner, verbatim):**
 *"Exponential time hypothesis is false... but the verified algorithm is slower than trying all 2^n assignments at every practical size."*
-— **about the limitation of the ETH refutation and nothing else** (owner,
-2026-11-05: no graphs, no pathwidth, no MOSP in it). The object is OpenAI's
-family 378 (`github.com/openai/math`, 2026-10-25; cloned read-only under
-`~/dev/untrusted/`, never built or run from inside except in the paper's
-sandboxed replay): what the Lean-verified statement says exactly (a finite
-multitape machine, an honest trace, constants fixed before the formula, the
-exponent `n (log log n)² / √log n` only, whose factor exceeds 1 for every
-`50 < n < e^{5504}`, so the verified *guarantee* is weaker than `2^n · poly`
-at every practical size, while the machine's actual running time is
-unknown because the constants are never computed; the manuscript's sharper
-exponents and the quantitative circuit bound are unverified), an
-independent inspection and replay of the proof (`reports/scratch/eth_audit/`:
-3,091 modules, no axiom / sorry / native_decide / implemented_by / unsafe /
-partial, 33 statement definitions identical, no recorded axiom audit, no
-CI, no second-kernel replay), which hypotheses the verified statement
-refutes and what it does not refute, and what it changes for a
-practitioner (nothing on any machine). Directory `paper3/`; open questions
-the loop could not settle go to `paper3/ETH_AMBIGUOUS.MD` for the owner.
-Ralph loop0015 writes it (`reports/paper3_plan.md`); the audit found no
-flaw, and the paper reads as a careful reading by people who checked.
+— **about the limitation of the ETH refutation and nothing else** (owner:
+no graphs, no pathwidth, no MOSP in it). `paper3/latex/main.pdf`, 64
+pages, plain English by the owner's rule (every symbol glossed, no formula
+beyond `2^n` in the abstract and introduction, the dense passages in
+Appendix B); `paper3/README.md` has the regenerate command beside every
+number, the replay's hashes, the Lean names and every open question by
+entry. The object is OpenAI's family 378 (`github.com/openai/math`, commit
+`4eaee875`, cloned read-only under `~/dev/untrusted/`, read with `open()`,
+`sed` and `grep` only, built once in a `bwrap` sandbox from a fresh copy).
+**What is verified** (Section 2): for each `k` a finite multitape machine
+and constants `C, A, S, d, e` *exist* with the exact count within
+`C (L+1)^d · 2^{A ρ(n)}` steps, `ρ(n) = n (ln ln(n+16))² / √ln(n+16)`; the
+constants are never computed (at least 257 where the proof writes one
+down, the exhibited theorem's at least 258 with `C ≥ 28,701`); `ρ(n)/n`
+exceeds 1 for every `50 ≤ n < e^{5504}` (peak `16/e² ≈ 2.17` near
+`10^{23.7}`; `e^{5504}` has 2,391 digits), so the verified guarantee is
+above `2^n` at every practical size while the machine's running time is
+unknown; the manuscript's sharper exponents and Corollary 1.4's circuit
+bound are **paper-only** (Section 3, each claim tagged verified /
+supported / paper-only with page and line). **The inspection** (Section
+4): closure 3,091 modules, zero `axiom` / `sorry` / `native_decide` /
+`implemented_by` / `unsafe` / `partial`, 35 statement definitions compared
+(33 identical, 2 up to `noncomputable`), the compile lemmas ending in the
+comparator's own `Trace`, no recorded axiom audit, no CI,
+`enable_nanoda: false` on 413 of 418 challenge JSONs. **The replay**
+(Section 5): the closure built at the pinned `v4.34.1` and upstream
+Mathlib `d13f23b7` in 33 min, 0 errors, `#print axioms` = the three
+standard axioms; `lean4export` + `nanoda_lib` (`8de7e0c4`) checked 95,176
+declarations with no errors — the trust boundary now excludes the build,
+the axiom output and the single kernel, and still includes the comparator
+run (textual match only) and `lean4export`'s faithfulness. **What
+follows** (Section 6): ETH, SETH, Gap-ETH, NSETH, #ETH and the randomised
+forms of the first three refuted by named conjuncts; a derived lower bound
+loses its premise and nothing more (the manuscript's §1.1.3). **The
+practitioner** (Section 7): CaDiCaL, Ganak and ApproxMC on random 3-CNF to
+500 variables sit tens of decades below `2^n`, which the verified
+guarantee crosses at `n = 50`; no implementation of the verified machine
+exists (`practitioner.py --check` proves the absence of any entry point).
+**Our Lean** (Section 8): the comparator's model copied byte for byte and
+the theorem restated as `SubexpCount k : Prop`, left under
+`lean/MOSPFormalization/SubexpPathwidth/` by the owner's decision S3, 21
+declarations axiom-audited (`paper3/lean/`), never proved, never an axiom.
+**Related work** (Section 9): `leanprover/comparator` is archived and
+merged into Lean core as `lake comparator` at v4.35.0; the human audit
+paper (arXiv 2608.14673) concerns the August results, not 378; "we found
+no prior statement" of the title's observation, bounded to six texts.
+**The stance**: no flaw found, none asserted; a careful reading by people
+who checked. **Gaps**: the comparator run not reproduced; the two JCSS
+hypothesis papers cited unread (`literature/MISSING.md`); the title's
+"is slower" rests on §2.5 and §7.4 (10b); 61 entries in
+`paper3/ETH_AMBIGUOUS.MD`, 39 open and affecting the text, sorted in
+Section 10.2 and in the README. Cost: thirteen sessions and about 7.5 h
+of wall clock for items 01–12 (the replay's 33 min inside), under $160
+of the $4,000 budget. Nothing under `solutions/` touched;
+no MOSP or pathwidth run; the only compute on random 3-CNF the script
+generates and the sandboxed build.
 
 **Unrelated to the plan:**
 - Fix the pathwidth SAT encoding variable ID collision bug in `encoding.py`.
