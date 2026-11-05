@@ -201,9 +201,11 @@ an answer).
   four hours, and the replay needs eight; the agent changed the driver so
   one item can carry its own limit. Nothing for the owner to decide; the
   change stands.
-- **S6 resolved**: model counters are to be installed on the host before
-  item 06 runs (the coordinator is doing it); item 06 uses what is
-  installed and names it.
+- **S6 resolved**: `pyapproxmc` 4.4.0 (ApproxMC, an approximate counter
+  with (ε, δ) guarantees) is installed on the host by the owner
+  (2026-11-05); no exact counter is installed. Item 06 uses ApproxMC for
+  counts and CaDiCaL (pysat) for decision times, and says so; an exact
+  counter (ganak, sharpSAT-td) would need a source build.
 - **S7 resolved**: the text says exactly "for every 50 ≤ n < e^5504".
 - **S8 resolved**: ok.
 - **Compute**: the owner allows as many `nice -n 19` cores as needed
