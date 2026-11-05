@@ -3,3 +3,8 @@
 [2026-11-05 01:12:43] claude session it01 (cap 8.00 h) -> session_it01.log
 [2026-11-05 02:07:53] session it01: ok (exit 0, 73 tool calls)
 [2026-11-05 02:19:08] tests passed: GATE PASS
+[2026-11-05 02:19:08] committed 45c977edf: 01 The replay: the SubexponentialSAT closure built in the bwrap sandbo
+[2026-11-05 02:19:08] === iteration 2: 02 The statement, read exactly.
+[2026-11-05 02:19:08] claude session it02 (cap 4.00 h) -> session_it02.log
+[2026-11-05 02:38:53] session it02: ok (exit 0, 46 tool calls)
+[2026-11-05 02:50:06] tests passed: GATE PASS

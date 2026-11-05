@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 1/12 SOLVED
+Current: 2/12 SOLVED
 
 ## Setup — 2026-11-05
 
@@ -111,3 +111,66 @@ Current: 1/12 SOLVED
   Claude session on this machine (not this one; item 02's script by its
   docstring). They will be swept into this iteration's commit; item 02
   should treat them as its own starting point, not as item 01's work.
+
+---
+
+## Iteration 2 — 2026-11-05 02:19 (item 02, the statement read exactly) `[x]`
+
+### Completed
+- **Re-verified the comparator file line by line** against the clone at
+  `4eaee875` (`cat -n`, 220 lines): every line number of
+  `statement_audit.md` holds (SAT 13–51, encoding 53–81, `Trace` 87–90,
+  `PrimitiveMachine` 92–99, `Cfg` 103–105, `step` 107–119, `init`
+  121–124, `runtimeScale` 132–134, `runtimeBound` 136–139, `countWord`
+  147, `LocatedCfg`…`visitedSpace` 149–189, the theorem 194–217, `sorry`
+  218); Mathlib's `Stmt` (PostTuringMachine.lean 118–120), `Dir`
+  (Tape.lean 421–423), `Tape` (408–414), `mk₁` (494) re-located; the
+  manuscript's "log denotes the natural logarithm" at p. 1 lines 48–49
+  (and p. 7 lines 326–327), Theorem 1.1 at p. 2 lines 56–62, "the weaker
+  exponent" at p. 2 line 63, Proposition 6.4 with `n ⩾ 20` at p. 43
+  lines 2474–2476, Appendix D's base-2 convention at p. 57 lines
+  3251–3252.
+- **One fact added beyond the audit**: the proof's own exponent constant
+  is `A = 256 + A_t` with `1 ≤ A_t` (`SqrtLogSpace/NativeLargeEntry.lean`
+  line 51; `NativeLeafContract.lean` lines 792–793; `1 ≤ C ∧ 1 ≤ A` at
+  `NativeLargeEntry.lean` line 12), so the proof as written has
+  `A ≥ 257`; quoted for the value only, flagged for item 04
+  (`ETH_AMBIGUOUS.MD` 02c).
+- `paper3/scripts/runtime_scale.py` (python3 -I, computes in
+  `y = ln(n+16)`, imports nothing from the clone): prints the `ρ(n)/n`
+  table at `n = 1, 20, 49, 50, 100, 125, 10³, 10⁶, 10¹², 10^23.7, 10^100,
+  10^1000, e^5504, 10^3000`; `n = 50` first above 1 (`0.9994 / 1.0027`);
+  peak `16/e² = 2.1654` at `ln(n+16) = e⁴` (`n ≈ 10^23.71`); back below 1
+  at `ln(n+16) = 5503.7` (`n ≈ e^5504 ≈ 10^2390`, bracketed: 1.000049 at
+  5503, 0.999951 at 5505). Writes `latex/tables/runtime_scale.tex` and
+  `latex/figures/runtime_scale.{pdf,png}` (log-`n` axis 10…10^2500, the
+  line, the level 1, the three landmarks, `50 ≤ n ≤ 10⁶` shaded).
+- The owner's central figure (`rho_over_n.py`, from another session at
+  02:07) kept as Figure 2.1, with two fixes: the peak made analytic
+  (`10^23.7`, was the grid's `10^23.5`) and the `+16` written into the
+  legend (02b).
+- `paper3/latex/sec2_statement.tex` drafted (6 subsections, 7 pages:
+  definitions one by one with lines; the theorem as an aligned display
+  with each conjunct's lines; the quantifier order, no `n ≥ 20`, the
+  existential constants; the numbers, Table 2.1, Figures 2.1–2.2; the
+  title's claim in four numbered points; what the statement does
+  establish, with the `O(n^k)` clause cap and the ETH citation; "what
+  this does not claim"). `make -C paper3/latex check` passes, 13 pages,
+  no overfull box from this section.
+- `paper3/README.md` "How to regenerate every number" gets the Section 2
+  paragraph; `ETH_AMBIGUOUS.MD` entries 02a–02d.
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone executed (read with `sed -n`/`grep` only).
+
+### Blockers
+- None.
+
+### Next
+- Item 03 (what the manuscript claims beyond the statement): Section 2
+  already points at `sec:beyond` for the two sharper exponents and the
+  base-2 `rho` of `Asymptotics.lean` lines 10–11 / 189–190.
+- Item 04 should confirm the `A = 256 + A_t` reading (02c) and the
+  `cutoff = max 20 (max Nleaf Ns)` at `NativeLargeEntry.lean` line 50.
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 02:38
+  (exit 0; pytest 1,978 + 123 passed, both papers build, title verbatim,
+  `solutions/` untouched).

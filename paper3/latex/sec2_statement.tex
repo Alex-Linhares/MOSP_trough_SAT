@@ -1,5 +1,380 @@
-% The verified statement, read exactly -- drafted by loop0015 item 02.
+% The verified statement, read exactly -- drafted by loop0015 item 02 (2026-11-05).
+% Every line number of the comparator file is at commit 4eaee875 of the clone
+% (~/dev/untrusted/openai-math, read with cat/sed -n only); every manuscript quote
+% gives the page of paper.pdf and the line of reports/scratch/eth_audit/paper.txt.
+% Every number of this section: python3 -I paper3/scripts/runtime_scale.py
+% (the rho(n)/n table and the crossings) and python3 -I
+% reports/scratch/eth_audit/check_encoding.py (the encoding lengths).
 \section{The verified statement, read exactly}
 \label{sec:statement}
 
-\placeholder{Item 02 drafts this section: the comparator's definitions one by one with their lines, the quantifier order, the encoding length, the exponent $\runtimeScale$; the table (label \texttt{tab:runtime-scale}) and figure (label \texttt{fig:runtime-scale}) of $\rhon/n$ (from \repofile{paper3/scripts/runtime\_scale.py}); the title's claim stated precisely. Ends with what this does not claim''.}
+The whole of what is machine-checked about family 378 is one theorem,
+\texttt{exact\_count\_and\_sat}, stated in the 220-line comparator file
+\clonefile{lean/ComparatorChallenges/SubexponentialSAT.lean} of the
+collection \citep{OAI:The-Exponential-Time-Hypothesis-is-False-October-25-2026}
+at commit \texttt{4eaee875}. The file carries the statement with a
+\texttt{sorry} for its proof (line 218); the solution tree proves the same
+statement, and the collection's comparator checks that the two agree
+(Section~\ref{sec:proof}). The replay of Section~\ref{sec:replay}
+rebuilt that proof and found the three standard axioms and nothing else.
+This section reads the statement, definition by definition, and says what
+it asserts and what it does not. Line numbers are those of the comparator
+file; we quote nothing from memory.
+
+\subsection{The definitions, one by one}
+
+\paragraph{Formulas and the count (lines 13--51).}
+A \texttt{Literal V} is a variable with a sign (lines 19--22); a
+\texttt{Clause V} is a \texttt{Finset} of literals and a \texttt{CNF V} a
+\texttt{Finset} of clauses (lines 24--25). An assignment is any function
+\(V \to \mathtt{Bool}\) (line 17). A literal evaluates to the Boolean
+``the assignment agrees with its sign'' (lines 29--30), a clause to ``some
+literal is true'' (lines 32--33), a formula to ``every clause is true''
+(lines 35--36). \texttt{WidthAtMost k F} says every clause has at most
+\(k\) literals as a set (line 38). Over a finite variable type,
+\texttt{satisfyingAssignments F} filters the universe of all assignments
+(lines 44--45), and \texttt{count F} is its cardinality (line 47): the
+number of satisfying assignments among all \(2^n\) when
+\(V = \mathtt{Fin}\ n\). The \texttt{Finset} choices change nothing in the
+meaning: a repeated clause or literal collapses, the empty clause is
+allowed and unsatisfiable, a tautological clause \(\{x, \neg x\}\) is
+allowed and counts two toward the width. That is consistent with the
+manuscript's ``Repeating a literal permits clauses with fewer than \(k\)
+literals'' (p.~1, line~44).
+
+\paragraph{The input encoding (lines 53--81).}
+\texttt{encodeNat n} is \(n\) ones followed by a zero (line 55): unary.
+\texttt{frame} doubles a bit string, prefixing each bit with a one, and
+ends it with a zero (lines 57--58). \texttt{encodeList enc} prefixes each
+element's frame with a one and ends the list with a zero (lines 60--62).
+A literal becomes the number \(2\cdot\mathrm{var} + [\text{positive}]\),
+at most \(2n - 1\) (lines 64--65); a clause is its sorted list of literal
+numbers, a formula its sorted list of clauses (lines 67--71).
+\texttt{encodeCNF F} is \texttt{encodeNat n} followed by the formula's
+list of lists of unary numbers (lines 73--77), and
+\texttt{formulaBitLength F} is the length of that bit string (line 79).
+Two things follow. The number of variables \(n\) is part of the input,
+so a variable that occurs in no clause is still counted. And the length
+is polynomial: a clause of \(j \le k\) literals costs \(2j(4n+1)+4\) bits,
+so
+\[
+  L \;=\; \mathtt{formulaBitLength}\ F \;\le\; n + 2 + m\,\bigl(2k(4n+1) + 4\bigr)
+  \;=\; O(k\,n\,m)
+\]
+for \(m\) clauses. The solution itself proves
+\((L+1)^d \le (8k+7)^d\,(n + |F| + 1)^{2d}\)
+(\clonefile{SqrtLogSpace/Statement.lean}, lines 9--14). Emulating the
+definitions (\repofile{reports/scratch/eth_audit/check_encoding.py}),
+a formula with \(n = 125\), \(m = 500\), \(k = 4\) encodes to
+\(L = 1{,}006{,}223\) bits and one with \(n = 1{,}000\), \(m = 4{,}000\),
+\(k = 3\) to \(47.9\) million, both under the bound. Nothing in the
+encoding is exponential; the unary numbers are linear in \(n\).
+
+\paragraph{The machine (lines 83--128).}
+\texttt{PrimitiveMachine} (lines 92--99) is a finite object: a number
+\texttt{tapeCount} of tapes and a number \texttt{stateCount} of states,
+an input tape and a start state, a table \texttt{scan} saying which tape
+each state reads, and a table \texttt{transition} from
+\(\mathtt{Fin}\ \mathtt{stateCount} \times \mathtt{Option\ Bool}\)---a
+domain of \(3 \cdot \mathtt{stateCount}\) points---into either a halting
+answer (a \texttt{Bool}) or a next state with one action. The action type
+is Mathlib's \texttt{Turing.TM0.Stmt (Option Bool)}: move the head left or
+right, or write one of the three symbols \texttt{none}, \texttt{some
+false}, \texttt{some true}, five values in all
+(\path{Mathlib/Computability/TuringMachine/PostTuringMachine.lean}
+lines 118--120 and \path{Tape.lean} lines 421--423 at Mathlib
+\texttt{d13f23b7}, the clone's pinned revision). A configuration
+\texttt{Cfg} (lines 103--105) is a state, halted or not, and one Mathlib
+\texttt{Tape} per tape index (a head symbol and two blank-padded halves,
+\path{Tape.lean} lines 408--414, blank \(=\) \texttt{none}).
+\texttt{step} (lines 107--119) returns \texttt{none} in a halted state;
+otherwise it reads the head of the one tape the state scans, looks the
+pair up in the table, and either halts with the answer, or writes one
+symbol or moves that one head by one cell and changes state. \texttt{init}
+(lines 121--124) puts the input on the input tape with the head at its
+first bit and every other tape blank (\texttt{Tape.mk}$_1$,
+\path{Tape.lean} line 494). A Lean function on a finite domain is,
+whatever term defines it, a finite table; so a step is one lookup in a
+table of \(3 \cdot \mathtt{stateCount}\) rows, and no field of the
+structure can carry unbounded computation.
+
+\paragraph{Traces (lines 87--90).}
+\texttt{Trace step t a c} is an inductive proposition with two
+constructors: \texttt{refl}, a trace of length 0 from \(a\) to \(a\)
+itself, and \texttt{cons}, which extends a trace from \(b\) by one
+successful step \(a \mapsto b\). So it holds exactly when \(c\) is
+reached from \(a\) by \(t\) successful applications of \texttt{step}, and
+a trace of length 0 to a different configuration is impossible. Since
+\texttt{step} is a function, the run is deterministic.
+
+\paragraph{Space monitoring (lines 147--189).}
+\texttt{LocatedCfg} (lines 149--153) pairs a configuration with, per tape,
+the head's current position and the least and greatest positions seen so
+far, as integers; \texttt{locatedInit} starts every head at 0 with the
+input tape's range covering the input (lines 155--159);
+\texttt{headDisplacement} is \(-1\), \(+1\) or \(0\) for a move left, a
+move right or a write (lines 161--164); \texttt{monitor} (lines 166--182)
+applies the same table lookup to update the position and the running
+minimum and maximum of the scanned tape, and nothing else;
+\texttt{locatedStep} is \texttt{step} on the configuration followed by
+\texttt{monitor} (lines 184--186). \texttt{visitedSpace} (lines 188--189)
+is the sum over tapes of \(\mathrm{upper} - \mathrm{lower} + 1\): the
+number of cells whose head position was ever visited. \texttt{countWord a}
+is the binary expansion of \(a\), least significant bit first, with
+\texttt{[false]} for \(0\) (line 147), and \texttt{toNat} (lines 7--9)
+decodes such a word.
+
+\paragraph{The exponent and the bound (lines 130--141).}
+\begin{quote}\small
+\texttt{runtimeScale n = n * (Real.log (Real.log (n + 16)))\^{}2 /}\\
+\texttt{\quad Real.sqrt (Real.log (n + 16))}
+\end{quote}
+(lines 132--134, transcribed; the casts to \(\mathbb{R}\) omitted), that is
+\[
+  \rhon \;=\; \frac{n\,\bigl(\ln\ln(n+16)\bigr)^2}{\sqrt{\ln(n+16)}},
+\]
+with \texttt{Real.log} the natural logarithm. The manuscript fixes the
+same base: ``Throughout, log denotes the natural logarithm'' (p.~1, lines
+48--49; again at p.~7, lines 326--327). The shift by 16 keeps
+\(\ln\ln\) defined and positive at every \(n \ge 0\) (\(\ln 16 = 2.77\)),
+so the theorem can be stated for all \(n\) with no proviso. Then
+\begin{quote}
+\texttt{runtimeBound C A d L n = C * (L + 1)\^{}d * 2\^{}(A * runtimeScale n)}
+\end{quote}
+(lines 136--139, transcribed), a real number, with the real-exponent
+power. We write \(\rhon\) for \texttt{runtimeScale n} throughout the
+paper.
+
+\subsection{The theorem, and the order of its quantifiers}
+
+Lines 194--217 state, for every \(k\) with \(2 \le k\):
+\[
+\small
+\begin{array}{l}
+\exists\ \mathtt{machine},\ \mathtt{countTape},\ \mathtt{answerTape},\
+  C, A, S \in \mathbb{R},\ d, e \in \mathbb{N},\\[2pt]
+\quad 0 < C \ \wedge\ 0 < A \ \wedge\ 0 < S \ \wedge\ 0 < d \ \wedge\ 0 < e\ \wedge\\[2pt]
+\quad \forall\, n \in \mathbb{N},\ \forall\, F : \mathtt{CNF}\ (\mathtt{Fin}\ n),\
+  \mathtt{WidthAtMost}\ k\ F \;\rightarrow\\[2pt]
+\qquad \exists\ \mathtt{time} \in \mathbb{N},\ \mathtt{final} : \mathtt{LocatedCfg}\ \mathtt{machine},\\[2pt]
+\qquad\quad \mathtt{Trace}\ (\mathtt{locatedStep}\ \mathtt{machine})\ \mathtt{time}\
+  (\mathtt{locatedInit}\ \mathtt{machine}\ (\mathtt{encodeCNF}\ F))\ \mathtt{final}\\[2pt]
+\qquad\qquad\qquad\text{(lines 201--202)}\\[2pt]
+\qquad\quad \wedge\ \text{the count tape holds \texttt{countWord (count F)}}
+  \quad\text{(203--204)}\\[2pt]
+\qquad\quad \wedge\ \text{the answer tape holds the bit \([0 < \mathtt{count}\ F]\)}
+  \quad\text{(205--206)}\\[2pt]
+\qquad\quad \wedge\ \text{the halting state carries that bit}
+  \quad\text{(207)}\\[2pt]
+\qquad\quad \wedge\ \mathtt{toNat}\ (\mathtt{countWord}\ (\mathtt{count}\ F)) = \mathtt{count}\ F
+  \quad\text{(208)}\\[2pt]
+\qquad\quad \wedge\ |\mathtt{countWord}\ (\mathtt{count}\ F)| \le n + 1
+  \quad\text{(209)}\\[2pt]
+\qquad\quad \wedge\ \mathtt{time} \le C\,(L+1)^d\,2^{A\,\rhon},\ L = \mathtt{formulaBitLength}\ F
+  \quad\text{(210--211)}\\[2pt]
+\qquad\quad \wedge\ \forall\ \text{prefix of the trace},\
+  \mathtt{visitedSpace} \le S\,(L+1)^e
+  \quad\text{(212--217).}
+\end{array}
+\]
+Three features of the order matter.
+
+\emph{The machine and the five constants come after \(k\) and before
+\(n\) and \(F\).} They may depend on \(k\) and on nothing else; inside
+the universal quantifier only \texttt{time} and \texttt{final} are
+chosen. So for each \(k\) one fixed finite machine serves every formula
+of every size, and \(C, A, S, d, e\) are the same for all of them: the
+standard \(O_k(1)\) reading. The table's size is \(O_k(1)\) in the same
+sense, with no explicit function of \(k\).
+
+\emph{There is no lower bound on \(n\).} The manuscript's Theorem~1.1
+and Proposition~6.4 are stated for \(n \ge 20\) (p.~2, lines 56--57;
+p.~43, lines 2474--2475), and the solution's auxiliary
+\texttt{exact\_count\_eth} keeps \(20 \le n\)
+(\clonefile{SqrtLogSpace/Final.lean}, lines 104--109); the exported
+theorem does not. The \(+16\) in \(\rhon\) is what makes that possible.
+
+\emph{The constants are existential.} The statement asserts that values
+of \(C, A, S, d, e\) exist; it names none. The proof obtains them from
+existential lemmas and never evaluates them: at the point where the
+large-input run is assembled, the exponent constant is set to
+\(A = 256 + A_t\) with \(A_t \ge 1\) taken from a leaf contract
+(\clonefile{SqrtLogSpace/NativeLargeEntry.lean}, line 51;
+\clonefile{SqrtLogSpace/NativeLeafContract.lean}, lines 792--793), and
+the degree and the polynomial constants are built the same way. So the
+proof as written has \(A \ge 257\), and no closed value of any of the
+five. The witness machine is explicit in one respect: it is compiled
+from a program over 80 one-bit registers and 1,220 tapes, with
+\(\mathtt{countTape} = 256\) and \(\mathtt{answerTape} = 1216\)
+(\clonefile{SqrtLogSpace/Final.lean}, lines 98--101); its state count is
+a finite type's cardinality that nothing computes. Section~\ref{sec:proof}
+is the inspection of the proof; this section only reads what the
+statement fixes and what it leaves open.
+
+\subsection{The exponent, in numbers}
+
+Everything the title says rests on one function. With \(y = \ln(n+16)\),
+\[
+  \frac{\rhon}{n} \;=\; \frac{(\ln y)^2}{\sqrt{y}},
+\]
+which rises from \(0.64\) at \(n = 1\), crosses \(1\) between
+\(n = 49\) and \(n = 50\), peaks at \(16/e^2 = 2.165\) where
+\(\ln y = 4\), i.e.\ \(y = e^4\), \(n = e^{e^4} - 16 \approx 10^{23.7}\),
+and returns below \(1\) only where \((\ln y)^2 = \sqrt{y}\) again, at
+\(y = 5503.7\), i.e.\ \(n \approx e^{5504} \approx 10^{2390}\).
+Table~\ref{tab:runtime-scale} gives the values and
+Figures~\ref{fig:central} and \ref{fig:runtime-scale} draw them; every
+number is printed by \repofile{paper3/scripts/runtime\_scale.py}
+(run under \texttt{python3 -I}; it imports nothing from the clone and
+computes in \(y\), so that no \(n\) beyond floating-point range is ever
+formed). The crossing at 50 is a fact about integers:
+\(\rho(49)/49 = 0.9994\) and \(\rho(50)/50 = 1.0027\). In the limit
+\(\rhon/n \to 0\), since \((\ln y)^2/\sqrt{y} \to 0\): the exponent is
+\(o(n)\), and that is a theorem in our companion Lean
+\leanref{rho-little-o}. Both facts are true at once, and the second is
+the one the title is about: the function is \(o(n)\), and it is above
+\(n\) on every size anyone will ever write down.
+
+\begin{table}[htbp]
+\centering
+\caption{The verified exponent relative to \(n\). \(\rhon = n(\ln\ln(n+16))^2/\sqrt{\ln(n+16)}\),
+the comparator's \texttt{runtimeScale} (lines 132--134), natural logarithms.
+The verified bound is \(C(L+1)^d\,2^{A\rhon}\); at \(A = 1\) its exponential
+factor is \(2^{(\rhon/n)\cdot n}\), against \(2^n\) for trying every assignment.
+Regenerate: \texttt{python3 -I paper3/scripts/runtime\_scale.py}.}
+\label{tab:runtime-scale}
+\input{tables/runtime_scale}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{rho_over_n.pdf}\\[4pt]
+\includegraphics[width=\linewidth]{rho_over_n_practical.pdf}
+\caption{The verified exponent against brute force. Top: \(\rhon/n\) over
+the whole range, the axis in \(\log_{10} n\) from \(n = 10\) to
+\(n = 10^{3000}\); the dashed level is \(2^n\); beneath it the manuscript's two
+sharper exponents, \(n\ln\ln n/\sqrt{\ln n}\) (Theorem~1.1, general) and
+\(n/\sqrt{\ln n}\) (fixed clause density), which are not in the Lean
+library (Section~\ref{sec:beyond}). Bottom: the same three curves over the
+practical range \(n = 10\) to \(10^6\), with \(\rhon/n\) marked at
+\(n = 50, 125, 10^3, 10^4, 10^6\). All curves at the constant \(A = 1\);
+the verified \(A\) is unknown. Regenerate:
+\texttt{python3 -I paper3/scripts/rho\_over\_n.py}.}
+\label{fig:central}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{runtime_scale.pdf}
+\caption{\(\rhon/n\) alone, on a logarithmic axis in \(\log_{10} n\) from
+\(n = 10\) to \(n = 10^{2500}\), with the level \(1\) (brute force, \(2^n\)),
+the first integer above the level (\(n = 50\)), the peak (\(16/e^2 = 2.17\)
+at \(\ln(n+16) = e^4\), \(n \approx 10^{23.7}\)), the return below the level
+(\(n \approx e^{5504} \approx 10^{2390}\)), and the practical range
+\(50 \le n \le 10^6\) shaded. Regenerate:
+\texttt{python3 -I paper3/scripts/runtime\_scale.py}.}
+\label{fig:runtime-scale}
+\end{figure}
+
+\subsection{The title's claim, made precise}
+
+The title says the verified algorithm is slower than trying all \(2^n\)
+assignments at every practical size. Read against the statement, that is
+the following, and nothing more.
+
+\begin{enumerate}
+\item \textbf{What is verified is a guarantee, not a running time.} The
+  theorem says the machine halts within \(C(L+1)^d\,2^{A\rhon}\) steps.
+  It does not say how many steps the machine takes on any input, and no
+  implementation of the machine exists to be timed. A bound above
+  \(2^n\) does not say the machine is slow; it says the proof promises
+  nothing better than \(2^n\) there.
+\item \textbf{The constants \(C, A, S, d, e\) are existential and never
+  computed.} The comparator asserts their existence; the proof builds
+  them from existential lemmas (above, with \(A \ge 257\) as
+  constructed) and states no value. The machine's state count is likewise
+  never computed.
+\item \textbf{With \(A = 1\), the verified exponent exceeds \(n\) for
+  every \(50 \le n < e^{5504}\).} That is Table~\ref{tab:runtime-scale}:
+  the exponential factor of the bound is at least \(2^n\) from 50
+  variables up to about \(10^{2390}\), and \(2^{2.17\,n}\) at its
+  worst. With the true \(A\), whatever it is, the factor is
+  \(2^{A\rhon} \ge 2^{\rhon}\) once \(A \ge 1\), and the proof's own
+  construction has \(A \ge 257\); so nothing is known that would put the
+  bound below \(2^n\) at any practical size.
+\item \textbf{Hence, at every practical size, the verified guarantee is
+  weaker than the guarantee of trying all assignments.} Trying all \(2^n\)
+  assignments and checking each against the \(m\) clauses counts the
+  models in \(2^n \cdot \mathrm{poly}(n+m)\) steps on any reasonable
+  machine, with constants one can write down. The verified guarantee is
+  \(C(L+1)^d\,2^{A\rhon}\) with \(\rhon > n\) on \(50 \le n < e^{5504}\)
+  and \(C, A, d\) unknown. For every \(C \ge 1\), \(A \ge 1\) and
+  \(d \ge 1\) the verified bound is above \(2^n\) on every \(n\) in that
+  range, and the only values on record are the proof's, which has
+  \(1 \le C\) and \(1 \le A\) in the large-input run's own statement
+  (\clonefile{SqrtLogSpace/NativeLargeEntry.lean}, line 12) and
+  \(A \ge 257\) in its construction. A proof with \(A < 1\) would be a
+  different proof; none is on record.
+\end{enumerate}
+
+None of this is a defect of the formalisation or of the proof; it is
+what an \(O_k(1)\) statement with a \(2^{o(n)}\) exponent of this shape
+means when the exponent's constants are not tracked. The manuscript
+itself calls \(\rhon\) ``the weaker exponent'' (p.~2, line~63), and its
+sharper exponents are not in the Lean library (Section~\ref{sec:beyond}).
+One more detail of base: the solution's internal \(\rho\)
+(\clonefile{SqrtLogSpace/Asymptotics.lean}, lines 10--11) is in base 2 and
+is related to \texttt{runtimeScale} by
+\(\mathtt{runtimeScale}\ n \le 4\,\rho_2(n)\) for \(n \ge 20\)
+(lines 189--190); the base changes the exponent by a constant factor
+that \(A\) absorbs, so nothing above depends on it.
+
+\subsection{What the statement does establish}
+
+For each fixed \(k \ge 2\), a deterministic machine that, on the canonical
+encoding of any \(k\)-CNF on \(n\) variables with \(m\) clauses, halts with
+the exact number of satisfying assignments in binary on a named tape,
+within \(C(L+1)^d\,2^{A\rhon}\) steps, where \(L = O(k\,n\,m)\) is
+polynomial in \(n + m\) and \(\rhon = o(n)\); and, because a
+\texttt{Finset} of clauses of width at most \(k\) has at most
+\(\sum_{j \le k}\binom{2n}{j} = O(n^k)\) members (\(2{,}604{,}376\) at
+\(n = 125\), \(k = 3\)), the whole bound is \(2^{o(n)}\) in \(n\) alone.
+That is a deterministic \(2^{o(n)} \cdot \mathrm{poly}(n+m)\) algorithm
+for \#\(k\)-SAT in the standard sense, and therefore for \(k\)-SAT; it
+refutes the Exponential Time Hypothesis \citep{ImpagliazzoPaturi2001} as
+stated. The statement reads as the manuscript's verified form, the
+weaker exponent of its Proposition~6.4 (p.~43, lines 2474--2476), without
+the \(n \ge 20\) proviso. We found no field, definition or quantifier
+through which the statement could be kernel-true and mean something
+weaker than this; the audit it summarises is
+\repofile{reports/scratch/eth_audit/statement\_audit.md}. Our own
+restatement of the statement as a Lean \texttt{Prop}, character for
+character over a verbatim copy of the machine model, is
+\leanref{subexpcount}; it is never proved and never an axiom there
+(Section~\ref{sec:lean}).
+
+\subsection{What this does not claim}
+
+\begin{itemize}
+\item \textbf{No running time of any machine.} Nothing here measures or
+  estimates how long the verified machine, or any program, takes on any
+  input. The title compares two \emph{guarantees}; Section~\ref{sec:practitioner}
+  is the only place in the paper where anything is timed, and it times
+  ordinary solvers, not this machine.
+\item \textbf{No statement about the proof.} That the statement means
+  what we say it means is a reading of 220 lines; whether the proof of
+  it is sound is Section~\ref{sec:proof} and Section~\ref{sec:replay},
+  which found no flaw. The one proof-side fact quoted here, \(A = 256 +
+  A_t\), is a line of the solution read for the value it assigns, not a
+  claim about the argument.
+\item \textbf{No value of the constants.} \(A \ge 257\) is what the
+  proof writes down, not what the machine needs; a different proof of
+  the same statement could have any \(A > 0\). The statement itself
+  fixes nothing.
+\item \textbf{Nothing about the manuscript's sharper exponents}, which
+  are not in the Lean library and are Section~\ref{sec:beyond}'s subject.
+\item \textbf{No claim about sizes beyond \(e^{5504}\).} Past
+  \(n \approx 10^{2390}\) the verified factor is below \(2^n\) at
+  \(A = 1\); we say nothing about that range except that it is not a
+  practical one.
+\end{itemize}

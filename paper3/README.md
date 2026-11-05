@@ -76,10 +76,26 @@ checks the title in `main.tex` verbatim, and fails if anything under
 
 ## How to regenerate every number
 
-*(Filled in by the items, section by section. Until then: the `ρ(n)/n`
-numbers come from `python3 -I reports/scratch/eth_audit/check_encoding.py`;
-the closure counts from `python3 -I reports/scratch/eth_audit/closure.py`
-and `defdiff.py`, read-only on the clone.)*
+*(Filled in by the items, section by section. Until an item fills its
+section: the closure counts come from `python3 -I
+reports/scratch/eth_audit/closure.py` and `defdiff.py`, read-only on the
+clone.)*
+
+- **Section 2, the statement** (item 02): `python3 -I
+  paper3/scripts/runtime_scale.py` prints the `ρ(n)/n` table (Table 2.1),
+  the first integer above 1 (`n = 50`: `ρ(49)/49 = 0.9994`,
+  `ρ(50)/50 = 1.0027`), the peak (`16/e² = 2.1654` at `ln(n+16) = e⁴`,
+  `n ≈ 10^23.71`) and the return below 1 (`ln(n+16) = 5503.7`,
+  `n ≈ e^5504 ≈ 10^2390`), and writes `latex/tables/runtime_scale.tex` and
+  `latex/figures/runtime_scale.{pdf,png}` (Figure 2.2). `python3 -I
+  paper3/scripts/rho_over_n.py` draws the central figure (Figure 2.1, two
+  panels, with the manuscript's two unverified exponents beneath) and
+  writes `latex/tables/rho_over_n.csv`. The encoding lengths quoted in
+  §2.1 (`L = 1,006,223` at `n, m, k = 125, 500, 4`; `47.9 M` at
+  `1000, 4000, 3`) come from `python3 -I
+  reports/scratch/eth_audit/check_encoding.py`. Every comparator line
+  number is at clone commit `4eaee875`; every manuscript quote gives the
+  page of `paper.pdf` and the line of `reports/scratch/eth_audit/paper.txt`.
 
 ## The replay
 

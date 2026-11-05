@@ -46,7 +46,9 @@ def ratios(l10):
 V, P, D = zip(*[ratios(l) for l in L])
 
 # landmarks
-peak_i = int(np.argmax(V)); peak_l10, peak_v = L[peak_i], V[peak_i]
+# peak analytically: (ln y)^2/sqrt(y) is maximal at ln y = 4, y = ln(n+16) = e^4, value 16/e^2
+# (the grid's step of 0.75 in log10 n put it at 10^23.5 before item 02; the true abscissa is e^4/ln 10 = 23.71)
+peak_l10, peak_v = math.e ** 4 / math.log(10.0), 16.0 / math.e ** 2
 # crossing of the verified ratio back below 1 (large n): solve (ln ln n)^2 = sqrt(ln n)  ->  ln n ~ 5504 (e^5504)
 cross_ln = 5504.0; cross_l10 = cross_ln / math.log(10.0)
 # small-n crossing: rho(49)/49 = 0.9994, rho(50)/50 = 1.0027
@@ -69,7 +71,7 @@ ax.plot(L, V, color=BLUE, lw=2.0, zorder=3)
 ax.plot(L, P, color=ORANGE, lw=2.0, zorder=3)
 ax.plot(L, D, color=AQUA, lw=2.0, zorder=3)
 # direct labels (text in ink, a colored tick carries identity)
-ax.text(300, 1.95, "verified exponent, $\\rho(n)/n$ with $\\rho(n)=n(\\ln\\ln n)^2/\\sqrt{\\ln n}$", color=INK, fontsize=8.2, va="bottom")
+ax.text(300, 1.95, "verified exponent, $\\rho(n)/n$ with $\\rho(n)=n(\\ln\\ln(n{+}16))^2/\\sqrt{\\ln(n{+}16)}$", color=INK, fontsize=8.2, va="bottom")
 ax.plot([285, 295], [1.985, 1.985], color=BLUE, lw=3)
 ax.text(300, 0.56, "manuscript, general: $n\\ln\\ln n/\\sqrt{\\ln n}$ (not verified)", color=INK, fontsize=8.2, va="bottom")
 ax.plot([285, 295], [0.595, 0.595], color=ORANGE, lw=3)

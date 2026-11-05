@@ -87,7 +87,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   reading. Nothing produced inside the sandbox is executed outside it;
   only text leaves it.
 
-- [ ] **02 The statement, read exactly.**
+- [x] **02 The statement, read exactly.**
   From `reports/scratch/eth_audit/statement_audit.md`, re-verified line
   by line against the clone (`cat`, `sed -n`): the comparator's
   definitions one by one — `PrimitiveMachine` (finite: `tapeCount`,

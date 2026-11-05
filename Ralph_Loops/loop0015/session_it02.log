@@ -1,0 +1,100 @@
+# session it02 started 2026-11-05 02:19:08
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the audit, the comparator file in the clone, the existing script that appeared from another session, and the LaTeX skeleton, then write the script, figure, table and section.
+  > $ date && ls paper3 paper3/latex paper3/scripts paper3/latex/figures paper3/latex/tables 2>&1 && cat paper3/latex/sec2_statement.tex && cat paper3/latex/main.tex 
+  > $ cat reports/scratch/eth_audit/statement_audit.md
+  > $ cd /home/al/dev/untrusted/openai-math && git rev-parse --short HEAD && cat -n lean/ComparatorChallenges/SubexponentialSAT.lean
+  > $ cat paper3/scripts/rho_over_n.py && echo ===== && cat reports/scratch/eth_audit/check_encoding.py && echo ===== && head -5 paper3/latex/tables/rho_over_n.csv &&
+  > $ cat paper3/latex/Makefile && echo ===== && cat paper3/ETH_AMBIGUOUS.MD && echo ===== && sed -n '/^## 0.4/,/^## 0.5/p' reports/paper3_plan.md | head -150
+  > $ grep -n "^#" reports/paper3_plan.md | head -40 && echo ===== && grep -n -i "0\.4\.\|item 02\|\*\*02" reports/paper3_plan.md | head -40
+  > $ sed -n 16,72p reports/paper3_plan.md && echo ===== && sed -n 113,200p reports/paper3_plan.md
+  > $ cat paper3/latex/sec5_replay.tex | head -200
+  > $ P=reports/scratch/eth_audit/paper.txt && python3 - "$P" <<'EOF'
+import sys,re
+lines=open(sys.argv[1],encoding='utf-8',errors='replace').read().split('\n')
+pg=1
+
+  > $ P=reports/scratch/eth_audit/paper.txt && for r in 44,50 54,68 324,328 2472,2478 3250,3253; do echo "--- L$r"; sed -n "${r}p" $P; done
+  > $ python3 -I -c "import numpy, matplotlib; print(numpy.__version__, matplotlib.__version__)"; echo ===; cat paper3/README.md; echo ===; grep -n "^@" paper3/latex/
+  > $ sed -n 1,165p lean/MOSPFormalization/SubexpPathwidth/Frame.lean
+  > $ cd /home/al/dev/untrusted/openai-math && echo "--- Asymptotics 1-20"; sed -n 1,20p lean/OAI/Algorithms/SubexponentialSAT/SqrtLogSpace/Asymptotics.lean; echo "--
+  > Read /home/al/dev/MOSP/paper3/latex/figures/rho_over_n.png
+  > Read /home/al/dev/MOSP/paper3/latex/figures/rho_over_n_practical.png
+  > $ echo "--- secA"; cat paper3/latex/secA_appendix_lean.tex; echo "--- labels"; grep -n "\\\\label{sec:" paper3/latex/sec*.tex; echo "--- gate"; grep -n "def \|che
+  > $ M=lean/.lake/packages/mathlib/Mathlib; F1=$(grep -rl "inductive Stmt" $M/Computability | head -3); echo "$F1"; for f in $F1; do grep -n "inductive Stmt\|  | mov
+  > $ f=lean/.lake/packages/mathlib/Mathlib/Computability/TuringMachine/Tape.lean; grep -n "inductive Dir\|def mk₁\|^structure Tape\|^  head :\|^  left :\|^  right :\
+  > $ grep -n "mk₁" lean/.lake/packages/mathlib/Mathlib/Computability/TuringMachine/Tape.lean | head -3; grep -n "mk₁" ~/dev/untrusted/openai-math/lean/.lake 2>/dev/n
+
+Inputs are all in hand. Now I'm writing the script `runtime_scale.py`, running it, and in the same step applying the small analytic-peak fix to the earlier figure script.
+  > Write /home/al/dev/MOSP/paper3/scripts/runtime_scale.py
+  > $ python3 -I paper3/scripts/runtime_scale.py && cat paper3/latex/tables/runtime_scale.tex
+  > $ sed -i 's/\$50 \\\\le n \\\\le 10^6\$/$50 \\\\leq n \\\\leq 10^6$/' paper3/scripts/runtime_scale.py && grep -n "leq" paper3/scripts/runtime_scale.py && python3 
+  > Read /home/al/dev/MOSP/paper3/latex/figures/runtime_scale.png
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/scripts/runtime_scale.py"); s=p.read_text()
+old='''            (UPPER_LOG10_N, 1.0), (260, 1.45), fontsi
+  > $ sed -n 140,152p reports/scratch/eth_audit/proof_audit.md
+
+Now checking one thing the proof audit mentions, that the proof's own exponent constant is built as 256 plus an existential term, in the clone, and viewing the fixed figure.
+  > $ cd ~/dev/untrusted/openai-math && sed -n 1,60p lean/OAI/Algorithms/SubexponentialSAT/SqrtLogSpace/NativeLargeEntry.lean
+  > $ cd ~/dev/untrusted/openai-math/lean/OAI/Algorithms/SubexponentialSAT/SqrtLogSpace && grep -n "256 + At\|cutoff := max\|hn20 :" NativeLargeEntry.lean | head; ech
+  > Read /home/al/dev/MOSP/paper3/latex/figures/runtime_scale.png
+
+All inputs are settled. Now the three independent writing pieces: the section itself, the ambiguity entries, and the README's regenerate paragraph.
+  > Write /home/al/dev/MOSP/paper3/latex/sec2_statement.tex
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/latex/sec2_statement.tex"); s=p.read_text()
+a="first bit and every other tape blank (\\texttt{Tape.mk₁},
+  > $ grep -c "Overfull" main.log; grep -n "Unicode\|Missing\|Error" main.log | head; python3 - <<'EOF'
+import subprocess
+t=subprocess.run(["pdftotext","-layout","mai
+  > $ grep -A1 "Overfull" main.log | head -30; pdftoppm -r 70 -png -f 8 -l 8 main.pdf /tmp/p3/pg
+  > $ python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("sec2_statement.tex"); s=p.read_text()
+a="""\\begin{quote}
+\\texttt{runtimeScale n = n * (Real.log (Real.log (n 
+  > Read /tmp/p3/pg-02.png
+
+The section builds and page 2 reads correctly. I'm now checking the remaining rendered pages of the section at once.
+  > Read /tmp/p3/pg-03.png
+  > Read /tmp/p3/pg-04.png
+  > Read /tmp/p3/pg-05.png
+  > Read /tmp/p3/pg-06.png
+  > Read /tmp/p3/pg-07.png
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import pathlib
+p=pathlib.Path("paper3/latex/sec2_statement.tex"); s=p.read_text()
+a="""  and \\(C, A, d\\) unknown. Th
+  > Read /tmp/p3/pg-08.png
+  > $ tail -5 /tmp/claude-1000/-home-al-dev-MOSP/a5d1686e-9b30-4a62-80e0-04d7e122a504/tasks/bcaojvjxc.output 2>/dev/null; echo; date
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+import pathlib,re
+p=pathlib.Path("Ralph_Loops/loop0015/iterations.md"); s=p.read_text()
+a="- [ ] **02 The statement, r
+  > $ F=/tmp/claude-1000/-home-al-dev-MOSP/a5d1686e-9b30-4a62-80e0-04d7e122a504/tasks/bcaojvjxc.output; for i in $(seq 1 110); do if grep -q "GATE" "$F" 2>/dev/null; 
+
+The gate passed. Recording that in PROGRESS.md and confirming nothing under `solutions/` changed.
+  > $ sed -i 's/- Gate: `python3 Ralph_Loops\/loop0015\/gate.py` started 02:27; result\n  recorded below when it finished./X/' Ralph_Loops/loop0015/PROGRESS.md && pyt
+
+Item 02 is done: the gate passed, `solutions/` is untouched, nothing is committed (the driver commits), and no item remains open for this iteration.
+
+**What was done**
+
+- **The statement re-read against the clone.** Every line number in the statement audit holds at commit `4eaee875`: the SAT definitions, the unary encoding with its bound `L ≤ n + 2 + m(2k(4n+1)+4)`, the finite machine (a transition table on `3·stateCount` points into Mathlib's five-value `Stmt`), `Trace` with its two constructors, the space monitor, `runtimeScale` and `runtimeBound`, and the theorem's quantifier order (machine and `C, A, S, d, e` after `k`, before `n` and `F`; no `n ≥ 20` proviso, unlike the manuscript's Theorem 1.1 and Proposition 6.4). The manuscript's "log denotes the natural logarithm" is cited at page 1, lines 48–49.
+- **One fact added beyond the audit.** The proof's own exponent constant is set to `A = 256 + A_t` with `A_t ≥ 1`, so the proof as written has `A ≥ 257`. The section quotes the line for its value only and flags it for item 04 in `ETH_AMBIGUOUS.MD` entry 02c.
+- **`paper3/scripts/runtime_scale.py`** prints the `ρ(n)/n` table and landmarks, computing in `y = ln(n+16)` so no huge `n` is ever formed, and writes Table 2.1 and Figure 2.2. The values agree with the audit: first above 1 at `n = 50`, peak `16/e² = 2.165` near `10^23.7`, back below 1 at `n ≈ e^5504 ≈ 10^2390`.
+- **The owner's central figure** is kept as Figure 2.1, with the peak made analytic (`10^23.7` instead of the grid's `10^23.5`) and the `+16` written into its legend.
+- **`sec2_statement.tex`** is drafted in six subsections and ends with "what this does not claim". The paper builds at 13 pages with no undefined reference.
+- `README.md` has the Section 2 regenerate paragraph; `ETH_AMBIGUOUS.MD` has entries 02a–02d; PROGRESS.md and `iterations.md` are updated, with the count now 2 of 12.
+
+**What is next**
+
+Item 03, the manuscript's claims beyond the statement. Section 2 already points at it for the two sharper exponents and for the solution's base-2 `rho`. Item 04 should confirm the `A = 256 + A_t` reading and the `cutoff` at `NativeLargeEntry.lean` line 50.
+
+# result: success in 1183s, 47 turns, cost $8.31

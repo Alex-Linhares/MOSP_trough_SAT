@@ -213,3 +213,62 @@ an answer).
 - **S8 resolved**: ok.
 - **Compute**: the owner allows as many `nice -n 19` cores as needed
   (TASK.md amended: no worker cap at nice 19).
+
+### 02a — three figures of one function (item 02, 2026-11-05)
+- **Ambiguous**: the owner's commit of 2026-11-05 (`4ceb1699a`) gave the
+  paper a central figure in two panels (`rho_over_n.pdf`, the whole
+  range with the manuscript's two unverified exponents beneath;
+  `rho_over_n_practical.pdf`, `n = 10…10⁶`) and told item 02 to use both
+  as Figure 1; item 02's brief asks for its own `runtime_scale.pdf`
+  (log-`n` axis to `10^2500`, the line, the level 1, the practical range
+  shaded). Section 2 would then carry three drawings of `ρ(n)/n`.
+- **Chosen**: both. Figure 2.1 (`fig:central`) is the owner's two panels
+  in one float; Figure 2.2 (`fig:runtime-scale`) is the brief's figure,
+  the verified curve alone with the three landmarks and the shaded range.
+  The section text points at both. Section 1 (item 09) may re-use
+  Figure 2.1 as its Figure 1 or refer to it.
+- **Owner may change**: drop Figure 2.2 (the table carries its numbers),
+  or move Figure 2.1 to the introduction.
+
+### 02b — the central figure's peak label and formula (item 02, 2026-11-05)
+- **Ambiguous**: `rho_over_n.py` found the peak on its grid of 4,000
+  points over 3,000 decades (step 0.75 in `log₁₀ n`) and labelled it
+  `n ≈ 10^23.5`; the maximum of `(ln y)²/√y` is at `ln y = 4`, i.e.
+  `n ≈ 10^23.71`, which `check_encoding.py`, `TASK.md` and the plan all
+  give as `10^23.7`. Its legend also wrote `ρ(n) = n(ln ln n)²/√ln n`,
+  without the comparator's `+16`.
+- **Chosen**: item 02 made the peak analytic in the script (`e⁴/ln 10`,
+  value `16/e²`) and wrote the `+16` into the legend; the figure now
+  reads `10^23.7` and the same formula as the comparator. Nothing else
+  of the owner's figure was touched.
+- **Owner may change**: the legend back to the shorter formula with the
+  caption carrying the `+16`.
+
+### 02c — a proof-side fact quoted in the statement section (item 02, 2026-11-05)
+- **Ambiguous**: the brief says Section 2 makes "no statement about the
+  proof", but the sentence "with the true `A` nothing is known" invites
+  the question what the proof's own `A` is. The solution sets
+  `A = 256 + A_t` with `1 ≤ A_t` (`SqrtLogSpace/NativeLargeEntry.lean`
+  line 51; `NativeLeafContract.lean` lines 792–793), so the proof as
+  written has `A ≥ 257`.
+- **Chosen**: Section 2 quotes that one line for the value it assigns,
+  says so explicitly in "what this does not claim" (a value the proof
+  writes down, not a value the machine needs), and leaves the argument
+  to Section 4. Item 04 should confirm the reading of lines 39–59 of
+  `NativeLargeEntry.lean` (the `cutoff`, the leaf contract) in its own
+  terms.
+- **Owner may change**: remove the `A ≥ 257` sentence from Section 2 and
+  keep it in Section 4 only.
+
+### 02d — the Lean statement transcribed, not quoted verbatim (item 02, 2026-11-05)
+- **Ambiguous**: the brief says "the statement in words and in Lean".
+  The comparator's text uses `∃ ∧ → ℕ ℝ ≤`, which pdflatex with
+  `inputenc` cannot typeset in a `verbatim` block, and the house build is
+  pdflatex.
+- **Chosen**: lines 194–217 are rendered as an aligned display in LaTeX
+  math with each conjunct's line numbers beside it, and `runtimeScale`
+  and `runtimeBound` as ASCII transcriptions with the casts omitted,
+  each marked "transcribed"; the verbatim text is in the clone at the
+  cited lines and in our `Frame.lean` (`SubexpCount`, Appendix A).
+- **Owner may change**: a `listings` block with a Unicode-capable engine
+  (`lualatex`/`xelatex`) if the verbatim Lean is wanted on the page.

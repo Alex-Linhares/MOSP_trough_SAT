@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-05 02:07:53",
+  "updated": "2026-11-05 02:38:53",
   "phase": "tests",
-  "started": "2026-11-05 01:12:43",
-  "item": "01 The replay: the SubexponentialSAT closure built in the bwrap sandbox, the axioms record"
+  "started": "2026-11-05 02:19:08",
+  "item": "02 The statement, read exactly."
 }
