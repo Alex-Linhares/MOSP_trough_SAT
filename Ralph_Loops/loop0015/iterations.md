@@ -176,7 +176,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   files of arithmetic were not read; grep is necessary, not sufficient,
   and the build is what shows the closure type-checks.
 
-- [ ] **05 What follows, in general terms: the hypotheses, and what a derived lower bound loses.**
+- [x] **05 What follows, in general terms: the hypotheses, and what a derived lower bound loses.**
   Exactly which hypotheses the *verified* statement refutes and how: ETH
   (Impagliazzo & Paturi 2001; the deterministic `2^{o(n)}` 3-SAT decision
   is read off the answer tape), SETH (SETH ⇒ ETH; cite the standard

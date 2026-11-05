@@ -143,6 +143,25 @@ clone.)*
   `latex/tables/proof_inspection.json`; exit status non-zero if anything
   has moved; `--check` verifies without writing. Table 4.2 (the trust
   boundary) is prose from Sections 4 and 5, not generated.
+- **Section 6, what follows in general terms** (item 05): `python3 -I
+  paper3/scripts/consequences.py` checks every page, line and quoted
+  fragment of the section against the extract (the hypotheses as the
+  manuscript states them: ETH p. 4 lines 165–166, SETH 166–169, Gap-ETH
+  172–174 and its randomised form 175–176, NSETH 181–183, the randomised
+  ETH and SETH by citation at 190–191, #ETH 204–205; the refutation
+  paragraph 187–191 and its two context sentences 191–194; the #ETH
+  sentence p. 5 211–212; §1.1.3's "removes one basis" 226–227, OVC
+  229–232, the unrestricted-width hypothesis 233–236, "a reduction in the
+  other direction" 237–238, Set Splitting 239–243; the transfer caveat
+  p. 2 95–99), the manuscript's bibliography entries that `refs.bib`
+  copies for the hypotheses' sources (extract lines 3686–3811), the
+  comparator lines Section 6 relies on (38, 47, 132, 147, 194, 203–211 at
+  `4eaee875`, read with `open()` only), prints the clause-count bound
+  `Σ_{j≤k} C(2n, j)` (2,604,376 at `n = 125`, `k = 3`) and `ρ(n)/n` at a
+  few sizes, and writes `latex/tables/hypotheses.tex` (Table 6.1). Exit
+  status non-zero if anything has moved; `--check` verifies without
+  writing. No other number in Section 6 (the `A ≥ 257`, the `50 ≤ n <
+  e^5504` range) is Section 6's own; each is Section 2's.
 
 ## The replay
 

@@ -18,3 +18,8 @@
 [2026-11-05 03:25:37] claude session it04 (cap 4.00 h) -> session_it04.log
 [2026-11-05 03:51:03] session it04: ok (exit 0, 44 tool calls)
 [2026-11-05 04:02:17] tests passed: GATE PASS
+[2026-11-05 04:02:17] committed 438853e98: 04 The proof inspection, joined with the replay.
+[2026-11-05 04:02:17] === iteration 5: 05 What follows, in general terms: the hypotheses, and what a derived lower bound loses.
+[2026-11-05 04:02:17] claude session it05 (cap 4.00 h) -> session_it05.log
+[2026-11-05 04:24:10] session it05: ok (exit 0, 34 tool calls)
+[2026-11-05 04:35:23] tests passed: GATE PASS

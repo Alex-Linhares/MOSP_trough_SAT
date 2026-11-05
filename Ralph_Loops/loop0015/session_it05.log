@@ -1,0 +1,107 @@
+# session it05 started 2026-11-05 04:02:17
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll draft item 05: Section 6 on which hypotheses the verified statement refutes and what a derived lower bound loses. First I'll read the existing sections, the manuscript extract around §1.1.1/§1.1.3, and the comparator statement.
+  > $ ls paper3 paper3/latex paper3/scripts && cat paper3/latex/main.tex && cat paper3/latex/Makefile && cat paper3/latex/sec6_consequences.tex 2>/dev/null | head -50
+  > $ cat paper3/latex/sec3_beyond.tex && echo ====== && sed -n 1,80p paper3/latex/sec2_statement.tex
+  > $ sed -n 80,420p paper3/latex/sec2_statement.tex
+  > $ F=reports/scratch/eth_audit/paper.txt; awk 'NR>=1 && NR<=130 {printf "%d\t%s\n", NR, $0}' $F
+  > $ F=reports/scratch/eth_audit/paper.txt; awk 'NR>=130 && NR<=250 {printf "%d\t%s\n", NR, $0}' $F; echo; echo "FORMFEED PAGES:"; awk '{n+=gsub(/\f/,"")} NR==187||N
+  > $ F=reports/scratch/eth_audit/paper.txt; grep -n -E '^\s*\[(IP01|IPZ01|Din16|MR17|CCK\+ ?20|CGI\+ ?16|DHM\+ ?14|CDL\+ ?16|Wil16|VW19|Bri14|RV13|LMS18|BK15|BI16|Wi
+  > $ F=reports/scratch/eth_audit/paper.txt; for L in 3686 3689 3705 3708 3711 3733 3735 3759 3810 3677 3773 3756 3795 3802; do sed -n "${L},$((L+2))p" $F; echo; done
+  > $ echo "=== refs.bib keys ==="; grep -n -E '^@' paper3/latex/refs.bib; echo "=== refs.bib ImpagliazzoPaturi + any ETH-ish ==="; grep -n -i -E 'Impagliazzo|Calabro
+  > $ sed -n 1,75p paper3/latex/refs.bib; echo "=== README 77-147 ==="; sed -n 77,147p paper3/README.md; echo "=== beyond_claims helpers ==="; grep -n -E '^def |^    
+  > $ grep -n -i 'calabro\|\[CIP' reports/scratch/eth_audit/paper.txt | head; echo "=== refs to consequences ==="; grep -n 'consequences' paper3/latex/sec*.tex | grep
+  > $ grep -n -i -B1 -A12 'hypotheses\b.*lower bound\|item 05\|### 0.4' reports/paper3_plan.md | sed -n 1,120p
+  > $ sed -n 125,200p reports/paper3_plan.md; echo "=== items ==="; grep -n -A14 '^\s*5\.\s\|\*\*05\|05\.' reports/paper3_plan.md | sed -n 1,60p
+  > Write /home/al/dev/MOSP/paper3/scripts/consequences.py
+  > $ python3 -I paper3/scripts/consequences.py; echo "exit=$?"; echo "=== challenge lines ==="; sed -n '38p;47p;132p;147p;194,196p;203,211p' ~/dev/untrusted/openai-m
+  > $ python3 - <<'EOF'
+import re
+p='paper3/scripts/consequences.py'
+s=open(p).read()
+s=s.replace("""    (194, 'theorem exact_count_and_sat'),
+    (195, '2 ≤ k'),""",
+
+Script passes with all pages, lines and comparator fragments verified. Now the bibliography entries, the section itself, the ambiguity entries and the README paragraph.
+  > $ cat >> paper3/latex/refs.bib <<'EOF'
+
+% ---------------------------------------------------------------------------
+% Item 05 (Section 6): the sources of the hy
+  > Write /home/al/dev/MOSP/paper3/latex/sec6_consequences.tex
+  > $ python3 - <<'EOF'
+p='paper3/scripts/consequences.py'
+s=open(p).read()
+s=s.replace("""    ('MR17', 3759, ['[MR17]   Pasin Manurangsi and Prasad Raghavendra. A Bi
+
+Now I'll build the paper and check for undefined references, overfull boxes in the new section, and scope words.
+  > $ make -C paper3/latex check 2>&1 | tail -5; echo "=== warnings ==="; grep -n -E 'Overfull|Underfull|Citation|Reference|multiply' paper3/latex/main.log | head -30
+  > $ cd /home/al/dev/MOSP/paper3/latex && sed -n 655,670p main.log; echo ...; sed -n 715,750p main.log | grep -v '^$' | head -30; echo "=== section 6 pages ==="; gre
+  > $ sed -n 955,1000p main.log | grep -v '^$'; mkdir -p /tmp/p3sec6 && pdftoppm -f 25 -l 30 -r 60 -png main.pdf /tmp/p3sec6/p && ls /tmp/p3sec6
+  > Read /tmp/p3sec6/p-28.png
+
+The table renders cleanly. Two small overfull boxes remain in the section (the NSETH quotation and the (E)/(S) display); I'll fix them, rebuild, then run the gate.
+  > $ cd /home/al/dev/MOSP && python3 - <<'EOF'
+p='paper3/latex/sec6_consequences.tex'
+s=open(p).read()
+old=r"""\[
+  \text{(E)}\quad \text{ETH} \Rightarrow \text{no }
+  > $ python3 - <<'EOF'
+p='paper3/latex/sec6_consequences.tex'
+s=open(p).read()
+s=s.replace("""\\paragraph{NSETH.}
+\\sloppy
+As stated (p.~4, lines 181--183):""","""\\
+  > $ (date; nice -n 19 python3 Ralph_Loops/loop0015/gate.py; echo "GATE EXIT $?"; date) > /tmp/gate_it05.log 2>&1
+  > $ pdftoppm -f 29 -l 29 -r 60 -png paper3/latex/main.pdf /tmp/p3sec6/q && python3 - <<'EOF'
+import re
+p='Ralph_Loops/loop0015/iterations.md'
+s=open(p).read()
+old='
+  > Read /tmp/p3sec6/q-29.png
+
+The section renders cleanly. While the gate runs in the background, I'll confirm the working tree shows nothing under `solutions/` and that the earlier sections' check scripts still pass.
+  > $ git status --short | grep -v '^?? Ralph_Loops/loop0015/session' ; echo "--- solutions/ changes: $(git status --short solutions/ | wc -l)"; python3 -I paper3/scr
+
+The only thing outstanding is the gate result. I'll wait on its log with a bounded monitor rather than end the turn.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+The only thing I need next is the gate's result. One watch covers it: emit the pass/fail/exit lines and the pytest and lake summaries, re-arming if it expires.
+  > Monitor {"command": "tail -n +1 -f /tmp/gate_it05.log | grep -E --line-buffered \"GATE (PASS|FAIL|EXIT)|passed|failed|error|Erro
+
+Everything for item 05 is written and verified; I'm now only waiting on the gate (lake build, pytest, both papers), which takes about 20 minutes. I'll report the result as soon as the log shows it.
+
+# result: success in 698s, 31 turns, cost $6.28
+  > $ tail -25 /tmp/gate_it05.log
+
+The gate passed. I'll stop the monitor and record the gate line in PROGRESS.md.
+  > ToolSearch {"query": "select:TaskStop", "max_results": 1}
+  > TaskStop {"task_id": "bw99nwlya"}
+  > $ python3 - <<'EOF'
+p='Ralph_Loops/loop0015/PROGRESS.md'
+s=open(p).read()
+old="""  quotation (05a) is the owner's call.
+"""
+assert s.endswith(old)
+s=s+"""- Gate: 
+
+Item 05 is done and the gate passed. Seven items remain, so no `LOOP_COMPLETE` line.
+
+**What was written**
+
+- `paper3/latex/sec6_consequences.tex`, Section 6 "What follows, in general terms" (pages 25 to 30 of the 33-page build). It states the one property every refutation uses (deterministic; `2^{o(n)}` in `n` alone because a width-`k` formula has at most `Σ_{j≤k} C(2n, j)` clauses; one machine per `k` with no `n ≥ 20` proviso; the multitape model as the conservative one), then takes each hypothesis in the manuscript's own wording with page and line and the manuscript's own source: ETH, SETH, Gap-ETH and its randomised form, NSETH, #ETH, and the randomised ETH and SETH. Each is negated by a named conjunct of the comparator statement, with the quantifier form made explicit. SETH is refuted directly at every `k`, and "SETH implies ETH" is recorded for the record through the Sparsification Lemma.
+- The lower-bound part is in general terms only, as shapes (E) and (S): the theorem stands with a false premise and derives nothing; the conclusion is not refuted; "hardness" survives as a fact about reductions only; the Orthogonal Vectors Conjecture and the unrestricted-width hypothesis are untouched, with the quantifier reason; and any transferred algorithm inherits the title's limitation on the SAT instance it builds. The manuscript's §1.1.3 sentences and the transfer caveat are quoted with pages and lines. The section ends with seven "what this does not claim" points.
+- `paper3/scripts/consequences.py` checks every page, line, fragment, bibliography entry and comparator line the section cites and writes Table 6.1. It reports all checks passed.
+- Seven `refs.bib` entries for the hypotheses' sources, copied from the manuscript's reference list with no DOI, since nothing was fetched.
+- `ETH_AMBIGUOUS.MD` entries 05a to 05d: the problem list elided from one §1.1.3 quotation for scope, the SETH-implies-ETH citation choice, the un-reread sources without DOIs, and the two paragraphs that are ours rather than the manuscript's.
+- README regenerate paragraph for Section 6, PROGRESS.md iteration 5, item 05 marked `[x]`.
+
+**Verification**
+
+- `make -C paper3/latex check` passes with no undefined reference and no overfull box in the section.
+- Gate passed at 04:23: lake build clean, pytest 1,978 passed, both papers build, title verbatim, nothing under `solutions/` touched.
+
+**Left for later items**: DOIs for the new entries and the Calabro–Impagliazzo–Paturi citation (item 08), and the `A ≥ 257` versus `A ≥ 258` alignment between Sections 2, 4 and 6 (item 10).
+
+# result: success in 24s, 5 turns, cost $8.97

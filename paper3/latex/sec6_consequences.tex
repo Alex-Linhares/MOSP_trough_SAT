@@ -1,5 +1,403 @@
-% What follows -- drafted by loop0015 item 05.
-\section{What follows}
+% What follows, in general terms -- drafted by loop0015 item 05 (2026-11-05).
+% Every manuscript quotation gives the page of paper.pdf and the line of
+% reports/scratch/eth_audit/paper.txt (page = form feeds before the line + 1);
+% every comparator line is at commit 4eaee875 of the clone, read with cat/sed -n
+% only. Every page, line, fragment and the one table of this section are checked
+% and written by
+%   python3 -I paper3/scripts/consequences.py
+% which exits non-zero if anything has moved. The section is in general terms
+% by the owner's rule (2026-11-05): no example from any width parameter, no
+% problem named beyond what the manuscript's §1.1.1 and §1.1.3 name.
+\section{What follows, in general terms}
 \label{sec:consequences}
 
-\placeholder{Item 05 drafts this section: which hypotheses the verified statement refutes (ETH, SETH, Gap-ETH, \#ETH, NSETH, the randomised forms) and how; in general terms, that a lower bound derived from ETH or SETH loses its premise while a statement ``no $(c-\varepsilon)^k$ algorithm'' is not itself refuted (the manuscript's \S1.1.3); no example from any width parameter. Ends with what this does not claim''.}
+Sections~\ref{sec:statement}--\ref{sec:replay} read the verified statement,
+drew the line between it and the manuscript, inspected the proof and
+replayed it. This section asks what follows from the verified statement
+alone: which hypotheses it refutes and by what step, and what a lower
+bound that was derived from one of those hypotheses has lost. The
+manuscript answers both questions itself, in \S1.1.1--\S1.1.2 (p.~4--5)
+and \S1.1.3 (p.~5), and we quote it; what we add is the quantifier form
+of each hypothesis, the one line of the comparator statement that negates
+it, and the distinction, stated in general terms, between a theorem whose
+premise has become false and a statement that has been refuted. Nothing
+here names a problem the manuscript's \S1.1.1 and \S1.1.3 do not name, and
+nothing here is about any problem's complexity beyond what those two
+sections state.
+
+\subsection{The one property every refutation uses}
+\label{sec:consequences-property}
+
+Every refutation below rests on the same conjuncts of
+\texttt{exact\_count\_and\_sat} (comparator file lines 194--217,
+Section~\ref{sec:statement}): for each fixed $k \ge 2$ there is one
+deterministic machine which, on the canonical encoding of any
+\texttt{WidthAtMost}~$k$ formula $F$ on $n$ variables (line 38), halts
+with \texttt{countWord (count F)} on its count tape (lines 203--204, 147),
+the bit $[0 < \mathtt{count}\ F]$ on its answer tape and in its halting
+state (lines 205--207), within $C\,(L+1)^d\,2^{A\rhon}$ steps (lines
+210--211). Four features of that property do the work.
+
+\begin{enumerate}
+\item \textbf{It is deterministic.} \texttt{step} is a function and
+  \texttt{Trace} is its iteration (Section~\ref{sec:statement}); there
+  is no random tape and no nondeterministic choice. A deterministic
+  algorithm is also a bounded-error randomised algorithm, with error
+  $0$, and also a nondeterministic algorithm, with no guess; so each
+  refutation of a deterministic hypothesis is a refutation of its
+  randomised and nondeterministic forms by the same machine.
+\item \textbf{The bound is $2^{o(n)}$ in $n$ alone.} A \texttt{Finset} of
+  clauses of width at most $k$ over $n$ variables has at most
+  $\sum_{j \le k}\binom{2n}{j}$ members ($2{,}604{,}376$ at $n = 125$,
+  $k = 3$), so $m = O(n^k)$ and $L = O(k\,n\,m) = O(n^{k+1})$
+  (Section~\ref{sec:statement}); hence the bound is
+  $n^{O_k(1)}\,2^{A\rhon}$, and since $\rhon/n \to 0$
+  \leanref{rho-little-o}, for every $\delta > 0$ there is an
+  $n_0(k, \delta)$ beyond which it is below $2^{\delta n}$. Below
+  $n_0$ the bound is a constant depending on $k$ and $\delta$. So the
+  running time is $O_{k,\delta}(2^{\delta n})$ for every $\delta > 0$,
+  and $2^{\delta n}(n+m)^{O_k(1)}$ with the polynomial written out. This
+  is an asymptotic fact and it is the only kind of fact the hypotheses
+  are about; it coexists with Section~\ref{sec:statement}'s observation
+  that $\rhon > n$ on every $50 \le n < e^{5504}$, which is about where
+  the asymptotics begin.
+\item \textbf{One machine per $k$, for every $n$.} The machine and the
+  constants are chosen after $k$ and before $n$ and $F$
+  (Section~\ref{sec:statement}); there is no $n \ge 20$ proviso in the
+  comparator statement, though the manuscript's Theorem~1.1 carries one
+  (p.~2, lines 56--57). So the verified form is the strong, uniform
+  negation: a single algorithm that is $O(2^{\delta n})$ for every
+  $\delta$ at once, where a hypothesis of the form ``for every $\delta$
+  there is an algorithm'' would have allowed a different algorithm for
+  each $\delta$.
+\item \textbf{The model is the conservative one.} The comparator's
+  machine is a multitape Turing machine with one head per tape, moving
+  one cell or writing one symbol per step. Every step of such a machine
+  is a bounded amount of work on any of the standard models in which the
+  hypotheses are stated, so the bound transfers to those models with at
+  most a constant factor per step, which the polynomial absorbs. The
+  input is the manuscript's canonical encoding, of length polynomial in
+  $n + m$; converting from any other reasonable encoding is polynomial
+  too.
+\end{enumerate}
+
+\subsection{The hypotheses, one by one}
+\label{sec:consequences-hypotheses}
+
+The manuscript's own sentence is (p.~4, lines 187--191):
+\begin{quote}\small
+``Theorem 1.1 refutes ETH, SETH, Gap-ETH, and NSETH. Indeed, testing
+whether the exact count is positive or zero decides both satisfiability
+and unsatisfiability in deterministic $2^{o(n)}(n+m)^{O_k(1)}$ time for
+every fixed $k$; deciding satisfiability also solves the Gap-ETH promise
+problem. The deterministic algorithm also refutes the bounded-error
+randomized versions of ETH [DHM$^+$14, Section 1] and SETH [CDL$^+$16,
+Definition 2.1], and of Gap-ETH.''
+\end{quote}
+and, for counting (p.~5, lines 211--212): ``Our algorithm (Theorem 1.1)
+solves \#3-SAT deterministically in $2^{o(n)}\,\mathrm{poly}(n,m)$ time
+and therefore refutes \#ETH.'' We take each hypothesis in the form the
+manuscript states it, with the manuscript's own source for that form,
+and say which conjunct negates it. Table~\ref{tab:hypotheses} is the
+summary. In every case the only thing used is the property of
+Section~\ref{sec:consequences-property}; nothing is used from the
+manuscript's sharper exponents, which are not verified
+(Section~\ref{sec:beyond}).
+
+\paragraph{ETH.}
+As stated (p.~4, lines 165--166): ``The Exponential Time Hypothesis (ETH)
+asserted that 3-SAT requires $2^{\Omega(n)}$ deterministic time in the
+worst case, and hence so does $k$-SAT for every fixed $k \ge 3$ [IP01,
+Theorem~1],'' citing \citet{ImpagliazzoPaturi2001}. In quantifiers:
+there is a $\delta > 0$ such that no deterministic algorithm decides
+3-SAT within $2^{\delta n}\,\mathrm{poly}(n+m)$ steps on all inputs.
+Its negation is: for every $\delta > 0$ there is one. The verified
+statement at $k = 3$ supplies, for every $\delta > 0$, the same machine,
+whose answer bit is $[0 < \mathtt{count}\ F]$, that is, the decision,
+within $O_{\delta}(2^{\delta n})\,\mathrm{poly}(n+m)$ steps
+(Section~\ref{sec:consequences-property}, item 2). This holds on every
+input of every size, so it refutes the hypothesis under either reading
+of ``$2^{\Omega(n)}$'' (a lower bound at infinitely many $n$, or at all
+large $n$). In the vocabulary of \citet{ImpagliazzoPaturi2001}, where
+$s_k$ is the infimum of the $\delta$ for which $k$-SAT has an
+$O(2^{\delta n})$ algorithm and ETH is $s_3 > 0$: the verified statement
+gives $s_k = 0$ for every $k \ge 2$, by one algorithm per $k$.
+
+\paragraph{SETH.}
+As stated (p.~4, lines 166--169): ``The Strong Exponential Time
+Hypothesis (SETH) made the sharper prediction that $k$-SAT requires
+$2^{n(1-o_k(1))}$ time as $k$ grows. Precisely, for every
+$\varepsilon \in (0,1)$, there is a fixed $k$ for which no deterministic
+algorithm solves $k$-SAT in $2^{(1-\varepsilon)n}(n+m)^{O(1)}$ time,''
+with the motivation attributed to \citet{ImpagliazzoPaturi2001}'s open
+problems (lines 169--171). The negation is: there is an
+$\varepsilon \in (0,1)$ such that for every fixed $k$ there is a
+deterministic $2^{(1-\varepsilon)n}(n+m)^{O(1)}$ algorithm. The verified
+statement gives more: for \emph{every} $\varepsilon \in (0,1)$ and every
+$k \ge 2$, the machine for $k$ runs within
+$C_k(L+1)^{d_k}\,2^{A_k\rhon}$ steps, and $A_k\rhon \le (1-\varepsilon)n$
+for all $n \ge n_0(k, \varepsilon)$ because $\rhon = o(n)$; below $n_0$
+the exponential factor is a constant. So each $k$ has a
+$2^{(1-\varepsilon)n}(n+m)^{O_k(1)}$ algorithm, and the polynomial's
+degree depending on $k$ is exactly what the hypothesis's ``for a fixed
+$k$'' permits. The refutation does not pass through ETH; it reads the
+statement at each $k$. It is also standard that SETH implies ETH: if
+3-SAT had a $2^{o(n)}$ algorithm then, by the Sparsification Lemma of
+\citet{ImpagliazzoPaturiZane2001}, which reduces $k$-SAT on $n$ variables
+to $2^{\varepsilon n}$ instances with $O_{k,\varepsilon}(n)$ clauses and
+so, after the clause-splitting reduction, to 3-SAT on $O_{k,\varepsilon}(n)$
+variables, so would $k$-SAT for every fixed $k$; so the refutation of
+ETH alone would already refute SETH. We note the implication for the
+record; the direct reading above is what the paper rests on.
+
+\paragraph{Gap-ETH, and its randomised form.}
+As stated (p.~4, lines 172--174): ``The Gap Exponential Time Hypothesis
+(Gap-ETH) strengthens ETH by postulating constants $\delta, \gamma > 0$
+for which no $O(2^{\gamma n})$-time algorithm can distinguish a
+satisfiable 3-CNF from one in which every assignment violates at least a
+$\delta$ fraction of the clauses, even when $m = O(n)$ [Din16, MR17],''
+citing \citet{Dinur2016} and \citet{ManurangsiRaghavendra2017}; and
+(lines 175--176) ``The randomized version rules out an algorithm with
+the same running time that distinguishes the two cases with probability
+at least $2/3$ on every promised input [CCK$^+$20, Conjecture 2.5],''
+citing \citet{Chalermsook2020}. The negation is: for every
+$\delta, \gamma > 0$ there is an $O(2^{\gamma n})$ algorithm that
+separates the two cases, already at $m = O(n)$. Exact decision separates
+them, since a formula in which every assignment violates a positive
+fraction of the clauses is unsatisfiable; and the verified machine at
+$k = 3$ decides within $n^{O(1)}\,2^{A\rhon} = O_{\gamma}(2^{\gamma n})$
+steps for every $\gamma > 0$, at every $m$ (item 2 above; at $m = O(n)$
+the polynomial is $O(n^{2d})$). The promise is never used: the machine
+answers correctly on every input, promised or not, with probability $1$,
+which refutes the randomised form by item 1.
+
+\paragraph{NSETH.}
+As stated (p.~4, lines 181--183): ``The Nondeterministic Strong
+Exponential Time Hypothesis (NSETH) asserts that, for every
+$\varepsilon > 0$, some fixed $k$ admits no nondeterministic
+$2^{(1-\varepsilon)n}\allowbreak(n+m)^{O(1)}$-time algorithm for deciding whether a
+$k$-CNF is unsatisfiable, or equivalently whether a $k$-DNF is a
+tautology [CGI$^+$16],'' citing \citet{Carmosino2016}. The negation is:
+there is an $\varepsilon > 0$ such that every fixed $k$ has a
+nondeterministic $2^{(1-\varepsilon)n}(n+m)^{O(1)}$ algorithm for
+unsatisfiability. The verified machine's answer bit is \texttt{false}
+exactly when $\mathtt{count}\ F = 0$ (lines 205--207), so it decides
+unsatisfiability deterministically within the SETH bound of the previous
+paragraph for every $\varepsilon$ and every $k$; and a deterministic
+machine is a nondeterministic one whose only computation path is the
+deterministic run, so every acceptance convention for nondeterministic
+time is met. The manuscript's ``decides both satisfiability and
+unsatisfiability'' (line 188) is this.
+
+\paragraph{\#ETH.}
+As stated (p.~4, lines 204--205): ``The counting Exponential Time
+Hypothesis (\#ETH) asserted that exactly counting the satisfying
+assignments of a 3-CNF requires $2^{\Omega(n)}$ deterministic time
+[DHM$^+$14, Section 1],'' citing \citet{Dell2014}. The negation is: for
+every $\delta > 0$ there is a deterministic $O(2^{\delta n})$ algorithm
+that outputs the exact count. The verified machine at $k = 3$ halts with
+\texttt{countWord (count F)} on its count tape, a binary word of length
+at most $n + 1$ that decodes to $\mathtt{count}\ F$ (lines 203--204,
+208--209), within the same bound. This is the one hypothesis for which
+the decision bit is not enough and the count tape is what refutes it;
+it is also the hypothesis the comparator statement was written for, the
+count being the theorem's first conclusion and the decision its
+corollary.
+
+\paragraph{The bounded-error randomised ETH and SETH.}
+The manuscript names them by citation only (p.~4, lines 190--191):
+``[DHM$^+$14, Section 1]'' for ETH \citep{Dell2014} and ``[CDL$^+$16,
+Definition 2.1]'' for SETH \citep{Cygan2016}. In each, the algorithm
+may be randomised and must be correct with probability bounded away
+from $1/2$ on every input. A deterministic algorithm is such an
+algorithm with error $0$ (item 1), so the refutations of ETH and SETH
+above refute these forms by the same machine, with no change to the
+bound. We have not re-read the two sources' definitions; we state the
+forms as the manuscript cites them, and a reader who needs the exact
+error threshold or the exact model of the source should go to the
+cited section and definition.
+
+\begin{table}[htbp]
+\caption{The hypotheses the manuscript's \S1.1.1--\S1.1.2 list, each in
+the form the manuscript states it (page of \texttt{paper.pdf}, lines of
+the committed extract), with the manuscript's own source for that form,
+the quantifier form, and the conjunct of the comparator statement that
+negates it (lines 194--217 of the comparator file at \texttt{4eaee875}).
+$A$, $C_k$, $d_k$ are the existential constants of
+Section~\ref{sec:statement}. Generated, with every page and fragment
+checked against the extract and the clone, by
+\texttt{python3 -I paper3/scripts/consequences.py}.}
+\label{tab:hypotheses}
+\scriptsize
+\input{tables/hypotheses}
+\end{table}
+
+\paragraph{What the manuscript places beside the list.}
+Two sentences follow the refutation paragraph (p.~4, lines 191--194):
+the result ``does not conflict with unconditional exponential lower
+bounds for restricted proof systems such as regular resolution [BI13],''
+and ``In 2016, Ryan Williams refuted the Merlin--Arthur version of SETH
+(MA-SETH) by giving a protocol that certifies $k$-CNF unsatisfiability
+in $2^{n/2}\,\mathrm{poly}(n,m)$ time [Wil16, Theorem 3.3]''
+\citep{Williams2016}. Both are context. The first says that a lower
+bound proved unconditionally for a restricted proof system is not a
+statement about algorithms in general and is not touched; the second
+that one member of the family was already false before this result.
+Neither is used below.
+
+\subsection{What a derived lower bound loses}
+\label{sec:consequences-lower-bounds}
+
+The manuscript's \S1.1.3 opens with a list of lower bounds that were
+proved from ETH or from SETH (p.~5, lines 213--225), for problems with
+exponential algorithms and for problems in polynomial time, and then
+says what its result does to them (lines 226--227):
+\begin{quote}\small
+``Our refutation of ETH and SETH removes one basis for the hardness
+claims above. Some of the same lower bounds follow from weaker
+hypotheses that may still hold.''
+\end{quote}
+We state what that means in general terms, for a theorem of either of
+the two standard shapes,
+\begin{align*}
+  \text{(E)}&\quad \text{ETH} \Rightarrow \text{no } 2^{o(n)} \text{ algorithm for } X,\\
+  \text{(S)}&\quad \text{SETH} \Rightarrow \text{no } (c - \varepsilon)^{k} \text{ algorithm for } Y \text{ for any } \varepsilon > 0,
+\end{align*}
+where $n$ and $k$ are whatever parameter of $X$ and $Y$ the theorem
+names and $c$ is its constant. Nothing below depends on what $X$ and $Y$
+are.
+
+\paragraph{The theorem stands; its premise is false; it derives nothing.}
+A theorem of shape (E) or (S) is an implication, proved by a reduction
+from $k$-SAT to $X$ or $Y$ that turns a fast algorithm for the target
+into a fast algorithm for $k$-SAT. The reduction is unaffected by
+anything in the verified statement; the implication remains a theorem.
+What has changed is that its premise is now known to be false
+(Section~\ref{sec:consequences-hypotheses}), so the implication can no
+longer be discharged: it derives nothing about $X$ or $Y$. That is the
+whole of what ``removes one basis'' means.
+
+\paragraph{The conclusion is not refuted.}
+A false premise does not make a conclusion false. The statement ``no
+$2^{o(n)}$ algorithm for $X$'' and the statement ``no
+$(c-\varepsilon)^k$ algorithm for $Y$'' are untouched by anything in the
+comparator statement, which speaks about $k$-CNF formulas and nothing
+else. To refute either, one would need an algorithm for $X$ or $Y$, and
+the verified statement supplies one only through a reduction in the
+opposite direction to the one the lower bound used. The manuscript says
+exactly this (p.~5, lines 237--238): ``To obtain a faster algorithm for
+a target problem from our SAT algorithm, we need a reduction in the
+other direction, from that problem to fixed-width SAT, that controls the
+number of variables.'' And it places the general caveat on itself at
+p.~2, lines 95--99:
+\begin{quote}\small
+``Note that runtime bounds of the form $2^{o(n)}$ do not transfer under
+general polynomial-time reductions ($2^{n^{o(1)}}$ would be needed for
+this), so our result does not imply that general NP problems admit
+subexponential time algorithms.''
+\end{quote}
+So for shape (E): a $2^{o(n)}$ algorithm for $X$ follows only from a
+reduction of $X$ to fixed-width SAT in which the number of SAT variables
+is $O(n)$ in $X$'s parameter, and the manuscript gives one such transfer
+(below). For shape (S): a $(c-\varepsilon)^k$ algorithm for $Y$ would
+need the exponent of the SAT instance to be below $k \log_2 c$ by a
+constant factor, and the verified statement's exponent is
+$A\rhon'$ in the variable count $n'$ of the SAT instance with $A$ unknown
+(Section~\ref{sec:statement}); no value of $A$ is on record below $257$,
+and no base $c$ is derived from the verified statement for any $Y$. No
+statement of shape ``no $(c-\varepsilon)^k$ algorithm'' is refuted by
+anything in this paper or, so far as we can read, in the manuscript.
+
+\paragraph{Hardness as a classification.}
+A statement of the form ``$Y$ is SETH-hard'' (or ETH-hard) records that
+a reduction exists from $k$-SAT to $Y$ with the stated parameter
+control. The reduction still exists, and the statement is still true as
+a statement about reductions. What it used to convey, that a fast
+algorithm for $Y$ is unlikely because it would refute SETH, it no longer
+conveys: a fast algorithm for $Y$ would refute SETH, and SETH is
+refuted. The classification is now a fact about reductions and no
+longer a fact about $Y$'s running time.
+
+\paragraph{The weaker hypotheses the manuscript names are untouched.}
+The manuscript gives two (p.~5, lines 229--236). The first is the
+Orthogonal Vectors Conjecture, which it states and then relates to SETH:
+``The reduction from SAT to Orthogonal Vectors shows that SETH implies
+OVC [Wil05, VW19]'' (lines 231--232). That implication is a theorem with
+a false premise, like (E) and (S): it says nothing about OVC either way,
+and nothing in the verified statement is about orthogonal vectors. The
+second is the width-unrestricted form of SETH, which we quote with the
+manuscript's list of the problems it covers elided (lines 233--236):
+\begin{quote}\small
+``The lower bounds for [\ldots] also follow from the hypothesis that
+unrestricted CNF-SAT admits no $2^{(1-\delta)n}\,\mathrm{poly}(n,m)$-time
+algorithm for any constant $\delta > 0$ [Bri14, RV13, LMS18]. Theorem
+1.1 gives a running-time guarantee for each fixed clause width $k$,
+while this hypothesis allows the width to grow with $n$.''
+\end{quote}
+The verified statement cannot reach this hypothesis, and the reason is
+visible in its quantifiers (Section~\ref{sec:statement}): the machine
+and the constants $C, A, S, d, e$ are chosen after $k$, and nothing in
+the statement bounds how they grow with $k$. For a formula whose width
+grows with $n$ there is no single machine and no single bound in the
+statement at all; even the trivial observation that every $k$-CNF is a
+CNF runs the wrong way, since the hypothesis quantifies over all widths
+at once. So the unrestricted-width hypothesis, and every lower bound
+that follows from it, is exactly where it was.
+
+\paragraph{What a transferred algorithm inherits.}
+The manuscript's one positive transfer is Set Splitting with sets of
+size at most $k$ (p.~5, lines 239--243): one variable per universe
+element and two clauses per set give a $k$-CNF with ``one variable per
+universe element, so for fixed $k$ Theorem 1.1 gives subexponential
+time in the universe size, up to a polynomial input-size factor,''
+citing \citet{Cygan2016}'s Observation~3.6. Section~\ref{sec:beyond}
+tags this supported: the encoding is on paper, the counter is the
+verified one. What such a transfer inherits is the verified guarantee
+on the SAT instance it builds, $C(L+1)^d\,2^{A\rho(n')}$ with $n'$ the
+number of SAT variables, and therefore the title's limitation with it:
+at $A = 1$ the exponential factor is above $2^{n'}$ for every
+$50 \le n' < e^{5504}$ (Table~\ref{tab:runtime-scale}), with $C, A, d$
+unknown. In general terms: an algorithm obtained from the verified
+statement through a variable-controlling reduction is a $2^{o(n')}$
+algorithm whose verified guarantee is weaker, at every practical size,
+than trying every assignment of the SAT instance it constructs. That is
+not a defect of the transfer; it is the same sentence as the title,
+read through a reduction.
+
+\subsection{What this does not claim}
+\label{sec:consequences-not}
+
+\begin{itemize}
+\item \textbf{No statement ``no $(c-\varepsilon)^k$ algorithm'' is
+  refuted}, for any problem, any parameter or any constant $c$. Such a
+  statement, proved from SETH, has lost its proof and kept its truth
+  value, which is unknown.
+\item \textbf{No statement ``no $2^{o(n)}$ algorithm for $X$'' is
+  refuted} either, unless $X$ has a reduction to fixed-width SAT that
+  controls the number of variables; the manuscript names one such
+  problem (Set Splitting) and we add none.
+\item \textbf{The unrestricted-width hypothesis is untouched}, and so is
+  the Orthogonal Vectors Conjecture, and so is every lower bound proved
+  from either; the verified statement is for each fixed $k$ and says
+  nothing about widths that grow with $n$.
+\item \textbf{Nothing about any specific problem's complexity} beyond
+  what the manuscript's \S1.1.1 and \S1.1.3 state and we quote. The
+  problems the manuscript lists at lines 213--225 and 233--235 are not
+  discussed here, and no example from any other parameterisation is
+  given, by the scope of this paper.
+\item \textbf{No re-reading of the sources.} Each hypothesis is stated
+  in the form the manuscript gives it, with the manuscript's citation;
+  we did not check that the cited sections and definitions state it in
+  the same words. If a source's form is stronger than the manuscript's,
+  the refutation of the manuscript's form may not reach it, and the
+  reader should check the source.
+\item \textbf{Asymptotic only.} Every refutation here is the negation of
+  an asymptotic statement and uses only $\rhon = o(n)$. None says that
+  any machine decides or counts anything fast at any size; the constants
+  are as unknown here as in Section~\ref{sec:statement}, and the
+  verified bound is above $2^n$ on every $50 \le n < e^{5504}$.
+\item \textbf{Nothing beyond the verified statement.} The manuscript's
+  sharper exponents (Section~\ref{sec:beyond}) are not used; where the
+  manuscript derives a consequence from them, it is not a consequence
+  of what is verified and is not claimed here.
+\end{itemize}

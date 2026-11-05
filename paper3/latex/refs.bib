@@ -69,3 +69,84 @@
   year         = {2026},
   note         = {Repository README; author, version and date recorded by item 08}
 }
+
+% ---------------------------------------------------------------------------
+% Item 05 (Section 6): the sources of the hypotheses, as the manuscript cites
+% them in its §1.1.1-1.1.2. Each entry is copied from the manuscript's own
+% reference list (reports/scratch/eth_audit/paper.txt, the lines named in the
+% note; checked by python3 -I paper3/scripts/consequences.py). No DOI is given:
+% item 05 fetched nothing (TASK.md's download list), so none was checked;
+% item 08 or the owner may add them.
+% ---------------------------------------------------------------------------
+
+% Gap-ETH, first source. Extract lines 3711-3712 ([Din16]).
+@techreport{Dinur2016,
+  author      = {Dinur, Irit},
+  title       = {Mildly exponential reduction from {Gap} {3SAT} to polynomial-gap {Label-Cover}},
+  institution = {Electronic Colloquium on Computational Complexity},
+  number      = {TR16-128},
+  year        = {2016},
+  note        = {Entry copied from the manuscript's reference list, extract lines 3711--3712; no DOI checked}
+}
+
+% Gap-ETH, second source. Extract lines 3759-3761 ([MR17]).
+@inproceedings{ManurangsiRaghavendra2017,
+  author    = {Manurangsi, Pasin and Raghavendra, Prasad},
+  title     = {A birthday repetition theorem and complexity of approximating dense {CSPs}},
+  booktitle = {44th International Colloquium on Automata, Languages, and Programming (ICALP 2017)},
+  series    = {LIPIcs},
+  volume    = {80},
+  pages     = {78:1--78:15},
+  year      = {2017},
+  note      = {Entry copied from the manuscript's reference list, extract lines 3759--3761; no DOI checked}
+}
+
+% The randomised Gap-ETH (the manuscript's "[CCK+20, Conjecture 2.5]"). Extract lines 3689-3691.
+@article{Chalermsook2020,
+  author  = {Chalermsook, Parinya and Cygan, Marek and Kortsarz, Guy and Laekhanukit, Bundit and Manurangsi, Pasin and Nanongkai, Danupon and Trevisan, Luca},
+  title   = {From {Gap-Exponential} {Time} {Hypothesis} to fixed parameter tractable inapproximability: {Clique}, {Dominating} {Set}, and more},
+  journal = {SIAM Journal on Computing},
+  volume  = {49}, number = {4}, pages = {772--810}, year = {2020},
+  note    = {Entry copied from the manuscript's reference list, extract lines 3689--3691; no DOI checked}
+}
+
+% NSETH. Extract lines 3686-3688 ([CGI+16]).
+@inproceedings{Carmosino2016,
+  author    = {Carmosino, Marco L. and Gao, Jiawei and Impagliazzo, Russell and Mihajlin, Ivan and Paturi, Ramamohan and Schneider, Stefan},
+  title     = {Nondeterministic extensions of the {Strong} {Exponential} {Time} {Hypothesis} and consequences for non-reducibility},
+  booktitle = {7th Innovations in Theoretical Computer Science Conference (ITCS 2016)},
+  pages     = {261--270},
+  year      = {2016},
+  note      = {Entry copied from the manuscript's reference list, extract lines 3686--3688; no DOI checked}
+}
+
+% #ETH and the bounded-error randomised ETH (the manuscript's "[DHM+14, Section 1]"). Extract lines 3708-3710.
+@article{Dell2014,
+  author  = {Dell, Holger and Husfeldt, Thore and Marx, D{\'a}niel and Taslaman, Nina and Wahl{\'e}n, Martin},
+  title   = {Exponential time complexity of the permanent and the {Tutte} polynomial},
+  journal = {ACM Transactions on Algorithms},
+  volume  = {10}, number = {4}, pages = {21:1--21:32}, year = {2014},
+  note    = {Entry copied from the manuscript's reference list, extract lines 3708--3710; no DOI checked}
+}
+
+% The bounded-error randomised SETH (the manuscript's "[CDL+16, Definition 2.1]") and the
+% Set Splitting reduction (its Observation 3.6). Extract lines 3705-3707.
+@article{Cygan2016,
+  author  = {Cygan, Marek and Dell, Holger and Lokshtanov, Daniel and Marx, D{\'a}niel and Nederlof, Jesper and Okamoto, Yoshio and Paturi, Ramamohan and Saurabh, Saket and Wahlstr{\"o}m, Magnus},
+  title   = {On problems as hard as {CNF-SAT}},
+  journal = {ACM Transactions on Algorithms},
+  volume  = {12}, number = {3}, pages = {41:1--41:24}, year = {2016},
+  note    = {Entry copied from the manuscript's reference list, extract lines 3705--3707; no DOI checked}
+}
+
+% MA-SETH refuted in 2016; context only (the manuscript's "[Wil16, Theorem 3.3]"). Extract lines 3810-3811.
+@inproceedings{Williams2016,
+  author    = {Williams, Richard Ryan},
+  title     = {Strong {ETH} breaks with {Merlin} and {Arthur}: short non-interactive proofs of batch evaluation},
+  booktitle = {31st Conference on Computational Complexity (CCC 2016)},
+  series    = {LIPIcs},
+  volume    = {50},
+  pages     = {2:1--2:17},
+  year      = {2016},
+  note      = {Entry copied from the manuscript's reference list, extract lines 3810--3811; no DOI checked}
+}

@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 4/12 SOLVED
+Current: 5/12 SOLVED
 
 ## Setup — 2026-11-05
 
@@ -353,3 +353,83 @@ Current: 4/12 SOLVED
   (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed;
   pathwidth_solver 123 passed in 6:32; paper 1 builds at 78 pages,
   paper 3 at 26; title verbatim; `solutions/` untouched).
+
+
+---
+
+## Iteration 5 — 2026-11-05 (item 05, what follows in general terms) `[x]`
+
+### Completed
+- **Each hypothesis read in the form the manuscript states it**, with page
+  and line of the extract and the manuscript's own source: ETH (p. 4,
+  165–166, [IP01, Theorem 1]), SETH (166–169, [IP01, Open Problems, item
+  2]), Gap-ETH (172–174, [Din16, MR17]) and its randomised form (175–176,
+  [CCK+20, Conjecture 2.5]), NSETH (181–183, [CGI+16]), the randomised ETH
+  and SETH by citation (190–191, [DHM+14, Section 1], [CDL+16, Definition
+  2.1]), #ETH (204–205, [DHM+14, Section 1]); the refutation paragraph
+  (187–191) and the #ETH sentence (p. 5, 211–212) quoted in full.
+- **Each refuted from the comparator statement alone**, by one of its
+  conjuncts (lines 194–217 at `4eaee875`): the answer bit
+  `[0 < count F]` (205–207) for ETH, SETH, Gap-ETH and NSETH, the count
+  tape (203–204) for #ETH; with the quantifier form stated each time —
+  the single-machine `2^{O_k(ρ(n))}` form gives the uniform negation (one
+  algorithm `O_δ(2^{δn})` for every `δ`), stronger than the `∀δ ∃` ETH
+  negation; SETH negated directly at every `k` and every `ε` (the
+  `(n+m)^{O_k(1)}` degree is what "for a fixed k" permits), with
+  "SETH ⇒ ETH" recorded for the record through the Sparsification Lemma
+  (`\citet{ImpagliazzoPaturiZane2001}`); the randomised and
+  nondeterministic forms by "a deterministic machine is both"; the
+  `2^{o(n)}`-in-`n`-alone step made explicit (`m ≤ Σ_{j≤k} C(2n,j)`, so
+  `L = O(n^{k+1})`); no `n ≥ 20` proviso; the multitape model as the
+  conservative one.
+- **What a derived lower bound loses, in general terms** with no problem
+  named: shapes (E) `ETH ⇒ no 2^{o(n)} for X` and (S) `SETH ⇒ no (c−ε)^k
+  for Y`; the theorem stands, the premise is false, nothing is derived
+  (the manuscript's "removes one basis", p. 5, 226–227, quoted); the
+  conclusion is not refuted (the "reduction in the other direction",
+  237–238, and the transfer caveat, p. 2, 95–99, quoted); hardness as a
+  classification (ours, 05d); OVC and the unrestricted-width hypothesis
+  untouched (229–236 quoted, the problem list elided for scope, 05a),
+  with the quantifier reason (constants chosen after `k`, nothing bounds
+  their growth); what a transferred algorithm inherits (Set Splitting,
+  239–243: the title's limitation read through a reduction).
+- `paper3/scripts/consequences.py` (python3 -I; reads the extract and
+  the clone with `open()` only): 8 hypothesis locations, 14 quoted
+  sentences, 9 bibliography entries, 12 comparator lines, the arithmetic;
+  writes `tables/hypotheses.tex` (Table 6.1); `ALL CHECKS PASSED`;
+  `--check` verifies without writing.
+- `paper3/latex/sec6_consequences.tex` drafted (4 subsections, pages
+  25–30: the one property every refutation uses, the hypotheses one by
+  one with Table 6.1 and the two context sentences, what a derived lower
+  bound loses in five paragraphs, "what this does not claim" in seven
+  points). `make -C paper3/latex check` passes, 33 pages; no overfull
+  box in the section (the (E)/(S) display split, an `\allowbreak` in the
+  NSETH quotation's formula). No word of graphs, pathwidth, treewidth or
+  MOSP in the section (grep).
+- `refs.bib`: seven entries for the hypotheses' sources (Dinur 2016,
+  Manurangsi & Raghavendra 2017, Chalermsook et al. 2020, Carmosino et
+  al. 2016, Dell et al. 2014, Cygan et al. 2016, Williams 2016), each
+  copied from the manuscript's reference list with its extract lines in
+  the `note`, no DOI (nothing fetched; 05c).
+- `paper3/README.md` Section 6 regenerate paragraph; `ETH_AMBIGUOUS.MD`
+  entries 05a–05d.
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone executed (read with `sed -n`, `cat -n` and the script's
+  `open()` only); no subagent used.
+
+### Blockers
+- None.
+
+### Next
+- Item 06 (the practitioner): Section 6's last paragraph ("what a
+  transferred algorithm inherits") is the bridge to it; 05d offers to
+  move that paragraph there.
+- Item 08 may add the DOIs to the seven new `refs.bib` entries (05c) and
+  Calabro–Impagliazzo–Paturi 2009 for "SETH ⇒ ETH" in words (05b).
+- Item 10 (refuter): the `A ≥ 257` of Sections 2 and 6 against Section
+  4's `A ≥ 258` (04c, 05d); the elided problem list in the §1.1.3
+  quotation (05a) is the owner's call.
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 04:23
+  (exit 0; `lake build` ok, 0 sorry; pytest 1,978 passed, 2 skipped,
+  1 xfailed in 4:37; pathwidth_solver 123 passed in 6:35; paper 1 builds
+  at 78 pages, paper 3 at 33; title verbatim; `solutions/` untouched).

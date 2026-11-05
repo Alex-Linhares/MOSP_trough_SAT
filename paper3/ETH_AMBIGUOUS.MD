@@ -405,3 +405,75 @@ an answer).
 - **Chosen**: Section 4 states 42 and lines 8–9; the audit is left as a
   dated scratch record.
 - **Owner may change**: nothing.
+
+### 05a — the problem list elided from the quotation of §1.1.3 lines 233–235 (item 05, 2026-11-05)
+- **Ambiguous**: the brief asks item 05 to quote, with page and line, the
+  manuscript's sentence that some lower bounds also follow from the
+  unrestricted-CNF-SAT hypothesis. That sentence (p. 5, lines 233–235)
+  opens with a list of the problems it covers, one of which is a width
+  parameter the owner's scope rule keeps out of the paper; the brief
+  also says "no example from any width parameter".
+- **Chosen**: Section 6 quotes lines 233–236 with the problem list
+  replaced by "[…]" ("The lower bounds for […] also follow from the
+  hypothesis that unrestricted CNF-SAT admits no …"), says so in the
+  sentence that introduces the quote, and keeps the manuscript's bracket
+  citations. The §1.1.3 opening list (lines 213–225) is referred to by
+  its lines and not quoted, as Section 3 did. The script checks the full
+  lines, elision or not.
+- **Owner may change**: restore the full quotation (three problem names,
+  one of them "the treewidth dependence of Independent Set and Dominating
+  Set"), since it is the manuscript's sentence and not ours.
+
+### 05b — SETH is refuted by reading the statement at each k; "SETH ⇒ ETH" is cited to Impagliazzo–Paturi–Zane (item 05, 2026-11-05)
+- **Ambiguous**: the brief says "SETH (SETH ⇒ ETH; cite the standard
+  implication with its source)". The verified statement holds for every
+  fixed `k ≥ 2`, so it negates SETH's "for every ε there is a k" directly,
+  without the implication; and the paper that states "SETH implies ETH"
+  in those words (Calabro, Impagliazzo & Paturi 2009, where the name
+  SETH is introduced) is not in the manuscript's bibliography and item 05
+  fetched nothing (TASK.md's download list).
+- **Chosen**: Section 6 refutes SETH directly (each `k` has a
+  `2^{(1−ε)n}(n+m)^{O_k(1)}` algorithm for every `ε`) and then records the
+  implication "for the record", with the two-line argument through the
+  Sparsification Lemma and `\citet{ImpagliazzoPaturiZane2001}` as its
+  source (that paper's SERF-completeness of `k`-SAT is the lemma the
+  implication rests on).
+- **Owner may change**: add Calabro–Impagliazzo–Paturi 2009 (IWPEC, LNCS
+  5917) to `refs.bib` as the source that states the implication in words,
+  or drop the implication sentence altogether since the refutation does
+  not use it.
+
+### 05c — the hypotheses' sources are copied from the manuscript's reference list and not re-read; no DOIs (item 05, 2026-11-05)
+- **Ambiguous**: each hypothesis is to be stated "as the manuscript's
+  §1.1.1 lists it" with its source. The sources (Dinur 2016, Manurangsi &
+  Raghavendra 2017, Chalermsook et al. 2020, Carmosino et al. 2016, Dell
+  et al. 2014, Cygan et al. 2016, Williams 2016) are not held under
+  `literature/`, and `refs.bib`'s header says DOIs are Crossref-checked
+  where given; item 05 may not download anything.
+- **Chosen**: seven `refs.bib` entries copied from the manuscript's own
+  reference list (extract lines 3686–3811, each entry's lines named in
+  its `note` and checked by `consequences.py`), with no DOI and a note
+  saying none was checked. Section 6 states every hypothesis in the
+  manuscript's wording with the manuscript's bracket citation, and says
+  in "what this does not claim" that the sources were not re-read.
+- **Owner may change**: have item 08 (which may fetch) add the DOIs and
+  check the entries against Crossref; or ask for the sources to be
+  obtained and the definitions compared word for word (an afternoon).
+
+### 05d — the "hardness as a classification" paragraph is ours (item 05, 2026-11-05)
+- **Ambiguous**: the brief asks for the premise/conclusion distinction
+  "in general terms" with the manuscript's §1.1.3 as the source. Section
+  6.3 adds one paragraph the manuscript does not have: that "Y is
+  SETH-hard" remains true as a statement about reductions and no longer
+  conveys anything about Y's running time. It also adds the paragraph
+  "What a transferred algorithm inherits" (the title's limitation read
+  through a reduction), which is a consequence of Section 2 and not a
+  manuscript sentence.
+- **Chosen**: both paragraphs kept, in general terms, with no problem
+  named; the first is marked as ours by its wording, the second cites
+  Table 2.1 and Section 3's "supported" tag for the Set Splitting
+  transfer. Section 6 also says `A ≥ 257` where it needs a constant,
+  following Section 2 (02c), not Section 4's `A ≥ 258` (04c), which the
+  refuter may align.
+- **Owner may change**: cut either paragraph, or move the second to
+  Section 7 (the practitioner).
