@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 6/12 SOLVED
+Current: 7/12 SOLVED
 
 ## Setup — 2026-11-05
 
@@ -508,3 +508,90 @@ Current: 6/12 SOLVED
   (exit 0; `lake build` ok; pytest 1,978 passed, 2 skipped, 1 xfailed;
   pathwidth_solver 123 passed in 6:32; paper 1 builds at 78 pages, paper
   3 at 38; title verbatim; `solutions/` untouched).
+
+
+---
+
+## Iteration 7 — 2026-11-05 05:25 (item 07, the companion Lean, axiom-audited) `[x]`
+
+### Completed
+- **Nothing moved.** The brief says `git mv` to `lean/MOSPFormalization/ETH/`;
+  the owner's resolution of S3 (`ETH_AMBIGUOUS.MD`, "Owner resolutions")
+  says "leave the Lean where it is … item 07 does not move anything", and
+  the brief had not been amended. The owner's word was followed: the
+  companion Lean stays at
+  `lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame}.lean`,
+  namespace `MOSPFormalization.SubexpPathwidth`; `MOSPFormalization.lean`
+  and the loop0014 crossover file are untouched; the S3 note planned for
+  `reports/subexp_pathwidth.md` §2.1 is not needed (07a).
+- **The byte-level re-diff** (`paper3/scripts/lean_rediff.py`, python3 -I,
+  reads the clone with `open()` only; `--check`; log
+  `paper3/lean/rediff.log`): our `PrimitiveMachine.lean` lines 31–221
+  against the clone's comparator file lines 1–190 followed by 220 —
+  **byte-identical, 191 lines each side, diff empty**; the clone's SHA-256
+  `4183b205…` and commit `4eaee875` as the header records. Beyond the
+  brief (07c): the body of `SubexpCount` (Frame.lean 85–107) against the
+  body of `exact_count_and_sat` (clone 195–217, `:= by` removed) —
+  **identical after whitespace normalisation (1,073 characters) and line
+  by line after stripping indentation (23 lines; ours two columns further
+  left)**, so "character for character" now has a regenerate command.
+  Zero `sorry`, zero `axiom` declarations in our two files; the clone's
+  one `sorry` at 218 is outside the copied range. `ALL CHECKS PASSED`.
+- **The axiom audit** (`paper3/lean/axiom_check.lean`, paper 1's pattern
+  without its `sorryAx` control line, 07b; run `cd lean && lake env lean
+  ../paper3/lean/axiom_check.lean > ../paper3/lean/axiom_check.log`
+  after an incremental `lake build`, 2 s, "Build completed successfully
+  (8988 jobs)"): 21 declarations — the ten copied definitions the
+  statement rests on, `SubexpCount`, `ExactCountAndSat`, and the nine
+  lemmas and helper defs — **19 on exactly `[propext, Classical.choice,
+  Quot.sound]`, `Computation.Trace` on none (inductive), `countWord` on
+  `[propext, Quot.sound]`, `sorryAx` on none**. Lean 4.34.0-rc2 (commit
+  `6a10ac8c`), Lake 5.0.0, Mathlib `1192d6246b46` (our library's toolchain,
+  not the clone's `v4.34.1` / `d13f23b7`; the copied model elaborates on
+  both, which the section calls small evidence and no more).
+- Written: `paper3/lean/README.md` (the files with the line of every
+  cited name, the eight Appendix rows, the audit command and result with
+  versions, the three re-diff checks, what this does not claim);
+  `paper3/latex/sec8_lean.tex` (pages 35–38, five subsections in plain
+  English: the copy, the restatement, what is proved and what it means
+  in words, the axiom audit, "what this does not claim" in six points; a
+  Prop / def / theorem / axiom gloss up front; no crossover or pathwidth
+  statement cited — the directory name is the only occurrence of the
+  word, 07a); `paper3/latex/secA_appendix_lean.tex` (eight `\leanentry`
+  rows in three groups, the placeholder removed, the `ETH/` preamble
+  rewritten); `paper3/README.md` (the `lean/` layout row and the Section
+  8 regenerate paragraph); `ETH_AMBIGUOUS.MD` entries 07a–07c.
+- **One paper-wide typesetting fix**: `\_` inside `\repofile{}`,
+  `\clonefile{}` and `\leannames{}` (verbatim-style `\path`) printed a
+  literal backslash — 11 places on pages 5, 8, 13, 14, 38, 39 of
+  Sections 2, 3, 10, 12 and in my own two files. Replaced by a plain `_`
+  inside those three macros only (`\texttt{…\_…}` untouched); the PDF
+  now has zero literal `\_`. Also a Unicode `ℕ` in Section 8's text
+  (`inputenc` cannot typeset it) became `$\mathbb{N}$`. `make -C
+  paper3/latex check` passes, 42 pages, no overfull box in Section 8 or
+  Appendix A (both under `\sloppy`, as item 04's section is).
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone executed (read with `open()`, `sed -n`, `sha256sum`,
+  `git rev-parse` only); the only Lean run is on our library; no
+  subagent used.
+
+### Blockers
+- None.
+
+### Next
+- Item 08 (related work): `refs.bib` notes still say "recorded by item
+  08" for `LeanComparator` and `Nanoda`; Section 8 cites neither.
+- Item 10 (refuter): Section 8's "character for character" is defined
+  as the normalised equality of 07c — Section 2 line ~352 and
+  Frame.lean's docstring use the phrase without that definition; align
+  if wanted. The two acceptance readings of 07b (lines with fewer than
+  three axioms) are the owner's call.
+- Item 11: `reports/paper3_plan.md` §0.4.7 and the item table still say
+  the Lean is moved to `ETH/`; `TASK.md` Context and Acceptance likewise;
+  superseded by the owner's S3 resolution and 07a. `paper3/lean/README.md`
+  records the audit's repository commit as `95eb564a0` (the HEAD when it
+  ran; the driver's commit of this iteration will be the one that holds
+  the files).
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 05:46
+  (exit 0; `lake build` ok; 1978 passed, 2 skipped, 1 xfailed, 180 warnings in 277.76s; 123 passed in 393.59s; paper 1 builds at 78 pages, paper 3 at 42; title verbatim;
+  `solutions/` untouched).

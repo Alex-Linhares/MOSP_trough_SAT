@@ -1,20 +1,37 @@
 % Appendix A: formal names, one row per result, as in paper 1
-% (\leanentry{key}{result} \leannames{...}); item 07 fills the rows.
+% (\leanentry{key}{result} \leannames{...}); rows written by item 07 (2026-11-05).
 \section{Formal names}
 \label{app:lean}
+\begingroup\sloppy
 
 Every Lean name the paper cites, with its file under
-\repofile{lean/MOSPFormalization/ETH/}; the axiom audit is
-\repofile{paper3/lean/axiom_check.lean} with its committed log.
+\repofile{lean/MOSPFormalization/SubexpPathwidth/} (the files are left where
+loop0014 wrote them, by the owner's decision recorded in
+\repofile{paper3/ETH_AMBIGUOUS.MD}, S3); the axiom audit is
+\repofile{paper3/lean/axiom_check.lean} with its committed log
+\repofile{paper3/lean/axiom_check.log}, and the byte-level re-diff of the
+copy against the comparator file is \repofile{paper3/scripts/lean_rediff.py}
+with its log \repofile{paper3/lean/rediff.log}. Every row's declarations are
+on the three standard axioms \texttt{propext}, \texttt{Classical.choice},
+\texttt{Quot.sound} or fewer; none depends on \texttt{sorryAx}. Nothing from
+the other study that shares the directory is cited.
 
 \begin{longtable}{@{}p{0.07\linewidth}p{0.43\linewidth}p{0.44\linewidth}@{}}
 \toprule
  & result & Lean names \\
 \midrule
 \endhead
-\leanentry{subexpcount}{The comparator statement restated as a \texttt{Prop}, \(\SubexpCount\ k\), over the verbatim copy of the machine model; never proved, never an axiom} \leannames{MOSPFormalization.SubexpPathwidth.SubexpCount} \\
-\leanentry{rho-little-o}{\(\rhon = o(n)\): the verified exponent is subexponential in the limit} \leannames{MOSPFormalization.SubexpPathwidth.runtimeScale\_isLittleO} \\
+\leangroup{The copy (\texttt{PrimitiveMachine.lean}, lines 31--221 = comparator lines 1--190 and 220, byte-identical; definitions only, the namespaces of the source kept)}
+\leanentry{copy-model}{The comparator's vocabulary: formulas and their satisfying-assignment count, the canonical bit encoding and its length, the multitape machine with its step and start, the trace, the running-time scale \(\rhon\) and the bound built from it, the count word, the located step and the visited space} \leannames{OAI.Algorithms.SubexponentialSAT.SAT.count, OAI.Algorithms.SubexponentialSAT.Encoding.encodeCNF, OAI.Algorithms.SubexponentialSAT.Encoding.formulaBitLength, OAI.Algorithms.SubexponentialSAT.Computation.PrimitiveMachine.step, OAI.Algorithms.SubexponentialSAT.Computation.Trace, OAI.Algorithms.SubexponentialSAT.SqrtLog.Statement.runtimeScale, OAI.Algorithms.SubexponentialSAT.SqrtLog.Statement.runtimeBound, OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.countWord, OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.locatedStep, OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.visitedSpace} \\
+\leangroup{The restatement (\texttt{Frame.lean}): two \texttt{def}s of a \texttt{Prop}, never proved, never axioms}
+\leanentry{subexpcount}{The comparator statement for width \(k\) as a named \texttt{Prop}, \(\SubexpCount\ k\): its body is the comparator theorem's body, identical after whitespace normalisation (1,073 characters, 23 lines)} \leannames{MOSPFormalization.SubexpPathwidth.SubexpCount} \\
+\leanentry{exactcountandsat}{The comparator theorem in full: for every \(k \ge 2\), \(\SubexpCount\ k\)} \leannames{MOSPFormalization.SubexpPathwidth.ExactCountAndSat} \\
+\leangroup{What is proved about them (\texttt{Frame.lean})}
+\leanentry{subexpcount-anti}{A machine for width \(k\) is a machine for every width \(k' \le k\), with the same constants; and the unpacking of the ``for every \(k \ge 2\)'' form} \leannames{MOSPFormalization.SubexpPathwidth.SubexpCount.anti, MOSPFormalization.SubexpPathwidth.ExactCountAndSat.subexpCount} \\
+\leanentry{runtimebound-eq}{The bound unfolds, by definition, to \(C\,(L+1)^d\,2^{A\cdot\rhon}\)} \leannames{MOSPFormalization.SubexpPathwidth.runtimeBound_eq} \\
+\leanentry{rho-little-o}{\(\rhon = o(n)\): the verified exponent is subexponential in the limit, from \((\ln y)^2/\sqrt{y} \to 0\)} \leannames{MOSPFormalization.SubexpPathwidth.tendsto_log_sq_div_sqrt, MOSPFormalization.SubexpPathwidth.runtimeScale_isLittleO} \\
+\leanentry{is-subexp-exponent}{``\(f\) is a subexponential exponent'' means \(f = o(n)\); \(A \cdot \rhon\) is one for every constant \(A\)} \leannames{MOSPFormalization.SubexpPathwidth.IsSubexpExponent, MOSPFormalization.SubexpPathwidth.isSubexpExponent_runtimeScale} \\
+\leanentry{trace-projection}{A run of the located (cell-monitoring) step projects to a run of the plain step with the same number of steps, so the comparator's time bound is a bound on the machine itself} \leannames{MOSPFormalization.SubexpPathwidth.LocatedCfg.monitor_config, MOSPFormalization.SubexpPathwidth.Trace.config_of_locatedStep} \\
 \bottomrule
 \end{longtable}
-
-\placeholder{Item 07 moves these declarations to \repofile{lean/MOSPFormalization/ETH/} and rewrites the names above to their new namespace.}
+\endgroup

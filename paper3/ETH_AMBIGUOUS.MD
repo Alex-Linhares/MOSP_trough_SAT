@@ -542,3 +542,68 @@ an answer).
   orders below `2^n`) does not depend on it.
 - **Owner may change**: rerun with the `ganak` binary and its options, or
   drop the exact counter's seconds above `n = 80` from the table.
+
+### 07a — the brief says `git mv` to `ETH/`; the owner's resolution of S3 says leave the Lean in place (item 07, 2026-11-05)
+- **Ambiguous**: `iterations.md` item 07, `TASK.md` (Context and
+  Acceptance), `reports/paper3_plan.md` §0.4.7 and its item table, and
+  the stubs of `sec8_lean.tex`, `secA_appendix_lean.tex` and `README.md`
+  all say the companion Lean is moved to
+  `lean/MOSPFormalization/ETH/{PrimitiveMachine,Statement}.lean`; the
+  owner's resolution of S3 (relayed by the coordinator, above) says
+  "leave the Lean where it is and cite the existing path … item 07 does
+  not move anything (item 07's brief amended)", and the brief was not in
+  fact amended.
+- **Chosen**: the owner's word. Nothing is moved; the two files stay at
+  `lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame.lean}`
+  with their namespace `MOSPFormalization.SubexpPathwidth`; the audit,
+  the re-diff, Section 8, Appendix A and both READMEs cite that path.
+  The paper says the directory is named for an earlier study of ours on
+  a different question and that nothing from it is cited; the directory
+  name is the one place the word in it appears in the paper (Section 8
+  and Appendix A name the path, as they must). The one-line note S3
+  planned for `reports/subexp_pathwidth.md` §2.1 is not needed and not
+  added. `reports/paper3_plan.md` §0.4.7 and the item table still say
+  `ETH/`; left for item 11, which updates the plan's §0.
+- **Owner may change**: move the files after all (then the namespace in
+  Appendix A's rows, `axiom_check.lean`'s `open`, `lean_rediff.py`'s
+  paths and `paper3/lean/README.md` change with them; the loop0014
+  crossover file, which uses these names, would need an `open` of the
+  new namespace); or rename the directory.
+
+### 07b — what the axiom audit prints, and "every line on the three axioms" (item 07, 2026-11-05)
+- **Ambiguous**: the acceptance rule says the audit has "every line on
+  `propext`, `Classical.choice`, `Quot.sound`". Two of the 21 lines print
+  fewer: `Computation.Trace` (an inductive definition) depends on no
+  axiom, and `SqrtLogSpace.countWord` on `[propext, Quot.sound]`. And
+  `paper1/axiom_check.lean` ends with a control line that must show
+  `sorryAx`, which this rule would forbid.
+- **Chosen**: the rule is read as "nothing beyond the three on any line,
+  `sorryAx` on none", which holds; the two lines are reported as printed,
+  in Section 8, Appendix A ("or fewer") and `paper3/lean/README.md`. No
+  `sorryAx` control line, so that the committed log has nothing a reader
+  must explain away; the gate's library-wide `sorry`/`axiom` scan is the
+  control instead. The ten copied definitions and the three `def`s are
+  printed beside the lemmas to show that they elaborate; a `def` printed
+  with axioms is not a claim.
+- **Owner may change**: add paper 1's control line; print the lemmas
+  only.
+
+### 07c — the statement match in the re-diff goes beyond the brief (item 07, 2026-11-05)
+- **Ambiguous**: the brief asks for a byte-level re-diff of
+  `PrimitiveMachine.lean` against the comparator's lines 1–190 and 220
+  only. Whether `SubexpCount`'s body is the theorem's "character for
+  character" (Frame.lean's own claim, repeated in Section 2) had been
+  checked only by reading.
+- **Chosen**: `lean_rediff.py` also compares the body of `SubexpCount`
+  (Frame.lean 85–107) with the body of `exact_count_and_sat` (clone
+  195–217, the trailing `:= by` removed) after whitespace normalisation
+  (identical, 1,073 characters) and line by line after stripping
+  indentation (identical, 23 lines; every line of ours is two columns
+  further left). "Character for character" in the paper is defined as
+  exactly this normalised equality, and Section 8 says it is textual.
+  The binders `(k : ℕ) (hk : 2 ≤ k)` are outside the body by
+  construction (`k` is the def's argument, `2 ≤ k` is
+  `ExactCountAndSat`'s hypothesis).
+- **Owner may change**: drop the extra check; or require an
+  indentation-exact match (which would mean restating the `def` with
+  the theorem's indentation).

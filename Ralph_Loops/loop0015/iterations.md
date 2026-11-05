@@ -226,7 +226,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   about the verified machine's actual running time (unknown); no
   implementation of the verified algorithm exists to run.
 
-- [ ] **07 The companion Lean: our restatement, axiom-audited.**
+- [x] **07 The companion Lean: our restatement, axiom-audited.**
   The restatement `SubexpCount k` (the comparator statement character for
   character over the verbatim-copied machine model) is on record in
   `lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame}.lean`.

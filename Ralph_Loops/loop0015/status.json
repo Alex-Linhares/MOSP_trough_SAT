@@ -1,6 +1,6 @@
 {
-  "updated": "2026-11-05 05:14:51",
+  "updated": "2026-11-05 05:46:53",
   "phase": "tests",
-  "started": "2026-11-05 04:35:24",
-  "item": "06 For the practitioner: SAT solvers and model counters against the verified bound and `2^"
+  "started": "2026-11-05 05:26:07",
+  "item": "07 The companion Lean: our restatement, axiom-audited."
 }

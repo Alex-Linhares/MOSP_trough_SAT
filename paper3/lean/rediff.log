@@ -1,0 +1,17 @@
+paper3/scripts/lean_rediff.py -- 2026-11-05 05:29 UTC
+clone: /home/al/dev/untrusted/openai-math at commit 4eaee87548250b2682affda7d05d947c05554bae (expected 4eaee87548250b2682affda7d05d947c05554bae)
+sha256 comparator (clone) : 4183b2057cff350d66848215ff7167196dfc20e1891b598fdddea59077a76685 (expected 4183b2057cff350d66848215ff7167196dfc20e1891b598fdddea59077a76685)
+sha256 PrimitiveMachine.lean: 23f7926e4644c9640ac815c35152caab9c3ccc64aef6b65266b738e9fffc54c9
+sha256 Frame.lean           : ad24111185ab388675a673b96c930d56adf3f1de15d01184dc01447c35e40fd4
+comparator file: 220 lines; PrimitiveMachine.lean: 221 lines; Frame.lean: 268 lines
+check 1: our copy starts at PrimitiveMachine.lean line 31 (191 lines); expected = clone lines 1-190 + 220 (191 lines)
+check 1: byte-identical (diff empty)
+check 2: SubexpCount body = Frame.lean lines 85-107 (23 lines); exact_count_and_sat body = clone lines 195-217 (23 lines, `:= by` removed)
+check 2: identical after whitespace normalisation (1073 characters)
+check 2: identical line by line after stripping indentation (23 lines); the indentation differs by two spaces (a `def` body against a `theorem` type)
+check 2: indentation offset (ours minus clone) per line: [-2]
+check 3: PrimitiveMachine.lean: 0 `sorry`, 0 `axiom` declaration(s) outside the header comment
+check 3: Frame.lean: 0 `sorry`, 0 `axiom` declaration(s) outside the header comment
+check 3: the clone's comparator file has `sorry` at line(s) [218]
+check 3: the `sorry` line is inside the copied range: False
+ALL CHECKS PASSED

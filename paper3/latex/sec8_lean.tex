@@ -1,5 +1,204 @@
-% The statement in our Lean -- drafted by loop0015 item 07.
+% The statement in our Lean -- drafted by loop0015 item 07 (2026-11-05).
+% Every number here is printed by paper3/scripts/lean_rediff.py (the copy, the
+% statement match, the sorry count; log paper3/lean/rediff.log) or by
+% `cd lean && lake env lean ../paper3/lean/axiom_check.lean` (the axiom audit;
+% log paper3/lean/axiom_check.log). Line numbers in our files are at the
+% repository commit the log names; line numbers in the clone are at 4eaee875.
 \section{The statement in our Lean}
 \label{sec:lean}
+\begingroup\sloppy
 
-\placeholder{Item 07 drafts this section: the restatement $\SubexpCount$ over the verbatim machine model under \repofile{lean/MOSPFormalization/ETH/}, the axiom audit, the byte-level re-diff against the comparator file; no theorem of ours about the hypothesis is proved, and none is claimed. Ends with what this does not claim''.}
+Sections~\ref{sec:statement} and \ref{sec:proof} read OpenAI's statement
+in OpenAI's files. This section describes the one thing we wrote in Lean
+ourselves: a copy of the statement inside our own library, checked by the
+same kernel, under our own name. The point is modest. Every sentence this
+paper says about ``the verified statement'' is pinned to a named object
+that the Lean kernel has elaborated, and anyone who wants to use the
+statement as a hypothesis later can cite that one name. Nothing is proved
+about the hypothesis here, and nothing is claimed beyond what the copy
+and its audit show.
+
+Two words first. In Lean a \emph{Prop} is a sentence that may be true or
+false; a \emph{def} gives a sentence a name without asserting it; a
+\emph{theorem} asserts a sentence and carries its proof; an \emph{axiom}
+asserts one without a proof. Our restatement is a def. It names the
+sentence and asserts nothing.
+
+The files are \repofile{lean/MOSPFormalization/SubexpPathwidth/PrimitiveMachine.lean}
+and \repofile{lean/MOSPFormalization/SubexpPathwidth/Frame.lean}, written
+on 2026-11-04 for an earlier study of ours on a different question. The
+directory carries that study's name. The owner chose to leave the files
+where they are rather than move them (\repofile{paper3/ETH_AMBIGUOUS.MD},
+S3), and this paper cites nothing from that study: only the copied model,
+the restatement, and six small lemmas about them, all listed in
+Appendix~\ref{app:lean}.
+
+\subsection{The copy: definitions only}
+\label{sec:lean-copy}
+
+The comparator file of family~378,
+\clonefile{lean/ComparatorChallenges/SubexponentialSAT.lean}, has 220
+lines. Lines 1--190 define the objects the theorem speaks about: the
+formulas, their canonical encoding as a bit string, the multitape machine,
+its step and its starting configuration, the running-time bound
+$\runtimeScale$ and the wrapper around it, the count word, and the
+located configuration that records which tape cells a run has visited.
+Lines 191--219 state the theorem \texttt{exact\_count\_and\_sat} and end
+it with \texttt{sorry}, the placeholder that a solution must replace.
+Line 220 closes the last namespace.
+
+Our \texttt{PrimitiveMachine.lean} is lines 1--190 and 220, and nothing
+else: after a thirty-line header that records the source, the commit, the
+file's hash and the Apache licence, the file is the copy
+\leanref{copy-model}. The header says so, and a script checks it.
+\repofile{paper3/scripts/lean_rediff.py} reads both files with
+\texttt{open()} only, takes everything in ours from the line
+\texttt{import Mathlib} on, and compares it byte for byte with the clone's
+lines 1--190 followed by line 220. The diff is empty: 191 lines on each
+side, identical. The script also checks the clone file's SHA-256 against
+the hash the header records, and that the clone is at commit
+\texttt{4eaee875}. The log is \repofile{paper3/lean/rediff.log}.
+
+So the copy holds the theorem's \emph{vocabulary} and not the theorem.
+The \texttt{sorry} at line 218 is outside the copied range, and our file
+has no \texttt{sorry} and no axiom declaration anywhere (the same script
+counts them: zero and zero in each of our two files). Everything in the
+copy is a definition. A definition can be badly chosen, but it cannot be
+false; what the definitions mean is Section~\ref{sec:statement}'s
+subject, and the copy adds nothing to it.
+
+\subsection{The restatement}
+\label{sec:lean-restatement}
+
+\texttt{Frame.lean} defines
+\[
+  \SubexpCount\ (k : \mathbb{N}) : \mathrm{Prop}
+\]
+as the body of the comparator theorem for width $k$, with the theorem's
+two binders handled thus: $k$ is the argument of the def, and the
+hypothesis $2 \le k$ is carried by a second def,
+\texttt{ExactCountAndSat}, which says ``for every $k \ge 2$,
+\(\SubexpCount\ k\)'' (Appendix~\ref{app:lean}, \ref{lean:subexpcount} and \ref{lean:exactcountandsat}).
+In words, \(\SubexpCount\ k\) is the sentence of
+Section~\ref{sec:statement}: one fixed machine, on every
+bounded-width formula, writes the exact number of satisfying assignments,
+answers whether there is one, runs within the bound built from
+$\runtimeScale$, and visits only polynomially many cells.
+
+The same script checks that the body is the comparator's. It takes the
+23 lines after \texttt{def SubexpCount (k : }$\mathbb{N}$\texttt{) : Prop :=} in our file
+(lines 85--107) and the 23 lines after the theorem's binders in the clone
+(lines 195--217, with the closing \texttt{:= by} removed), and compares
+them in two ways: with every run of white space collapsed to one space,
+and line by line with the indentation stripped. Both comparisons find the
+two texts identical, 1,073 characters. The only difference is that each
+of our lines starts two spaces further left, because a def's body sits
+two columns inside a theorem's type. We call this ``character for
+character''; it is a textual match, by the same method as
+Section~\ref{sec:proof}'s, and it rests on the file we copied from being
+the comparator file at the commit we name.
+
+Neither def is proved here, and neither is an axiom. The truth of
+\(\SubexpCount\ k\) for $k \ge 2$ rests on OpenAI's proof and on
+Sections~\ref{sec:proof} and \ref{sec:replay}, not on anything in our
+library. Our library would be unchanged if the proof were wrong.
+
+\subsection{What is proved, and what it means in words}
+\label{sec:lean-lemmas}
+
+Six small lemmas sit beside the defs, each proved in a few lines
+(Appendix~\ref{app:lean}, \ref{lean:subexpcount-anti}--\ref{lean:trace-projection}). None of them says
+anything about any machine's running time or about whether the hypothesis
+is true.
+
+\begin{itemize}
+\item \textbf{A machine for width $k$ is a machine for every smaller
+  width.} \texttt{SubexpCount.anti}: if \(\SubexpCount\ k\) holds and
+  $k' \le k$ then \(\SubexpCount\ k'\) holds, with the same machine and
+  the same constants, because a formula whose clauses have at most $k'$
+  literals has at most $k$. \texttt{ExactCountAndSat.subexpCount} unpacks
+  the ``for every $k \ge 2$'' form.
+\item \textbf{The bound is what it is.} \texttt{runtimeBound\_eq}: the
+  wrapper \texttt{runtimeBound} $C\,A\,d\,L\,n$ unfolds, by definition, to
+  $C\,(L+1)^d\,2^{A\cdot\rhon}$, the formula Section~\ref{sec:statement}
+  reads. The proof is \texttt{rfl}: the two sides are the same term.
+\item \textbf{The exponent is $o(n)$.} \texttt{tendsto\_log\_sq\_div\_sqrt}
+  says $(\ln y)^2/\sqrt{y} \to 0$ as $y \to \infty$, and
+  \texttt{runtimeScale\_isLittleO} says that $\rhon/n \to 0$ as
+  $n \to \infty$, that is, $\rhon = o(n)$ \leanref{rho-little-o}. This
+  is the limit fact that Sections~\ref{sec:statement},
+  \ref{sec:beyond} and \ref{sec:consequences} cite: in the limit the
+  exponent is smaller than $n$ by any factor one names. It is true at the
+  same time as the title's fact that $\rhon > n$ for every
+  $50 \le n < e^{5504}$, and the Lean says nothing about where the limit
+  begins to bite. \texttt{isSubexpExponent\_runtimeScale} is the same
+  statement for $A \cdot \rhon$, for every constant $A$
+  \leanref{is-subexp-exponent}.
+\item \textbf{The time bound is a bound on the plain machine.}
+  \texttt{Trace.config\_of\_locatedStep}: the comparator states its time
+  bound on the \emph{located} step, which records visited cells beside
+  each configuration. A run of the located step projects to a run of the
+  plain step with the same number of steps, so the bound is a bound on
+  the machine itself \leanref{trace-projection}. The one-line
+  \texttt{LocatedCfg.monitor\_config} is its helper.
+\end{itemize}
+
+\subsection{The axiom audit}
+\label{sec:lean-audit}
+
+Lean records, for every proved statement, the axioms its proof uses.
+Three are standard in Mathlib and in every proof of Sections~\ref{sec:proof}
+and \ref{sec:replay}: \texttt{propext}, \texttt{Classical.choice} and
+\texttt{Quot.sound}. A fourth, \texttt{sorryAx}, appears exactly when a
+proof was left out with \texttt{sorry}. The audit
+\repofile{paper3/lean/axiom_check.lean} prints the axioms of 21
+declarations: the ten copied definitions the statement rests on, the two
+defs, and the nine lemmas and helper definitions, in the pattern of our
+first paper's audit. It is run from our library's directory as
+\begin{verbatim}
+cd lean && lake env lean ../paper3/lean/axiom_check.lean \
+  > ../paper3/lean/axiom_check.log
+\end{verbatim}
+and the log is committed. The result: nineteen lines on exactly the three
+standard axioms; \texttt{Trace} on no axiom at all (it is an inductive
+definition); \texttt{countWord} on two of the three; \texttt{sorryAx} on
+none. The library it runs against is built with Lean~4.34.0-rc2 and
+Mathlib at \texttt{1192d624}, neither of which is what the clone pins
+(Lean~4.34.1, Mathlib \texttt{d13f23b7}, Section~\ref{sec:proof}). That
+the copied model elaborates unchanged against a different toolchain and a
+different Mathlib revision is small evidence that it rests on nothing
+patched or private, and no more than that. Our whole library builds with
+no \texttt{sorry} and no axiom declaration, which the loop's gate checks
+after every session.
+
+\subsection{What this does not claim}
+\label{sec:lean-notclaim}
+
+\begin{itemize}
+\item \textbf{\(\SubexpCount\ k\) is a def of a Prop, never proved
+  here.} Its truth is OpenAI's theorem, replayed in Section~\ref{sec:replay};
+  our library neither proves it nor assumes it. Nothing in this section
+  makes the refutation more or less certain.
+\item \textbf{The copy is definitions only.} The proof is not copied,
+  and could not be: it is 3,091 modules (Section~\ref{sec:proof}). What is
+  copied is the vocabulary of the statement, so that the restatement
+  reads as the comparator does.
+\item \textbf{No Lean computation evaluates the exponent.} $\runtimeScale$
+  is defined over the real numbers with real logarithms and is marked
+  \texttt{noncomputable}; no \texttt{\#eval} can print $\rho(50)$ or
+  $\rho(50)/50$. Every number in Section~\ref{sec:statement} comes from a
+  Python script, not from Lean, and the Lean proves only the limit.
+\item \textbf{The match is textual.} ``Character for character'' means
+  the normalised texts are equal; it is not a check at the level of
+  \texttt{lean4export}, and it rests on the clone being the repository at
+  the commit named.
+\item \textbf{The lemmas are trivial on purpose.} They fix the shape of
+  the bound and the limit of the exponent, and nothing else. No theorem
+  about any machine's running time, about the constants, or about the
+  manuscript's sharper exponents is stated, because none is verified.
+\item \textbf{The directory name is not a citation.} The files sit in a
+  directory named for another study of ours; nothing from that study
+  enters this paper, and the owner's decision to leave them in place is
+  recorded, not argued.
+\end{itemize}
+\endgroup

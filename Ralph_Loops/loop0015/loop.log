@@ -28,3 +28,8 @@
 [2026-11-05 04:35:24] claude session it06 (cap 4.00 h) -> session_it06.log
 [2026-11-05 05:14:51] session it06: ok (exit 0, 56 tool calls)
 [2026-11-05 05:26:07] tests passed: GATE PASS
+[2026-11-05 05:26:07] committed 95eb564a0: 06 For the practitioner: SAT solvers and model counters against the ve
+[2026-11-05 05:26:07] === iteration 7: 07 The companion Lean: our restatement, axiom-audited.
+[2026-11-05 05:26:07] claude session it07 (cap 4.00 h) -> session_it07.log
+[2026-11-05 05:46:53] session it07: ok (exit 0, 32 tool calls)
+[2026-11-05 05:58:09] tests passed: GATE PASS

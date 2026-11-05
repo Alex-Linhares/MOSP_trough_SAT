@@ -57,7 +57,7 @@ statement_audit.md` and `proof_audit.md` (2026-11-05). The plan is
 | `latex/` | the paper: `main.tex` (title verbatim, abstract, section inputs), `sec*.tex`, `refs.bib`, `Makefile` (`make`, `make check`), `figures/`, `tables/` |
 | `scripts/` | every number's regenerate script (`runtime_scale.py`, `practitioner.py`, …), written by the items |
 | `replay/` | the sandboxed replay: `README.md` with the exact commands, `logs/` (full logs git-ignored, hashes committed) |
-| `lean/` | `README.md` pointing at `lean/MOSPFormalization/ETH/` and `axiom_check.lean` with its log |
+| `lean/` | `README.md` pointing at the companion Lean (`lean/MOSPFormalization/SubexpPathwidth/{PrimitiveMachine,Frame}.lean`, left in place by the owner's decision S3), `axiom_check.lean` with its committed `axiom_check.log`, and `rediff.log` (the byte-level re-diff of the copy, written by `scripts/lean_rediff.py`) |
 | `refuter/` | item 10's refuter report |
 | `ETH_AMBIGUOUS.MD` | every question the loop could not settle, one entry each, for the owner |
 
@@ -193,6 +193,25 @@ clone.)*
   instance; nothing under `solutions/`. The two counters were installed
   from PyPI for this section (`pip install pyganak`; `pyapproxmc` was
   already present); no counter binary is on the host.
+
+- **Section 8, the statement in our Lean** (item 07): `python3 -I
+  paper3/scripts/lean_rediff.py` (from the repository root; `--check`
+  verifies without writing) re-diffs the copy — our
+  `lean/MOSPFormalization/SubexpPathwidth/PrimitiveMachine.lean` lines 31–221
+  against the clone's comparator file lines 1–190 followed by 220, byte for
+  byte (identical, 191 lines each side), with the clone's SHA-256
+  (`4183b205…`) and commit (`4eaee875`) — and the restatement — the body of
+  `SubexpCount` (Frame.lean 85–107) against the comparator theorem's body
+  (clone 195–217): identical after whitespace normalisation (1,073
+  characters) and line by line after stripping indentation (23 lines) — and
+  counts `sorry` and `axiom` declarations in our two files (zero and zero;
+  the clone's one `sorry` at line 218 is outside the copied range); log
+  `paper3/lean/rediff.log`. The axiom audit is `cd lean && lake env lean
+  ../paper3/lean/axiom_check.lean > ../paper3/lean/axiom_check.log` (21
+  declarations: 19 on exactly `[propext, Classical.choice, Quot.sound]`,
+  `Trace` on none, `countWord` on two of the three, `sorryAx` on none; Lean
+  4.34.0-rc2, Mathlib `1192d624`, our library's toolchain). `paper3/lean/README.md`
+  lists the files, the line of every cited name and both logs.
 
 ## The replay
 
