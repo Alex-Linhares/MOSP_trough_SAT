@@ -192,17 +192,17 @@ nothing unfair in it. What the title asserts, made precise:
 | 12 | Reserve: the nanoda replay if item 01 could not do it, or whichever item ended short | 11 | — | 4 h |
 
 Twelve items; the replay at its cap, the rest at loop0012–14's rate.
-**Estimate 20–30 hours wall, $400–700**; the owner's budget is $2,500
+**Estimate 20–30 hours wall, $400–700**; the owner's budget is $4,000
 (§0.6).
 
 ### 0.6 The budget rule
 
-**$2,500 for the whole loop** (owner, 2026-11-05). `budget_watch.py`
+**$4,000 for the whole loop** (owner, 2026-11-05). `budget_watch.py`
 (cloned from loop0014) sums, every five minutes, the **last** `# result`
 line of every `session_*.log` — `total_cost_usd` is cumulative within a
 session, so the last line is the session's cost and summing the lines
 would overcount — writes `budget.txt`, and sets `knobs.json` `stop: true`
-when the sum passes $2,500; the driver re-reads the knobs before every
+when the sum passes $4,000; the driver re-reads the knobs before every
 session and finishes the current iteration before stopping. A session
 that exceeds its wall-clock cap is killed by the driver and its item
 marked `[!]`; a session that ends on an API error is retried once.

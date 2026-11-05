@@ -99,7 +99,7 @@ reduction or width material enters it.
 - **Nothing under `solutions/` is ever written; no run on any MOSP
   instance; no pathwidth run.** Item 06's only compute is on random 3-CNF
   formulas it generates. The gate checks `solutions/` is untouched.
-- **Budget: $2,500 for the whole loop** (owner, 2026-11-05), tracked by
+- **Budget: $4,000 for the whole loop** (owner, 2026-11-05), tracked by
   `budget_watch.py` from the last `# result` line of each session log; it
   sets `knobs.json` `stop` past the budget. It is there so that the replay
   can take its 8 hours and the refuter pass can be thorough, not for

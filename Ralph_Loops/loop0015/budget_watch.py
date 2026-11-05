@@ -4,7 +4,7 @@ import json, re, time, os, sys
 from pathlib import Path
 HERE = Path(__file__).resolve().parent
 LOG, KNOBS, PIDFILE = HERE / "loop.log", HERE / "knobs.json", HERE / "driver.pid"
-BUDGET = 2500.0  # owner, 2026-11-05: $2,500 for loop0015
+BUDGET = 4000.0  # owner, 2026-11-05: $2,500 for loop0015
 driver = int(PIDFILE.read_text()) if PIDFILE.exists() else int(sys.argv[1])
 while True:
     # `total_cost_usd` is cumulative within a session (one session_id, re-woken after each
