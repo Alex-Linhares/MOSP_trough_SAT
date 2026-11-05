@@ -1,6 +1,46 @@
-% Acknowledgements, with the disclosure of AI use in paper 1's form (item 11).
+% Acknowledgements, with the disclosure of AI use in paper 1's form
+% (paper1/latex/sec8_ack.tex), written by item 11 on 2026-11-05. The
+% software versions are those the sections record (Section 5 the replay,
+% Section 7 the measurement, Section 8 our library).
 \section*{Acknowledgements}
 \addcontentsline{toc}{section}{Acknowledgements}
 
-\placeholder{Item 11 writes the acknowledgements, with the disclosure of AI
-use in the form of \repofile{paper1/latex/sec8_ack.tex}.}
+\paragraph{Use of AI tools.} Much of this work was carried out with Claude
+Code (Anthropic), an AI coding assistant running Claude models. Under the
+author's direction it wrote the scripts, the companion Lean files and the
+drafts of the text, ran the sandboxed replay and the measurement, read
+the manuscript and the Lean sources, and searched the few texts
+Section~\ref{sec:related} names. The author chose the question, fixed
+the title and the stance, directed the work, read the results and takes
+full responsibility for the content of this paper. We did not take the
+AI's word for any result. The verified statement is what the Lean kernel
+and, in our replay, a second checker written independently of Lean
+accept (Section~\ref{sec:replay}); every number in the paper is printed
+by a script that a reader can run (the data statement above); every
+quotation carries the page and line, or the file and line, where it can
+be read; and the whole paper was read once more, against the clone, the
+extract, the audits and the logs, by a second session of the same
+assistant that had seen none of the drafts' sources, whose findings and
+what was done about each are on record
+(\repofile{paper3/refuter/README.md}). ``People who checked'', in
+Section~\ref{sec:intro}, means the author and that assistant.
+
+\paragraph{The object of the paper.} The theorem, the proof and the
+manuscript this paper reads are OpenAI's
+\citep{OAI:The-Exponential-Time-Hypothesis-is-False-October-25-2026},
+published under the Apache-2.0 licence in a collection whose checking
+tool \citep{LeanComparator} and scope notes made the exact reading
+possible. Nothing in this paper is a claim of a flaw in that work.
+
+\paragraph{Software.} The replay used the Lean release the collection
+pins, Lean~4.34.1 \citep{MouraUllrich2021}, with the Mathlib library
+\citep{Mathlib2020} at the revision the collection pins, inside the
+\texttt{bwrap} sandbox Section~\ref{sec:replay} describes; the second
+checker was \texttt{nanoda\_lib} \citep{Nanoda} on an export written by
+\texttt{lean4export} \citep{Lean4Export}. Our own library builds with
+Lean~4.34.0-rc2 and Mathlib (Section~\ref{sec:lean}). The measurement
+used CaDiCaL~1.9.5 \citep{Biere2024CaDiCaL} through PySAT
+\citep{Ignatiev2018PySAT}, Ganak~2.8.0 \citep{Sharma2019Ganak} and
+ApproxMC~4.4.0 \citep{Chakraborty2013ApproxMC, Soos2019BIRD}. The
+bibliography's DOIs were checked against Crossref and DataCite
+(\repofile{paper3/latex/doi_check.log}).

@@ -1,5 +1,8 @@
 # Audit of the PROOF of `exact_count_and_sat` (openai/math family 378)
 
+> **Superseded counts (paper 3, item 11, 2026-11-05).** This is a dated scratch record written before Ralph loop0015 and is left as written. Four counts below have since been corrected by the paper (`paper3/ETH_AMBIGUOUS.MD` 04a, 04b, 04d, 04e; paper 3 Section 4, `paper3/scripts/proof_inspection.py`): the statement match is **35 definitions compared, 33 identical, 2 identical up to `noncomputable def` / `noncomputable section`**, not "all 33"; the comparator theorem's statement starts at challenge line **194** (= `Final.lean` 74), not 181; the manifest has **42** packages, not 41; `#print axioms` sits in **8 closure files / 19 commands** (17 files / 35 commands over the family directory, 9 of them never built), and `enable_nanoda: false` is on **413** of 418 JSONs, not 416. The replay (paper 3 Section 5) has since moved the "no build, no recorded axioms, no second kernel" items of the verdict's trust boundary; the comparator run itself remains unreproduced. Everything else here stands.
+
+
 Scope: the Lean proof of `OAI.Algorithms.SubexponentialSAT.SqrtLogSpace.exact_count_and_sat`
 in the read-only clone `/home/al/dev/untrusted/openai-math` (all paths below are relative
 to its `lean/` directory). Method: inspection only — `grep`/`sed`/`python3 -I` over the

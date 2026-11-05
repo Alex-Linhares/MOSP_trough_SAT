@@ -1,0 +1,27 @@
+# 2026-11-05 paper3/latex/refs.bib
+--   OAI:The-Exponential-Time-Hypothesis-is-False-October-25-2026 no DOI (misc; see its comment)
+ok    ImpagliazzoPaturi2001        crossref 10.1006/jcss.2000.1727
+ok    ImpagliazzoPaturiZane2001    crossref 10.1006/jcss.2001.1774
+--   SienickiSienicki2026         no DOI (misc; see its comment)
+--   LeanComparator               no DOI (misc; see its comment)
+--   Nanoda                       no DOI (misc; see its comment)
+--   Lean4Export                  no DOI (misc; see its comment)
+--   Landrun                      no DOI (misc; see its comment)
+--   Dinur2016                    no DOI (techreport; see its comment)
+ok    ManurangsiRaghavendra2017    datacite 10.4230/LIPIcs.ICALP.2017.78
+ok    Chalermsook2020              crossref 10.1137/18M1166869
+ok    Carmosino2016                crossref 10.1145/2840728.2840746
+ok    Dell2014                     crossref 10.1145/2635812
+ok    Cygan2016                    crossref 10.1145/2925416
+ok    Williams2016                 datacite 10.4230/LIPIcs.CCC.2016.2
+ok    Biere2024CaDiCaL             crossref 10.1007/978-3-031-65627-9_7
+ok    Ignatiev2018PySAT            crossref 10.1007/978-3-319-94144-8_26
+ok    Sharma2019Ganak              crossref 10.24963/ijcai.2019/163
+ok    Chakraborty2013ApproxMC      crossref 10.1007/978-3-642-40627-0_18
+ok    Soos2019BIRD                 crossref 10.1609/aaai.v33i01.33011592
+ok    Selman1996Hard               crossref 10.1016/0004-3702(95)00045-3
+known Mertens2006Threshold         crossref 10.1002/rsa.20090 (year: bib 2006, crossref 2005)
+     registry: 'Threshold values of random <i>K</i>‐SAT from the cavity method' / Mertens; accepted: Crossref's title carries HTML italic tags around K; the words agree (year 2005 is the online-first year, the volume is 2006)
+ok    MouraUllrich2021             crossref 10.1007/978-3-030-79876-5_37
+ok    Mathlib2020                  crossref 10.1145/3372885.3373824
+24 entries, 17 with a DOI, 0 disagree

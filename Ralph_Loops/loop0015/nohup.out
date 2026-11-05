@@ -53,3 +53,8 @@
 [2026-11-05 07:46:35] claude session it11 (cap 4.00 h) -> session_it11.log
 [2026-11-05 08:25:53] session it11: ok (exit 0, 98 tool calls)
 [2026-11-05 08:37:07] tests passed: GATE PASS
+[2026-11-05 08:37:07] committed 1e85aee13: 10 Full build and refuter pass.
+[2026-11-05 08:37:07] === iteration 12: 11 The write-up around the paper.
+[2026-11-05 08:37:07] claude session it12 (cap 4.00 h) -> session_it12.log
+[2026-11-05 09:00:12] session it12: ok (exit 0, 39 tool calls)
+[2026-11-05 09:11:29] tests passed: GATE PASS

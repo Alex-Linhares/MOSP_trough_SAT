@@ -20,6 +20,13 @@
   "title": "Which Problems Have Strongly Exponential Complexity?",
   "year": 2001
  },
+ "10.1007/978-3-030-79876-5_37": {
+  "fetched": "2026-11-05",
+  "first_author": "Moura",
+  "registry": "crossref",
+  "title": "The Lean 4 Theorem Prover and Programming Language",
+  "year": 2021
+ },
  "10.1007/978-3-031-65627-9_7": {
   "fetched": "2026-11-05",
   "first_author": "Biere",
@@ -75,6 +82,13 @@
   "registry": "crossref",
   "title": "On Problems as Hard as CNF-SAT",
   "year": 2016
+ },
+ "10.1145/3372885.3373824": {
+  "fetched": "2026-11-05",
+  "first_author": "The mathlib Community",
+  "registry": "crossref",
+  "title": "The lean mathematical library",
+  "year": 2020
  },
  "10.1609/aaai.v33i01.33011592": {
   "fetched": "2026-11-05",

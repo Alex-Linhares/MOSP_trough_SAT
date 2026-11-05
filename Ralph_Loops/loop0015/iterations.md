@@ -330,7 +330,7 @@ Every item drafts its section in `paper3/latex/sec*.tex`, ends it with
   fixed. The refuter's report goes to `paper3/refuter/README.md` and the
   fixes are listed in PROGRESS.md.
 
-- [ ] **11 The write-up around the paper.**
+- [x] **11 The write-up around the paper.**
   `paper3/README.md` complete (title verbatim first; what the paper is;
   how to build; how to regenerate every number, section by section; the
   replay's status and its logs' hashes; the Lean names; the open entries

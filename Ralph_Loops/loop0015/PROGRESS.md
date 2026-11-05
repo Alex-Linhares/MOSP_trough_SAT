@@ -8,7 +8,7 @@ limitation of the ETH refutation and nothing else. Gate:
 `python3 Ralph_Loops/loop0015/gate.py`. Open questions for the owner:
 `paper3/ETH_AMBIGUOUS.MD`.
 
-Current: 11/13 SOLVED (item 08x added to the list on 2026-11-05)
+Current: 12/13 SOLVED (item 08x added to the list on 2026-11-05; item 12, the reserve, is the only one open)
 
 ## Setup — 2026-11-05
 
@@ -1028,3 +1028,98 @@ Current: 11/13 SOLVED (item 08x added to the list on 2026-11-05)
   (exit 0; `lake build` ok, 0 sorry; pytest 1,978 passed, 2 skipped,
   1 xfailed in 4:36; pathwidth_solver 123 passed in 6:33; paper 1 builds
   at 78 pages, paper 3 at 62; title verbatim; `solutions/` untouched).
+
+
+---
+
+## Iteration 12 — 2026-11-05 08:37 (item 11, the write-up around the paper) `[x]`
+
+### Completed
+- **`paper3/README.md` complete** (530 lines; title verbatim first):
+  what the paper is, section by section with the numbers each section
+  owns; the layout; how to build; **how to regenerate every number**,
+  with a six-script `--check` loop at the top and one paragraph per
+  section (Sections 2–9, 1 and 10, the data statement, the bibliography,
+  the refuter pass); **the replay's status and hashes** (both kernels;
+  the eight SHA-256 values of `replay/logs/run2/hashes.txt`,
+  `build_main_sha256.txt` and `nanoda/export_sha256.txt`, the two HEADs,
+  what the replay does not cover); **the Lean names** (the 21 audited
+  declarations in three groups, the exact ten copied names from
+  `axiom_check.lean`, the audit result); **every `ETH_AMBIGUOUS.MD` entry
+  by number** — 59 on the day (S1–S8, 01a–10d, 11a–11g), sorted as the
+  paper's §10.2 sorts the first 48 (resolved 7; procedural or carried
+  12; open and affecting the text 36, fourteen bibliographic or
+  typographic), one clause each; and **the CLAUDE.md paragraph**
+  drafted in the last section as a replacement for the existing
+  "Paper 3, title fixed by the owner" paragraph, **not applied**.
+- **The two placeholder sections written** (the refuter's R17, 10d):
+  `sec11_data.tex` in paper 1's form (the repository and licence, what
+  it holds in six items, the clone's commit and licence, what a reader
+  needs to repeat the replay, "what this does not claim"); `sec12_ack.tex`
+  with the AI-use disclosure in paper 1's form — the four independent
+  checks, the refuter named as "a second session of the same assistant
+  that had seen none of the drafts' sources", "people who checked" =
+  the author and that assistant (09d) — the object-of-the-paper
+  paragraph, and the software paragraph with versions from Sections 5,
+  7 and 8. Two `refs.bib` entries (Lean 4, Mathlib) copied from paper
+  1's bibliography; `check_refs.py` re-run: 24 entries, 17 with a DOI,
+  0 disagree, log of record rewritten. `make -C paper3/latex check`
+  passes: **64 pages (62 before), zero overfull boxes** (one from the
+  new section fixed by rewording; `\texttt{-{}-check}` for the flag).
+  Rendered text of both sections read back from the PDF.
+- **The audits annotated, not edited** (R19, 10d): a dated block-quote
+  note under the title of `reports/scratch/eth_audit/statement_audit.md`
+  (416 → 413) and `proof_audit.md` (33 → 35/33/2, line 181 → 194, 41 →
+  42, 17 files → 8 closure files / 19 commands, 416 → 413, the
+  trust-boundary items the replay moved), each pointing at the entry
+  numbers and `proof_inspection.py`.
+- **`reports/paper3_plan.md` §0 updated**: annotated in italics where
+  overtaken (the header's "Not launched"; 64 → 67 pages, 03b; the Lean
+  left in place, 07a, in §0.3 and §0.4.7; `-j 8` → `taskset`, 01a, in
+  §0.4.5; the worker cap lifted, §0.4.10; the estimate against the
+  actual 6.5 h / $133, §0.5) and a new **§0.9 "What was done"**, one
+  past-tense paragraph per item with its gap, where §0.4 was found
+  wrong, and how each risk of §0.7 came out.
+- **Two things found on the way**: `budget_watch.py`'s comment said
+  $2,500 beside `BUDGET = 4000.0` (comment corrected, code unchanged,
+  11c); and `paper3/.gitignore`'s `latex/*.log` rule had kept item 10's
+  `doi_check.log` — the run of record the paper cites — out of every
+  commit (`!latex/doi_check.log` added, so the driver's `git add -A`
+  takes it; 11g).
+- **Verified before writing**: the README's six-script check loop run
+  as the README gives it (all six `ALL CHECKS PASSED`), `counts.sh`
+  reproducing `counts.txt` line for line, the scope grep over the two
+  new sections (only the repository URL and the directory path carry
+  the words), the abstract recounted at 198 words (the README had said
+  197).
+- `ETH_AMBIGUOUS.MD` entries 11a–11g (the data statement's URL and
+  licence from paper 1; the disclosure's wording and the refuter
+  sentence; the audits annotated and the budget comment; the eleven
+  later entries listed in the README only, §10.2 unchanged; the
+  CLAUDE.md paragraph as a replacement, not applied; the plan annotated
+  and extended, not rewritten; the two bibliography entries copied and
+  the ignore rule).
+- Nothing under `solutions/` touched; no MOSP or pathwidth run; nothing
+  of the clone executed (the check scripts read it with `open()`); the
+  only network access was Crossref for the two new DOIs; no subagent
+  used.
+
+### Blockers
+- None.
+
+### Next
+- **Item 12 (the reserve)**: nanoda is not needed (item 01 ran it). What
+  remains open for it, if the owner wants it: the second plain-English
+  pass over the ~40 sentences of 46–58 words that 10c lists by section;
+  optionally adding entries 10a–11g to the paper's §10.2 (11d), which
+  means re-counting its sentences. Otherwise the loop is complete
+  except for that mark.
+- For the owner: fold the CLAUDE.md paragraph from `paper3/README.md`'s
+  last section (11e); the 36 open entries in the README, by number.
+- Gate: `python3 Ralph_Loops/loop0015/gate.py` **GATE PASS** at 08:59
+  (started 08:44 under `nice -n 19`; tail:
+  `lake build: ok` · `sorry in code: 0 (limit 0): []` ·
+  `1978 passed, 2 skipped, 1 xfailed, 180 warnings in 278.45s (0:04:38)` ·
+  `123 passed in 392.02s (0:06:32)` · paper 1 `no undefined references;
+  Pages: 78` · paper 3 `no undefined references; Pages: 64` ·
+  `GATE PASS` · `exit 0`; title verbatim; `solutions/` untouched).

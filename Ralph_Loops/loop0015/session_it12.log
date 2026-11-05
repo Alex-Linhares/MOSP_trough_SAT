@@ -1,0 +1,131 @@
+# session it12 started 2026-11-05 08:37:07
+
+⚠ claude.ai connectors are disabled because ANTHROPIC_API_KEY or another auth source is set and takes precedence over your claude.ai login · Unset it to load your organization's connectors
+
+I'll start by reading the current state of the files this item touches: `paper3/README.md`, `paper3/ETH_AMBIGUOUS.MD`, `reports/paper3_plan.md`, and the refuter's notes on placeholders.
+  > $ date && cat Ralph_Loops/loop0015/iterations.md && echo ---- && wc -l paper3/README.md paper3/ETH_AMBIGUOUS.MD reports/paper3_plan.md && ls paper3 paper3/latex p
+  > $ cat paper3/README.md
+  > $ cat paper3/ETH_AMBIGUOUS.MD
+  > $ grep -n '^### \|^## ' paper3/ETH_AMBIGUOUS.MD; echo ====; sed -n '/^## Owner resolutions/,/^## Entries/p' paper3/ETH_AMBIGUOUS.MD | head -80
+  > $ cat reports/paper3_plan.md
+  > $ echo "=== sec10 §10.2" && sed -n '/subsection{.*ledger\|subsection{.*entries\|subsection{.*ETH_AMBIG\|subsection{.*open/,$p' paper3/latex/sec10_conclusion.tex |
+  > $ echo "=== paper1 ack"; cat paper1/latex/sec8_ack.tex; echo "=== paper1 data stmt"; grep -ln 'Data, code' paper1/latex/*.tex; f=$(grep -l 'Data, code' paper1/lat
+  > $ echo "=== 10a-10d"; sed -n '816,911p' paper3/ETH_AMBIGUOUS.MD; echo "=== refuter R17 R19"; grep -n -A12 'R17\|R19' paper3/refuter/README.md | head -80
+  > $ echo "=== replay hashes"; grep -n -i 'sha-256\|sha256\|^[0-9a-f]\{64\}' paper3/replay/README.md | head -40; echo "=== counts.txt"; cat paper3/replay/logs/run2/c
+  > $ echo "=== hashes.txt"; cat paper3/replay/logs/run2/hashes.txt; echo "=== export sha"; cat paper3/replay/logs/nanoda/export_sha256.txt; echo "=== build sha"; cat
+  > $ echo "=== paper1 bib Lean/Mathlib"; grep -n -A10 '^@.*MouraUllrich2021\|^@.*Mathlib2020' paper1/latex/refs.bib; echo "=== budget"; grep -n 'BUDGET' Ralph_Loops/
+  > $ sed -n '/begin{abstract}/,/end{abstract}/p' paper3/latex/main.tex | grep -v '^%' | grep -v 'begin{abstract}\|end{abstract}\|noindent' | sed 's/\\emph{\([^}]*\)}
+  > $ cat > paper3/latex/sec11_data.tex <<'EOF'
+% The data, code and proofs statement, in paper 1's form (item 11, 2026-11-05).
+% Every path is in the repository; eve
+  > $ python3 - <<'EOF'
+from pathlib import Path
+s = Path("reports/scratch/eth_audit/statement_audit.md")
+p = Path("reports/scratch/eth_audit/proof_audit.md")
+note_s 
+
+Now the three remaining independent writes: the full `paper3/README.md`, the plan's §0, and the ledger entries 11a–11g.
+  > $ cat > paper3/README.md <<'EOF'
+Exponential time hypothesis is false... but the verified algorithm is slower than trying all 2^n assignments at every practical s
+  > $ grep -n 'print axioms' paper3/lean/axiom_check.lean; echo ===; cat paper3/lean/axiom_check.log
+
+Now the three independent edits: the README's exact ten names and the count sentence, the plan's §0, and the ledger entries.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("paper3/README.md"); t = p.read_text()
+old = "| the copied vocabulary (ten) | `SAT.count`, `SAT.WidthAtMost`
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/paper3_plan.md"); t = p.read_text()
+def rep(old, new):
+    global t
+    assert old in t, old[:60]
+ 
+
+The plan script failed on one string before writing anything, so nothing changed. I need the exact wording of the `-j 8` passage in the plan; the ledger append does not depend on it, so both go now.
+  > $ grep -n -B1 -A2 '\-j 8' reports/paper3_plan.md
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/paper3_plan.md"); t = p.read_text()
+def rep(old, new):
+    global t
+    assert old in t, old[:60]
+ 
+
+The plan is updated. Next three are independent: the ledger entries, a paper build to check the two new sections and bibliography entries, and the DOI check for the two added references.
+  > $ cat >> paper3/ETH_AMBIGUOUS.MD <<'EOF'
+
+### 11a — the data statement's repository URL and licence are paper 1's (item 11, 2026-11-05)
+- **Ambiguous**: the data 
+
+Fifty-nine entries, as the README says. Now the paper build and the DOI check, which are independent of each other.
+  > $ make -C paper3/latex check 2>&1 | tail -6; grep -c 'Overfull' paper3/latex/main.log; grep -i 'undefined\|Warning--' paper3/latex/main.log paper3/latex/main.blg 
+  > $ timeout 600 python3 paper3/scripts/check_refs.py 2>&1 | tail -8
+
+The paper now builds at 64 pages with one overfull box. I need its location, whether the DOI log of record was rewritten, and the rendered text of the new sections to proofread. All independent.
+  > $ grep -n -B2 -A3 'Overfull' paper3/latex/main.log | head -20; echo "=== doi log"; ls -la paper3/latex/doi_check.log; tail -2 paper3/latex/doi_check.log; grep -n 
+
+Two independent things: fix the overfull line in the data statement and rebuild, then proofread the rendered last pages; and rewrite the DOI log of record from the cached run.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("paper3/latex/sec11_data.tex"); t = p.read_text()
+old = """\\item the record of every question the writing c
+  > $ pdftotext paper3/latex/main.pdf - | awk '/^Data, code and proofs$/{f=1} f{print} /^Software\./{n++} n && /DataCite/{exit}' | tail -n +1 | head -90
+  > $ grep -ho 'texttt{[^}]*check}' paper3/latex/sec[2-9]*.tex | sort | uniq -c; grep -o '\\texttt{.\{0,8\}regenerate}' paper3/latex/sec7_practitioner.tex | head -2
+  > $ grep -n -- '-check\|-regenerate' paper3/latex/sec*.tex | head -8
+  > $ sed -i 's/\\texttt{--check}/\\texttt{-{}-check}/' paper3/latex/sec11_data.tex && grep -c -- '-{}-check' paper3/latex/sec11_data.tex && python3 paper3/scripts/ch
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("reports/paper3_plan.md"); t = p.read_text()
+old = "  before the summary; the conclusion's §10.2 sorting of 
+  > $ nice -n 19 python3 Ralph_Loops/loop0015/gate.py > /tmp/gate_it12.log 2>&1; echo "exit $?" >> /tmp/gate_it12.log
+  > $ echo "=== scope"; grep -n -i 'pathwidth\|treewidth\|MOSP\|graph' paper3/latex/sec11_data.tex paper3/latex/sec12_ack.tex; echo "(only the repository name / direc
+  > $ git ls-files paper3/latex/doi_check.log paper3/latex/main.pdf; git check-ignore -v paper3/latex/doi_check.log; git log --oneline -1 -- paper3/latex/doi_check.lo
+  > $ python3 - <<'EOF'
+from pathlib import Path
+g = Path("paper3/.gitignore"); t = g.read_text()
+old = "latex/*.log\n"
+assert old in t
+t = t.replace(old, "latex/*.lo
+
+Everything is in place except the gate's result. Checking its interim output once rather than waiting idle.
+  > $ cat /tmp/gate_it12.log; date
+
+The gate's output is buffered until it exits, so I'll wait on the file with a bounded monitor rather than ending the turn on the background job. Loading the Monitor tool first.
+  > ToolSearch {"query": "select:Monitor", "max_results": 1}
+
+Only one thing is outstanding: the gate's exit line. Arming a bounded watch on its log, re-armable if it has not finished in ten minutes.
+  > Monitor {"command": "until grep -q '^exit' /tmp/gate_it12.log 2>/dev/null; do sleep 15; done; tail -12 /tmp/gate_it12.log", "des
+
+Nothing else is independent of the gate now: the progress section needs its tail, and the item mark follows the progress section. I'll continue when the watch reports the exit line.
+
+# result: success in 741s, 38 turns, cost $7.22
+
+The gate finished. Reading its tail.
+  > $ cat /tmp/gate_it12.log; date
+
+Gate passed at 08:59. The last two steps are independent of each other: the progress section with the updated count, and the item mark. Both now.
+  > $ python3 - <<'EOF'
+from pathlib import Path
+p = Path("Ralph_Loops/loop0015/PROGRESS.md"); t = p.read_text()
+old = "Current: 11/13 SOLVED (item 08x added to the l
+
+Item 11 is done and marked; item 12 (the reserve) is the only one still open, so no `LOOP_COMPLETE` line was added.
+
+**What this iteration produced**
+
+- **`paper3/README.md` is complete.** Title verbatim first, what the paper is by section, how to build, a regenerate command beside every number with a six-script check loop at the top, the replay's status with all eight SHA-256 hashes, the 21 audited Lean names, all 59 ledger entries by number sorted into resolved (7), procedural (12) and open (36), and the CLAUDE.md paragraph drafted in the last section. That paragraph is not applied to `CLAUDE.md`.
+- **The two placeholder sections are written.** The data statement and the acknowledgements follow paper 1's form, with the AI-use disclosure naming the refuter as a second session of the same assistant. Two bibliography entries for Lean 4 and Mathlib were copied from paper 1. The paper builds at 64 pages with zero overfull boxes.
+- **The plan's §0 is updated** by annotation where it was overtaken, plus a new §0.9 with one past-tense paragraph per item and its gap.
+- **The two audits carry a dated note** of the counts the paper has since corrected, as entry 10d chose. They are not edited.
+
+**Two problems found on the way, both fixed**
+
+- The DOI check's log of record, which the paper cites, was git-ignored by the `latex/*.log` rule and had never been committed. A negation line now lets the driver pick it up.
+- The budget watcher's comment said $2,500 beside a code value of $4,000. The comment was corrected; the code is unchanged.
+
+**Verification.** The README's check loop passes on all six scripts, the replay counts reproduce line for line, and the full gate passed at 08:59 with its tail recorded in `PROGRESS.md`. Nothing under `solutions/` was touched, nothing of the clone was executed, and no subagent was used.
+
+**What is left for item 12**, if the owner wants it: the second plain-English pass over the roughly forty long sentences listed in entry 10c, and optionally folding entries 10a through 11g into the paper's §10.2.
+
+# result: success in 58s, 3 turns, cost $10.32

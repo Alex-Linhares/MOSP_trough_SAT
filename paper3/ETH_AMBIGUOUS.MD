@@ -909,3 +909,137 @@ an answer).
   (its brief already carries 04a / 04b / 04e for that).
 - **Owner may change**: have the audits edited in place instead of
   annotated.
+
+### 11a — the data statement's repository URL and licence are paper 1's (item 11, 2026-11-05)
+- **Ambiguous**: the data statement has to name where the material is.
+  The brief says "the repository" and no more; paper 1's statement
+  names `https://github.com/Alex-Linhares/MOSP_trough_SAT` under the MIT
+  licence, and paper 3's files live in that same repository under
+  `paper3/` and `lean/MOSPFormalization/SubexpPathwidth/`.
+- **Chosen**: `sec11_data.tex` names paper 1's URL and licence and the
+  two directories, lists what the repository holds section by section
+  (scripts with `--check`, the replay's scripts and hashes, the
+  companion Lean and its audit, the measurement's raw data, the audits
+  and the extract, the fetched texts, the ledger and the refuter's
+  report), says the clone is read-only at `4eaee875` under Apache-2.0,
+  and ends with a one-paragraph "what this does not claim" (the seconds
+  are one machine's; only counts, hashes and axiom lines repeat exactly).
+- **Owner may change**: a separate repository or an archived snapshot
+  (Zenodo DOI) for paper 3; a different licence for the text; the
+  repository name (paper 1's `MOSP_trough_SAT` carries a word the owner
+  asked to keep out of this paper — it appears only as the URL).
+
+### 11b — the acknowledgements disclose the assistant, and name the refuter as a second session of it (item 11, 2026-11-05)
+- **Ambiguous**: paper 1's disclosure says the AI wrote the software,
+  proofs and drafts under the authors' direction and "we did not take
+  the AI's word for any result", listing the independent checks. Here
+  the independent checks are the Lean kernel and nanoda, the scripts,
+  the located quotations, and the refuter's reading — but the refuter
+  was itself a session of the same assistant, blind to the sources.
+  Saying "an independent reader" would overstate it; saying nothing
+  would hide the one whole-paper check the paper had. Entry 09d read
+  "people who checked" as the author and the assistant.
+- **Chosen**: `sec12_ack.tex` follows paper 1's form (one author, "the
+  author's direction", full responsibility), lists the four checks, and
+  says in words that the whole paper was read against its sources "by a
+  second session of the same assistant that had seen none of the
+  drafts' sources", pointing at `paper3/refuter/README.md`; and that
+  "people who checked" means the author and that assistant (09d). A
+  second paragraph acknowledges the object of the paper (OpenAI's
+  collection, Apache-2.0, the comparator tool) and repeats the no-flaw
+  stance; a third gives the software versions the sections record,
+  with two bibliography entries for Lean 4 and Mathlib (11g).
+- **Owner may change**: the wording of the disclosure; whether the
+  refuter sentence stays; a co-author credit for the AI, if that was the
+  meaning of "keep yours if possible" in S1's resolution (09d).
+
+### 11c — the two audits annotated, not edited; the budget watcher's stale comment (item 11, 2026-11-05)
+- **Ambiguous**: 10d chose to annotate the audits rather than edit them;
+  the note's form and which counts it names were open. `budget_watch.py`
+  line 7 read `BUDGET = 4000.0  # … $2,500 for loop0015`, and the setup
+  section of `PROGRESS.md` says `BUDGET = 2500.0`; `TASK.md` and the plan
+  say $4,000, and the code used 4,000 throughout.
+- **Chosen**: one block-quoted note under the title line of each audit,
+  dated, saying the file is a dated scratch record left as written and
+  listing the counts the paper corrected with the entry numbers and the
+  script that checks them (`statement_audit.md`: 416 → 413;
+  `proof_audit.md`: 33 → 35/33/2, line 181 → 194, 41 → 42, 17 files →
+  8 closure files / 19 commands, 416 → 413, and the trust-boundary items
+  the replay moved). The comment in `budget_watch.py` was corrected to
+  $4,000 (the code is unchanged); `PROGRESS.md`'s setup line is left as
+  the record of what it said.
+- **Owner may change**: edit the audits in place and drop the notes; or
+  set the budget to the $2,500 the comment and the setup line carried,
+  if that was the intended figure.
+
+### 11d — the entries written after §10.2 are listed in the README only (item 11, 2026-11-05)
+- **Ambiguous**: the conclusion's §10.2 sorts the 48 entries written
+  before it and says in its "what this does not claim" that later
+  entries "are in the file and not here". Items 10 and 11 added eleven
+  (10a–10d, 11a–11g). Adding them to §10.2 means re-counting its
+  "forty-four … four … forty-eight … thirty-three … thirteen" sentences;
+  leaving them out keeps the conclusion as item 09 wrote and the
+  refuter read it.
+- **Chosen**: the paper's §10.2 is unchanged; `paper3/README.md`'s
+  "Open questions for the owner, by entry" lists all 59 with one clause
+  each, in §10.2's three groups (resolved 7; procedural or carried 12;
+  open and affecting the text 36, fourteen of them bibliographic or
+  typographic), with the eleven later entries sorted into the same
+  groups.
+- **Owner may change**: add the eleven to §10.2 and re-count it; or
+  move the whole list out of the paper into the README and leave §10.2
+  with the counts only.
+
+### 11e — the CLAUDE.md paragraph: one dense paragraph, replacing the existing one, not applied (item 11, 2026-11-05)
+- **Ambiguous**: `CLAUDE.md` already carries a "Paper 3, title fixed by
+  the owner (2026-11-05, no deviations)" paragraph written before the
+  loop ran, which says what the paper will be about and that loop0015
+  writes it. The brief says to draft "the CLAUDE.md paragraph" into the
+  README's last section and not apply it; whether it replaces or follows
+  the existing one, and at what length, was open.
+- **Chosen**: one paragraph in the house style of the Next Steps
+  section (bold lead, the title verbatim in italics, one dense paragraph
+  with the numbers and the file paths), drafted as a replacement for the
+  existing paragraph and saying so in its preamble; it carries what is
+  verified, the inspection, the replay, what follows, the practitioner,
+  our Lean, related work, the stance, the gaps, the cost and the three
+  rules the loop kept (the clone untrusted and never built in place
+  except in the sandbox; nothing under `solutions/`; no MOSP or pathwidth
+  run). `CLAUDE.md` itself is untouched.
+- **Owner may change**: keep both paragraphs (the plan and the result);
+  shorten the draft; fold it in elsewhere than Next Steps.
+
+### 11f — the plan's §0 annotated in place and extended by §0.9, not rewritten (item 11, 2026-11-05)
+- **Ambiguous**: the brief says "§0 updated with what was done, item by
+  item, in the past tense, with the gaps". The plan's §0.1–§0.8 is the
+  record of what was decided before the loop; rewriting it in the past
+  tense would erase what the loop was asked to do, which is what
+  `PROGRESS.md` is read against.
+- **Chosen**: the decisions are left as written and marked where they
+  were overtaken, in italics with the entry number (the manuscript's 67
+  pages, 03b; the Lean left in place, 07a, in §0.3 and §0.4.7; the
+  `-j 8` and `taskset`, 01a, in §0.4.5; the worker cap lifted, §0.4.10;
+  the estimate against the actual cost and wall clock, §0.5; the header's
+  "Not launched"); and a new §0.9 "What was done" gives one past-tense
+  paragraph per item with its gap, then where §0.4 was found wrong and
+  how each risk of §0.7 came out. §1's non-claims stand.
+- **Owner may change**: collapse §0.1–§0.8 into §0.9; or move §0.9 to
+  the top.
+
+### 11g — the Lean 4 and Mathlib references copied from paper 1's bibliography (item 11, 2026-11-05)
+- **Ambiguous**: the acknowledgements' software paragraph cites Lean 4
+  and Mathlib, which paper 3's `refs.bib` did not carry; the download
+  list does not name Crossref (10a), and `check_refs.py` queries it for
+  every entry with a DOI.
+- **Chosen**: the two entries (`MouraUllrich2021`, `Mathlib2020`) were
+  copied verbatim from `paper1/latex/refs.bib`, where their DOIs were
+  checked by paper 1's run, and re-checked here by `python3
+  paper3/scripts/check_refs.py` (the run of record
+  `paper3/latex/doi_check.log` now has 24 entries); nothing was fetched
+  beyond the two registry records.
+  Found on the way: `paper3/.gitignore`'s `latex/*.log` rule had kept
+  `doi_check.log` out of every commit, so item 10's run of record was
+  never in git; a `!latex/doi_check.log` line now lets the driver's
+  `git add -A` take it.
+- **Owner may change**: cite the Lean 4 reference manual or the Mathlib
+  repository instead of the two conference papers.

@@ -1,5 +1,8 @@
 # Statement audit: `exact_count_and_sat` (openai/math family 378, "The Exponential Time Hypothesis is False")
 
+> **Superseded counts (paper 3, item 11, 2026-11-05).** This is a dated scratch record written before Ralph loop0015 and is left as written. One count below has since been corrected by the paper: `enable_nanoda: false` is on **413** of the 418 challenge JSONs (true on 2, key absent on 3), not 416 (`paper3/ETH_AMBIGUOUS.MD` 04b; paper 3 Section 4.7, `paper3/scripts/proof_inspection.py`). Everything else here was re-verified line by line by item 02 and stands.
+
+
 Audited 2026-11-05 against the read-only clone at `/home/al/dev/untrusted/openai-math`
 (comparator file `lean/ComparatorChallenges/SubexponentialSAT.lean`, 220 lines; `S:` below
 means that file, `Sol:` the solution tree `lean/OAI/Algorithms/SubexponentialSAT/`).

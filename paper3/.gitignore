@@ -12,6 +12,9 @@ latex/*.blg
 latex/*.fdb_latexmk
 latex/*.fls
 latex/*.log
+# ... except the DOI check's run of record, which the paper cites (item 11: the
+# rule above had hidden item 10's file from `git add -A`)
+!latex/doi_check.log
 latex/*.out
 latex/*.toc
 latex/*.synctex.gz
