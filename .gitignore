@@ -77,3 +77,6 @@ reports/scratch/subexp_pathwidth/03_reductions/*.txt
 
 # loop0014 item 07: pdftotext extracts of held PDFs, regenerable (07_algorithms/README.md)
 reports/scratch/subexp_pathwidth/07_algorithms/*.txt
+# Garey & Johnson 1979, held from the owner's Zotero (2026-11-06), copyrighted book: not committed
+literature/1979-Garey-Johnson-Computers-and-Intractability-NP-Completeness.pdf
+literature/1979-Garey-Johnson-Computers-and-Intractability-NP-Completeness.djvu

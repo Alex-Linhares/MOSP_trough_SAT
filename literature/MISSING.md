@@ -655,3 +655,11 @@ setup's Crossref check.
   PySAT 2018; Ganak 2019; ApproxMC 2013; BIRD 2019; Selman, Mitchell &
   Levesque 1996; Mertens, Mézard & Zecchina 2006 — item 06). None has a
   checked DOI (`paper3/ETH_AMBIGUOUS.MD` 05c, 06c, 08c).
+
+## Held but not committed (copyright)
+
+- **Garey & Johnson (1979), *Computers and Intractability: A Guide to the Theory of
+  NP-Completeness*.** PDF and DjVu copied from the owner's Zotero on 2026-11-06 into
+  `literature/1979-Garey-Johnson-Computers-and-Intractability-NP-Completeness.{pdf,djvu}`,
+  git-ignored. The reference for every NP-completeness citation in the papers (problem
+  numbers GT.., SR.., and the bandwidth / linear arrangement entries).

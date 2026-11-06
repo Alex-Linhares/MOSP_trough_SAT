@@ -2,6 +2,20 @@
 
 Started 2026-10-09. Check items off as they are done.
 
+## Members of the pathwidth complex still to find (owner, 2026-11-06)
+
+- [ ] **Look for problems that also belong to the pathwidth complex** — problems in
+  the literature equal to pathwidth or within a fixed offset or band of it that
+  Table 1 and the three members added in paper 1 (wavefront, progressive
+  pebbling, vertex search) do not list. The owner can point to some; start from
+  Garey & Johnson (1979, now held) for the layout, arrangement and search
+  problems, from the vertex-separation / node-search / interval-thickness
+  literature of paper 1's Section 2, and from `paper2/complex_members.md`.
+  Each candidate gets the Instance / Question form of
+  `paper1/problem_transformations.md`, a transformation proved on paper and
+  checked by `paper1/complex_check.py` on small instances, and only then a
+  Lean statement in `lean/MOSPFormalization/Complex/`.
+
 ## Before posting on arXiv
 
 Done 2026-10-19: the source bundle builds and compiles standalone
