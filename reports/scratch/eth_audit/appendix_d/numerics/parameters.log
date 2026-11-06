@@ -1,0 +1,46 @@
+== Thresholds implied by the fixed constants (exact integer arithmetic) ==
+  u_0 = floor(eps*lambda) >= 1 needs lambda >= 131072 = 2^17, i.e. s > 2^131071
+  (D.5) u_0 >= lambda^(4/5) needs lambda >= eps^-5 = 2^85 = 38685626227668133590597632, i.e. s > 2^(2^85 - 1)
+  (D.5) D_arr = r^(2a) = 2^(12a) <= s^(1/1000): with a <= 4 eps lambda the exponent ratio is 48/131072 = 0.000366 <= 1/1000: holds for all s once a <= 4 eps lambda (note r^(2a), not r*2^a)
+  depth: H < C s 8^-d  <=>  8^d < C floor(sqrt(lambda))  <=>  d < log2(lambda)/6 + log2(C)/3  (consistent)
+  Lemma D.3 child size: 6M/r with r = 64 is 6/64 = 3/32 = 0.09375 < 1/8 = 0.12500: consistent
+  at lambda = 2^17: u_0 = 1, a_0 = 2, L = 4, D_arr = 16777216 = 2^24, 2 D_arr^2 Delta = 2^49 * s^0.9; H ~ s/362; (D.6) M >= 2 D_arr^2 Delta needs s^0.1 >= 2^49 * 362, i.e. s >= 2^575: fine at s ~ 2^131072
+== (D.15): number of exponent tuples at depth 0, with the parameters of (D.4) ==
+  (M = number of wires at the root; p = root precision n+1; i = 0 node, D = L = 2^{a_0}; h = ceil(3M/u_0))
+  Columns: lambda, u_0, a_0, p_t/M, N per weight = 6M/D, the text's estimate exp(theta p_t + (6M/D) sum_j -ln(1-e^{-theta j})) in bits per wire at its optimal theta (= 2 pi sqrt(M p_t/D)), at the text's theta = sqrt(M/(D p_t)), its numeric minimum, and a rigorous lower bound on the tuple count (weight-1 modes only, C(N+p_t-1, N)) in bits per wire
+  lambda=2^17  u_0=1        a_0=2         p_t/M=       120 N/M=       1.5 bound(opt theta)=  49.654 bits/wire (text's theta   85.899; numeric min   45.542); weight-1 lower bound=  11.661 bits/wire
+  lambda=2^18  u_0=2        a_0=4         p_t/M=       232 N/M=     0.375 bound(opt theta)=  34.519 bits/wire (text's theta   59.716; numeric min   33.218); weight-1 lower bound=   4.019 bits/wire
+  lambda=2^20  u_0=8        a_0=16        p_t/M=  1.97e+05 N/M=  9.16e-05 bound(opt theta)=  15.706 bits/wire (text's theta   27.171; numeric min   15.705); weight-1 lower bound=   0.003 bits/wire
+  lambda=2^22  u_0=32       a_0=64        p_t/M=  1.38e+19 N/M=  3.25e-19 bound(opt theta)=   7.850 bits/wire (text's theta   13.581; numeric min    7.850); weight-1 lower bound=   0.000 bits/wire
+  lambda=2^24  u_0=128      a_0=256       p_t/M=  2.17e+76 N/M=  5.18e-77 bound(opt theta)=   3.925 bits/wire (text's theta    6.790; numeric min    3.925); weight-1 lower bound=   0.000 bits/wire
+  lambda=2^26  u_0=512      a_0=1024      p_t/M=  >1e308   N/M= 3.34e-308 bound(opt theta)=   1.963 bits/wire (text's theta    3.395; numeric min    1.963); weight-1 lower bound=   0.000 bits/wire
+  lambda=2^28  u_0=2048     a_0=4096      p_t/M=  >1e308   N/M=         0 bound(opt theta)=   0.981 bits/wire (text's theta    1.698; numeric min    0.981); weight-1 lower bound=   0.000 bits/wire
+  lambda=2^30  u_0=8192     a_0=16384     p_t/M=  >1e308   N/M=         0 bound(opt theta)=   0.491 bits/wire (text's theta    0.850; numeric min    0.491); weight-1 lower bound=   0.000 bits/wire
+  lambda=2^32  u_0=32768    a_0=65536     p_t/M=  >1e308   N/M=         0 bound(opt theta)=   0.246 bits/wire (text's theta    0.425; numeric min    0.246); weight-1 lower bound=   0.000 bits/wire
+  lambda=2^36  u_0=524288   a_0=1048576   p_t/M=  >1e308   N/M=         0 bound(opt theta)=   0.063 bits/wire (text's theta    0.109; numeric min    0.063); weight-1 lower bound=   0.000 bits/wire
+  lambda=2^40  u_0=8388608  a_0=16777216  p_t/M=  >1e308   N/M=         0 bound(opt theta)=   0.026 bits/wire (text's theta    0.044; numeric min    0.026); weight-1 lower bound=   0.000 bits/wire
+  For comparison: direct summation of a call with M wires costs 2^M = 1.000 bits/wire; the trivial 2^n
+  algorithm is 1/45 = 0.022 bits/wire for 3-CNF at density 4.26 (M ~ 45 n, computed in section_degree).
+  large-M limit of the optimised estimate: 44.41 / sqrt(u_0) bits per wire (check at M = 1e9, u = 100: 44.41)
+  estimate < 2^M (direct summation of the same call) needs u_0 > 1973, i.e. lambda >= 2.59e+08, s >= 2^2.59e+08
+  estimate < 2^n (3-CNF, m = 4.26 n, M ~ 45 n) needs u_0 > 3993421, i.e. lambda >= 5.23e+11, s >= 2^5.23e+11
+  Exact tuple counts (big-integer, small M) against the paper's bound, u_0 = 1, a_0 = 2 (lambda = 2^17 parameters):
+    M=  4: p_t=481.0, N=6 modes per weight, exact #tuples = 2^177.4  (paper's bound 2^198.8; direct summation 2^4)
+    M=  8: p_t=961.0, N=12 modes per weight, exact #tuples = 2^359.0  (paper's bound 2^397.4; direct summation 2^8)
+    M= 16: p_t=1921.0, N=24 modes per weight, exact #tuples = 2^722.8  (paper's bound 2^794.6; direct summation 2^16)
+== D.4.7 exponent bookkeeping: sum over depth of the (D.15) bound, constants explicit ==
+  (D.15) with p_t <= (24 + o(1)) M D/u gives bits <= 2 pi sqrt(24) / ln 2 * M/sqrt(u) = 44.41 M/sqrt(u) per node; M_d <= C s 8^-d, u_d = floor(eps lambda / 2^d):
+  sum_d 8^-d sqrt(2^d) = 1.2147, so total <= 44.41 * 1.2147 / sqrt(eps) * C s / sqrt(lambda) = 19530 C s / sqrt(lambda) bits (plus H = s/sqrt(lambda) for the leaf and poly factors)
+  i.e. the proved exponent is O(s/sqrt(log s)) with a constant of order 10^4 C (C >= 4k for the D.2 network),
+    k=3, m=4.26n: bound < 2^n needs sqrt(lambda) > 1.23e+06, lambda > 1.52e+12, s > 2^1.52e+12
+    k=3, m=1.0n: bound < 2^n needs sqrt(lambda) > 4.69e+05, lambda > 2.2e+11, s > 2^2.2e+11
+    k=2, m=1.0n: bound < 2^n needs sqrt(lambda) > 3.12e+05, lambda > 9.76e+10, s > 2^9.76e+10
+  (these use only the explicit constants; C and the 'sufficiently large s' thresholds make the true crossover larger)
+== Item 4: degree hypothesis for the D.2 network with one variable in every clause ==
+  n = 2..12, k = 2..4, m = 3n, x_1 in every clause: max degree before/after subdivision <= max(k,3) (observed max 4); edges <= 4 k s; bipartite. The equality tree (d-2 trivalent vertices) is the splitting step.
+  ceil(s^0.9) < 3 only for s in [1, 2]; for n from 10 to 10^6 (s = n + m >= 10) the hypothesis holds with k = 3.
+  k = 3: max degree max(k,3) = 3 <= ceil(s^0.9) from s = 3
+  k = 5: max degree max(k,3) = 5 <= ceil(s^0.9) from s = 5
+  k = 10: max degree max(k,3) = 10 <= ceil(s^0.9) from s = 12
+  k = 20: max degree max(k,3) = 20 <= ceil(s^0.9) from s = 27
+  3-CNF, m = 4.26 n, all variables with >= 3 occurrences: wires after subdivision = 2(2km - 3n) = 45.12 n = 8.58 s

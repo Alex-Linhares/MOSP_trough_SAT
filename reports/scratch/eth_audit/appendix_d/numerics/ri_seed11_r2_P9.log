@@ -1,0 +1,89 @@
+trial 0: r=2 a=2 rows=3 cols=3 M=5 packets=3 labels rows=[(1, 1), (1, 1), (2, 2)] cols=[(2, 1), (1, 2), (2, 1)]
+   F(0) = contraction: 17
+   Lemma D.4 integrality of W(t+alpha z) for all t in S: True
+   deg F = 28 <= M(2L-1) = 35; F(t+alpha z) 2-integral for all t in S: True
+   t=-3 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-3 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-3 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-2 (i=1) zeta=0: (D.12) series ok=True divisibility ok=True on 4 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-2 (i=1) zeta=1: (D.12) series ok=True divisibility ok=True on 4 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-2 (i=1) zeta=3: (D.12) series ok=True divisibility ok=True on 4 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-1 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-1 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-1 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 1 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 1 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 1 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 2 (i=1) zeta=0: (D.12) series ok=True divisibility ok=True on 4 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 2 (i=1) zeta=1: (D.12) series ok=True divisibility ok=True on 4 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 2 (i=1) zeta=3: (D.12) series ok=True divisibility ok=True on 4 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 3 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 3 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 3 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+trial 1: r=2 a=2 rows=2 cols=3 M=6 packets=5 labels rows=[(2, 1), (2, 1)] cols=[(1, 1), (1, 1), (1, 2)]
+   F(0) = contraction: 84
+   Lemma D.4 integrality of W(t+alpha z) for all t in S: True
+   deg F = 42 <= M(2L-1) = 42; F(t+alpha z) 2-integral for all t in S: True
+   t=-3 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: False
+   t=-3 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-3 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-2 (i=1) zeta=0: (D.12) series ok=True divisibility ok=True on 3 crossing pairs; (D.16) ok=True with 1654 tuples over 24 effective modes; lhs!=rhs exactly: False
+   t=-2 (i=1) zeta=1: (D.12) series ok=True divisibility ok=True on 3 crossing pairs; (D.16) ok=True with 1654 tuples over 24 effective modes; lhs!=rhs exactly: False
+   t=-2 (i=1) zeta=3: (D.12) series ok=True divisibility ok=True on 3 crossing pairs; (D.16) ok=True with 1654 tuples over 24 effective modes; lhs!=rhs exactly: False
+   t=-1 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: False
+   t=-1 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-1 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 1 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: False
+   t= 1 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 1 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 2 (i=1) zeta=0: (D.12) series ok=True divisibility ok=True on 3 crossing pairs; (D.16) ok=True with 1654 tuples over 24 effective modes; lhs!=rhs exactly: False
+   t= 2 (i=1) zeta=1: (D.12) series ok=True divisibility ok=True on 3 crossing pairs; (D.16) ok=True with 1654 tuples over 24 effective modes; lhs!=rhs exactly: False
+   t= 2 (i=1) zeta=3: (D.12) series ok=True divisibility ok=True on 3 crossing pairs; (D.16) ok=True with 1654 tuples over 24 effective modes; lhs!=rhs exactly: False
+   t= 3 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: False
+   t= 3 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 3 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 8 crossing pairs; (D.16) ok=True with 11807 tuples over 40 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+trial 2: r=2 a=2 rows=3 cols=2 M=6 packets=4 labels rows=[(1, 2), (2, 2), (1, 2)] cols=[(1, 2), (1, 1)]
+   F(0) = contraction: -200
+   Lemma D.4 integrality of W(t+alpha z) for all t in S: True
+   deg F = 42 <= M(2L-1) = 42; F(t+alpha z) 2-integral for all t in S: True
+   t=-3 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-3 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-3 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-2 (i=1) zeta=0: (D.12) series ok=True divisibility ok=True on 2 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-2 (i=1) zeta=1: (D.12) series ok=True divisibility ok=True on 2 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-2 (i=1) zeta=3: (D.12) series ok=True divisibility ok=True on 2 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-1 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-1 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-1 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 1 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 1 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 1 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 2 (i=1) zeta=0: (D.12) series ok=True divisibility ok=True on 2 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 2 (i=1) zeta=1: (D.12) series ok=True divisibility ok=True on 2 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 2 (i=1) zeta=3: (D.12) series ok=True divisibility ok=True on 2 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 3 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 3 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 3 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+trial 3: r=2 a=2 rows=3 cols=2 M=6 packets=3 labels rows=[(2, 1), (1, 1), (2, 2)] cols=[(2, 1), (1, 1)]
+   F(0) = contraction: 72
+   Lemma D.4 integrality of W(t+alpha z) for all t in S: True
+   deg F = 35 <= M(2L-1) = 42; F(t+alpha z) 2-integral for all t in S: True
+   t=-3 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-3 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-3 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-2 (i=1) zeta=0: (D.12) series ok=True divisibility ok=True on 1 crossing pairs; (D.16) ok=True with 67 tuples over 8 effective modes; lhs!=rhs exactly: False
+   t=-2 (i=1) zeta=1: (D.12) series ok=True divisibility ok=True on 1 crossing pairs; (D.16) ok=True with 67 tuples over 8 effective modes; lhs!=rhs exactly: False
+   t=-2 (i=1) zeta=3: (D.12) series ok=True divisibility ok=True on 1 crossing pairs; (D.16) ok=True with 67 tuples over 8 effective modes; lhs!=rhs exactly: False
+   t=-1 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t=-1 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t=-1 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 1 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 1 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 1 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 2 (i=1) zeta=0: (D.12) series ok=True divisibility ok=True on 1 crossing pairs; (D.16) ok=True with 67 tuples over 8 effective modes; lhs!=rhs exactly: False
+   t= 2 (i=1) zeta=1: (D.12) series ok=True divisibility ok=True on 1 crossing pairs; (D.16) ok=True with 67 tuples over 8 effective modes; lhs!=rhs exactly: False
+   t= 2 (i=1) zeta=3: (D.12) series ok=True divisibility ok=True on 1 crossing pairs; (D.16) ok=True with 67 tuples over 8 effective modes; lhs!=rhs exactly: False
+   t= 3 (i=0) zeta=0: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: False
+   t= 3 (i=0) zeta=1: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+   t= 3 (i=0) zeta=3: (D.12) series ok=True divisibility ok=True on 5 crossing pairs; (D.16) ok=True with 434 tuples over 16 effective modes; lhs!=rhs exactly: True; control (budget P-2) ok=True
+(D.16) held in 72/72 (node, zeta) tests at P=9, r=2; non-trivial (lhs != rhs exactly): 32; negative controls run: 32, of which failed as they should: 0

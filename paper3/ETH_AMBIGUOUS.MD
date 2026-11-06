@@ -1113,3 +1113,17 @@ an answer).
   read and keep the later entries in the README only (11d's choice);
   or move the whole list out of the paper into the README and leave
   §10.2 with the counts.
+
+### A1 — Appendix D audited after the loop; add it to Section 3? (coordinator, 2026-11-06)
+- **Ambiguous**: at the owner's request three agents audited the manuscript's Appendix D,
+  the only proof of the sharper, unverified exponents (`reports/scratch/eth_audit/appendix_d/`,
+  README.md for the consolidated verdict): no error; one apparent error was a `pdftotext`
+  artifact; presentational gaps; and a constants finding — with the appendix's fixed
+  parameters the recursion has no level at all below 2^131071 wires, its own child-count
+  estimate exceeds direct summation below s ≈ 2^(2.6·10^8), and the proved sharper exponent
+  drops below n only for log s ≳ 1.5·10^12. Section 3 currently tags the sharper bounds
+  "paper-only" and says nothing about their constants.
+- **Chosen**: nothing changed in the paper; the material is on disk with regenerate commands.
+- **Owner may change**: add a subsection to Section 3 ("The sharper route, audited") with
+  the verdict, the thresholds and the three audit files as data, in plain English; or leave
+  the paper about the verified statement only.

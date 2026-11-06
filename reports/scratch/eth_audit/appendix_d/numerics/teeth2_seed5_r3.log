@@ -1,0 +1,5 @@
+trial 0 M=6 packets=5 t=-1 zeta=1: crossing contribution has v2=3; P=5: full budget ok=True (164 tuples, 16 eff. modes); budget 0 ok=False; largest failing budget=(0, 1)
+trial 0 M=6 packets=5 t=-1 zeta=3: crossing contribution has v2=3; P=5: full budget ok=True (164 tuples, 16 eff. modes); budget 0 ok=False; largest failing budget=(0, 1)
+trial 0 M=6 packets=5 t=3 zeta=1: crossing contribution has v2=4; P=6: full budget ok=True (416 tuples, 20 eff. modes); budget 0 ok=False; largest failing budget=(0, 1)
+trial 0 M=6 packets=5 t=3 zeta=3: crossing contribution has v2=4; P=6: full budget ok=True (416 tuples, 20 eff. modes); budget 0 ok=False; largest failing budget=(0, 1)
+summary: 4/4 full-budget checks hold; 4/4 budget-0 controls fail as required
