@@ -246,6 +246,25 @@ but no source we have read states it.
   Mycielski graph $M_7$ in a fraction of a second, 271 of the 340 Rome graphs
   left open at 600\,s, and MOSP optima that took up to 1,128 core-hours to
   refute (Sections~\ref{sec:minor} and~\ref{sec:results}).
+\item \emph{A parallel refutation, proved sound.} The previous algorithm is
+  sequential, and its two reaching ingredients, the nogood memo and the old
+  moves a node inherits from the siblings searched before it, are what stop
+  the textbook split of a depth-first search from being a proof. Our split
+  (Section~\ref{sec:practice}, Appendix~\ref{app:split}) expands the top of
+  the tree exactly as the sequential search would, hands every child to its
+  own worker with the old moves it would have inherited and an empty memo,
+  re-splits any task that exceeds its node cap, and claims a refutation only
+  when every task has answered. We prove in Lean that every such run lifts to
+  a run of our corrected search \leanref{split}, so the parallel answer is a
+  certificate and not a heuristic, and we measure its price: the memo hits
+  the tasks cannot share and the nodes of tasks that were split again. It is
+  what certified the two hardest MOSP optima on record, 21 for
+  \texttt{Random-125-125-2-3\_0} after 9,665 subtrees and 1,128 core-hours and
+  25 for \texttt{Random-125-125-2-2\_0} after 17,001 subtrees and 2,231
+  core-hours, on 25 cores; on one core each would have taken months, and
+  neither had been certified before. The split scales with the cores it is
+  given, up to those two losses, and the ledger of finished tasks survives a
+  crash, so the next harder instance is a budget and not a new method.
 \item \emph{Benchmarks re-certified, and a dataset.} Our corrected search
   re-proved all 115 benchmark optima, on 113 distinct graphs, that rested on
   the previous algorithm, and none changed. We release 17,714 graphs, distinct

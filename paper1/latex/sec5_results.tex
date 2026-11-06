@@ -124,8 +124,20 @@ distinct graphs: SP3 and SP4 are each stored twice.
 The seven hardest are 125-customer Chu--Stuckey instances at density classes 2
 and 4. They are too large for one worker, so their search was split:
 the top levels of the tree are expanded into independent subtrees, each
-refuted on its own worker, and the value is refuted when every subtree is. The
-split is proved sound~\leanref{split}. All seven were refuted at 18 to 369
+refuted on its own worker, and the value is refuted when every subtree is.
+This is not the textbook split of a depth-first search, because two of the
+search's ingredients reach across the tree: the nogood memo, which the
+workers cannot share, and the old moves of Theorem~3, which a node inherits
+from the siblings searched before it, so that a subtree's answer is sound
+only if those siblings' answers are. The driver reproduces the sequential
+tree's order and inheritance exactly, gives each task an empty memo, re-splits
+a task that exceeds its node cap, and claims nothing until every task has
+answered \emph{unsat}. The split is proved sound~\leanref{split}: every such
+run lifts to a run of our corrected search. Its price is measured and
+reported beside each count: the memo hits the tasks cannot share, which make
+the split visit more nodes than one worker would, and the nodes of tasks
+that hit their cap and were split again, which we count as waste. The
+previous algorithm has no parallel form in its authors' papers. All seven were refuted at 18 to 369
 core-hours each, 1,112.6 in total (Table~\ref{tab:split},
 Appendix~\ref{app:split}).
 

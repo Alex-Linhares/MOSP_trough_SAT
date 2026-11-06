@@ -127,7 +127,11 @@ optimum of 7 where the optimum is 6. Our corrected search (and a SAT solver with
 the first of the two, was also found by Tamaki as a lemma
 \citep[Lemma~1]{Kitsunai2016} in the pathwidth literature; we prove our
 corrected search sound, formally, in Lean. We re-prove all 115 benchmark
-optima that rested on Chu and Stuckey's algorithm, changing none. Ported to graphs, our corrected search proves the pathwidth of all 11,534
+optima that rested on Chu and Stuckey's algorithm, changing none. Their search
+is sequential; we make the refutation parallel by a split of the search tree
+into independent subtrees that inherit the right refuted moves from their
+siblings, proved sound in Lean, and with it certify the two hardest MOSP
+optima on record, one after 17,001 subtrees and 2,231 core-hours on 25 cores. Ported to graphs, our corrected search proves the pathwidth of all 11,534
 Rome graphs, a standard graph-drawing benchmark of 10 to 110 vertices (97.1\% of them within 10 minutes each), and, on every benchmark set with published
 exact counts, as many graphs or more than the published branch and bound of
 Coudert, Mazauric and Nisse (2016). In the other direction, \emph{from pathwidth to MOSP}, a lower bound from graph
