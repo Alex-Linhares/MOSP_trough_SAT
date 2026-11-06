@@ -283,8 +283,59 @@ combines the sparsification of Section~6 with Lemma~D.2 (p.~54, line
 (p.~57, lines 3251--3252). All of this is \textbf{paper-only}: no
 declaration about tensor networks, contraction, Hermite recovery or
 packets exists in the family's 3,977 files, by the identifier search of
-Section~\ref{sec:beyond-lean}. We make no statement about Appendix~D's
-argument; we did not read it for correctness.
+Section~\ref{sec:beyond-lean}.
+
+\paragraph{The sharper route, audited.}
+After the rest of this paper was written we did read Appendix~D for
+correctness, three times over, each reading looking for a different kind
+of fault: one at the proof of the contraction theorem (Section~D.4), one
+at the two encodings and at the arithmetic that turns the theorem into
+the two sharper exponents (Sections~D.2 and D.3), and one that tested
+every identity small enough to compute with exact integer arithmetic.
+The three reports and every script are in the companion
+files\footnote{\texttt{reports/scratch/eth\_audit/appendix\_d/}:
+\texttt{README.md} for the joint verdict, one report per reading, and the
+scripts, each run with \texttt{python3 -I}.}. The outcome is in three
+parts.
+
+\emph{No error.} Every identity that can be instantiated held on every
+instance tried: the clause encoding gave the exact number of satisfying
+assignments on 2,100 random formulas; the sparse-system encoding gave the
+exact number of common zeros on 127 systems; the recovery step at the
+heart of the proof (``tapered Hermite recovery'', the text's name for
+reading an exact value back from approximations whose precision is
+allowed to decay) recovered the value exactly in 117 random cases, with
+the precision it lost far inside the budget the text allows; the
+divisibility claim behind it is exact and tight; the identity that splits
+one network into its children held in 408 of 408 cases, and failed, as it
+should, when the split was done without the correction terms; the
+running-time recurrence, derived twice independently, gives the exponent
+the text states. One apparent error was an artifact of our text
+extraction, which had dropped a superscript; the typeset page is right.
+What remains are presentational gaps: the induction the recursion rests
+on is never written out (every invariant it needs checks), and ``for all
+sufficiently large $n$'' is used without saying how large.
+
+\emph{How large.} That is the part that belongs in this paper. The
+appendix fixes its parameters explicitly, and with those parameters the
+recursion does not take even one step on any network of fewer than
+$2^{131071}$ wires: below that the text's ``fixed finite range of smaller
+sizes handled by direct summation'' applies, and direct summation is
+brute force. The appendix's own estimate of how many children one step
+produces exceeds brute force on the same input unless the network has at
+least about $2^{2.6\cdot 10^{8}}$ wires. And the exponent the appendix
+proves, with its own constants, falls below $n$ for three-variable
+clauses only once the logarithm of the size passes about
+$1.5\cdot 10^{12}$. None of this contradicts the asymptotic statement,
+which is about the limit. It says that the sharper exponents, like the
+verified one, carry no guarantee at any size anyone will write down, with
+a threshold far larger than the one in our title, and that the
+manuscript states no crossover for them.
+
+\emph{Status.} Appendix~D remains \textbf{paper-only}: read three ways
+and not faulted, which is evidence, not verification. A reading is not a
+kernel. The sharper exponents stand or fall with this appendix, and what
+we can say is that we looked for the fall and did not find it.
 
 \subsection{The hypotheses of \S1.1.1 and the fine-grained remarks of \S1.1.3}
 \label{sec:beyond-hypotheses}

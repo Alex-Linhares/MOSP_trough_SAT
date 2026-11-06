@@ -329,6 +329,16 @@ python3 paper3/scripts/check_refs.py              # the bibliography's DOIs (net
   `66a755ac2` and the working tree of 2026-11-05; the 26 left are tables,
   displays, list sentences, verbatim quotations and splitter artefacts.
 
+## The Appendix D audits (2026-11-06)
+
+`reports/scratch/eth_audit/appendix_d/`: three adversarial readings of the
+manuscript's Appendix D, the only proof of the sharper, unverified exponents
+(`audit_theorem_D1.md`, `audit_encodings_and_bounds.md`, `audit_numerics.md`,
+`README.md` for the joint verdict; scripts under the same directory and under
+`numerics/`, each run with `python3 -I`). No error found; the thresholds
+quoted in Section 3's paragraph "The sharper route, audited" come from
+`numerics/parameters.py` and `check_params.py` / `check_recurrence.py`.
+
 ## The replay: status and hashes
 
 **Done, both kernels** (item 01, 2026-11-05; `replay/README.md` has the

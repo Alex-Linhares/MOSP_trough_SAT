@@ -1123,7 +1123,7 @@ an answer).
   estimate exceeds direct summation below s ≈ 2^(2.6·10^8), and the proved sharper exponent
   drops below n only for log s ≳ 1.5·10^12. Section 3 currently tags the sharper bounds
   "paper-only" and says nothing about their constants.
-- **Chosen**: nothing changed in the paper; the material is on disk with regenerate commands.
-- **Owner may change**: add a subsection to Section 3 ("The sharper route, audited") with
-  the verdict, the thresholds and the three audit files as data, in plain English; or leave
-  the paper about the verified statement only.
+- **Chosen**: nothing changed in the paper at first; the material is on disk with regenerate commands.
+- **Resolved by the owner (2026-11-06, "good idea, let's do it")**: the paragraph "The
+  sharper route, audited" added to Section 3's Appendix D subsection, in plain English,
+  with the three audit files cited as companion data; the "paper-only" status kept.
