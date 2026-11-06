@@ -668,3 +668,5 @@ setup's Crossref check.
   `literature/` under their existing names, git-ignored and removed from the index on
   2026-11-06 at the owner's request (they were in commits up to 5897970cb; the history is
   not rewritten).
+- **De Giovanni, Massi & Pezzella (2010), the genetic-algorithm technical report**: treated the
+  same way on 2026-11-06 (held on disk, git-ignored, removed from the index and from the history).
