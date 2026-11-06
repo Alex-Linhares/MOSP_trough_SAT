@@ -669,4 +669,4 @@ setup's Crossref check.
   2026-11-06 at the owner's request (they were in commits up to 5897970cb; the history is
   not rewritten).
 - **De Giovanni, Massi & Pezzella (2010), the genetic-algorithm technical report**: treated the
-  same way on 2026-11-06 (held on disk, git-ignored, removed from the index and from the history).
+  same way on 2026-11-06 (held on disk, git-ignored, removed from the index; the history is not rewritten, by the owner's decision).
