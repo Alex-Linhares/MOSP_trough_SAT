@@ -663,3 +663,8 @@ setup's Crossref check.
   `literature/1979-Garey-Johnson-Computers-and-Intractability-NP-Completeness.{pdf,djvu}`,
   git-ignored. The reference for every NP-completeness citation in the papers (problem
   numbers GT.., SR.., and the bandwidth / linear arrangement entries).
+- **De Giovanni, Massi & Pezzella (2013, IJPR)** and **De Giovanni, Massi, Pezzella, Pfetsch,
+  Rinaldi & Ventura (2013, ITOR)**, received from the author on 2026-10-22: kept in
+  `literature/` under their existing names, git-ignored and removed from the index on
+  2026-11-06 at the owner's request (they were in commits up to 5897970cb; the history is
+  not rewritten).
